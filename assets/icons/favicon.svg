@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0c06a"/>
+      <stop offset="50%" style="stop-color:#dba550"/>
+      <stop offset="100%" style="stop-color:#c48f3a"/>
+    </linearGradient>
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5d080"/>
+      <stop offset="100%" style="stop-color:#dba550"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="64" fill="#0f1729"/>
+
+  <!-- Shield outer -->
+  <path d="M256 56 L400 90 L400 280 Q400 360 256 440 Q112 360 112 280 L112 90 Z"
+        fill="url(#gold)" stroke="none"/>
+
+  <!-- Shield inner (dark) -->
+  <path d="M256 80 L384 110 L384 275 Q384 345 256 418 Q128 345 128 275 L128 110 Z"
+        fill="#0f1729" stroke="none"/>
+
+  <!-- Open book - left page -->
+  <path d="M256 180 L170 195 L170 290 L256 275 Z" fill="url(#goldLight)" opacity="0.9"/>
+
+  <!-- Open book - right page -->
+  <path d="M256 180 L342 195 L342 290 L256 275 Z" fill="url(#gold)" opacity="0.9"/>
+
+  <!-- Book spine -->
+  <line x1="256" y1="175" x2="256" y2="280" stroke="#f0c06a" stroke-width="3"/>
+
+  <!-- Book lines left -->
+  <line x1="190" y1="215" x2="248" y2="208" stroke="#0f1729" stroke-width="2" opacity="0.3"/>
+  <line x1="190" y1="230" x2="248" y2="223" stroke="#0f1729" stroke-width="2" opacity="0.3"/>
+  <line x1="190" y1="245" x2="248" y2="238" stroke="#0f1729" stroke-width="2" opacity="0.3"/>
+  <line x1="190" y1="260" x2="248" y2="253" stroke="#0f1729" stroke-width="2" opacity="0.3"/>
+
+  <!-- Book lines right -->
+  <line x1="264" y1="208" x2="322" y2="215" stroke="#0f1729" stroke-width="2" opacity="0.3"/>
+  <line x1="264" y1="223" x2="322" y2="230" stroke="#0f1729" stroke-width="2" opacity="0.3"/>
+  <line x1="264" y1="238" x2="322" y2="245" stroke="#0f1729" stroke-width="2" opacity="0.3"/>
+  <line x1="264" y1="253" x2="322" y2="260" stroke="#0f1729" stroke-width="2" opacity="0.3"/>
+
+  <!-- Left laurel branch -->
+  <g fill="url(#gold)">
+    <path d="M230 340 Q180 310 160 240" stroke="#dba550" stroke-width="3" fill="none"/>
+    <ellipse cx="220" cy="330" rx="8" ry="16" transform="rotate(-20 220 330)"/>
+    <ellipse cx="205" cy="310" rx="8" ry="16" transform="rotate(-30 205 310)"/>
+    <ellipse cx="192" cy="288" rx="8" ry="16" transform="rotate(-40 192 288)"/>
+    <ellipse cx="180" cy="268" rx="7" ry="15" transform="rotate(-50 180 268)"/>
+    <ellipse cx="170" cy="248" rx="7" ry="14" transform="rotate(-55 170 248)"/>
+  </g>
+
+  <!-- Right laurel branch -->
+  <g fill="url(#gold)">
+    <path d="M282 340 Q332 310 352 240" stroke="#dba550" stroke-width="3" fill="none"/>
+    <ellipse cx="292" cy="330" rx="8" ry="16" transform="rotate(20 292 330)"/>
+    <ellipse cx="307" cy="310" rx="8" ry="16" transform="rotate(30 307 310)"/>
+    <ellipse cx="320" cy="288" rx="8" ry="16" transform="rotate(40 320 288)"/>
+    <ellipse cx="332" cy="268" rx="7" ry="15" transform="rotate(50 332 268)"/>
+    <ellipse cx="342" cy="248" rx="7" ry="14" transform="rotate(55 342 248)"/>
+  </g>
+</svg>

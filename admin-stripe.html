@@ -1,0 +1,2455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline' https://js.stripe.com https://cdn.jsdelivr.net https://api.qrserver.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://js.stripe.com; frame-src https://js.stripe.com; worker-src 'self' blob:;">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Configuração Stripe | escola liberal</title>
+  <!-- TOTP library (pure JS, no server needed) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jssha/3.3.1/sha.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1520;
+      --surface: #131e2e;
+      --card: #1a2535;
+      --border: #243044;
+      --accent: #d4a843;
+      --accent2: #635bff;
+      --green: #2ecc71;
+      --red: #e74c3c;
+      --yellow: #f39c12;
+      --text: #e8e6e1;
+      --muted: #7a8ca3;
+      --input-bg: #0d1520;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── AUTH GATE ── */
+    #auth-gate {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    #auth-gate.hidden { display: none; }
+
+    .auth-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    .auth-logo {
+      width: 52px; height: 52px;
+      background: rgba(212,168,67,.15);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1.25rem;
+    }
+    .auth-title { font-size: 1.2rem; font-weight: 700; margin-bottom: .35rem; }
+    .auth-subtitle { font-size: .83rem; color: var(--muted); margin-bottom: 1.75rem; line-height: 1.5; }
+
+    .auth-step-indicator {
+      display: flex; align-items: center; justify-content: center;
+      gap: .5rem; margin-bottom: 1.75rem;
+    }
+    .auth-step-dot {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 700;
+      border: 2px solid var(--border);
+      color: var(--muted);
+      transition: all .25s;
+    }
+    .auth-step-dot.active { border-color: var(--accent); color: var(--accent); background: rgba(212,168,67,.1); }
+    .auth-step-dot.done { border-color: var(--green); background: rgba(46,204,113,.1); color: var(--green); }
+    .auth-step-line { width: 32px; height: 2px; background: var(--border); border-radius: 2px; }
+
+    .auth-input-wrap { position: relative; margin-bottom: 1rem; }
+    .auth-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: .75rem 2.75rem .75rem 1rem;
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color .15s;
+      text-align: left;
+    }
+    .auth-input:focus { border-color: var(--accent); }
+    .auth-input.shake {
+      animation: shake .35s ease;
+      border-color: var(--red) !important;
+    }
+    .auth-input-eye {
+      position: absolute; right: .85rem; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem; cursor: pointer; color: var(--muted);
+    }
+
+    /* OTP input — 6 dígitos */
+    .otp-wrap {
+      display: flex; gap: .5rem; justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .otp-digit {
+      width: 46px; height: 54px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      transition: border-color .15s;
+      caret-color: var(--accent);
+    }
+    .otp-digit:focus { border-color: var(--accent); }
+    .otp-digit.filled { border-color: rgba(212,168,67,.5); }
+    .otp-digit.shake { animation: shake .35s ease; border-color: var(--red) !important; }
+
+    .auth-btn {
+      width: 100%;
+      padding: .8rem;
+      background: var(--accent);
+      color: #000;
+      border: none; border-radius: 10px;
+      font-size: .95rem; font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+      margin-bottom: .75rem;
+    }
+    .auth-btn:hover { background: #e8b84b; }
+    .auth-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .auth-error {
+      background: rgba(231,76,60,.1);
+      border: 1px solid rgba(231,76,60,.3);
+      border-radius: 8px;
+      padding: .6rem .9rem;
+      font-size: .82rem;
+      color: var(--red);
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .auth-timer {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-bottom: .5rem;
+    }
+    .auth-timer span { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    /* QR setup modal */
+    #qr-setup {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.7);
+      z-index: 10000;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    #qr-setup.hidden { display: none; }
+    .qr-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 380px; width: 100%;
+      text-align: center;
+    }
+    .qr-box h3 { font-size: 1.1rem; margin-bottom: .5rem; }
+    .qr-box p { font-size: .83rem; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.5; }
+    #qr-canvas { margin: 0 auto 1rem; display: block; border-radius: 8px; }
+    .qr-secret-box {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .6rem .9rem;
+      font-family: monospace;
+      font-size: .85rem;
+      color: var(--accent);
+      word-break: break-all;
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+    .qr-confirm-wrap { display: flex; gap: .5rem; }
+    .qr-confirm-input {
+      flex: 1;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: .6rem .75rem;
+      color: var(--text);
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: .2em;
+      outline: none;
+    }
+    .qr-confirm-input:focus { border-color: var(--accent); }
+    .qr-confirm-btn {
+      padding: .6rem 1.25rem;
+      background: var(--accent); color: #000;
+      border: none; border-radius: 8px;
+      font-weight: 700; cursor: pointer;
+      font-size: .9rem;
+    }
+
+    /* Lockout banner */
+    .lockout-msg {
+      background: rgba(231,76,60,.08);
+      border: 1px solid rgba(231,76,60,.3);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      font-size: .83rem;
+      color: var(--red);
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60% { transform: translateX(-6px); }
+      40%,80% { transform: translateX(6px); }
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: .75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-logo { font-weight: 700; font-size: 1rem; color: var(--accent); }
+    .topbar-title { color: var(--muted); font-size: .9rem; }
+    .topbar-sep { color: var(--border); }
+    .topbar-badge {
+      margin-left: auto;
+      background: var(--accent2);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: .5px;
+    }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    /* ── STATUS BANNER ── */
+    .status-banner {
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin-bottom: 2rem;
+      font-size: .9rem;
+    }
+    .status-banner.pending { background: rgba(243,156,18,.08); border: 1px solid rgba(243,156,18,.3); }
+    .status-banner.ok { background: rgba(46,204,113,.08); border: 1px solid rgba(46,204,113,.3); }
+    .status-banner.error { background: rgba(231,76,60,.08); border: 1px solid rgba(231,76,60,.3); }
+    .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.pending { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+    .status-dot.ok { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .status-dot.error { background: var(--red); box-shadow: 0 0 8px var(--red); }
+
+    /* ── SECTION ── */
+    .section { margin-bottom: 2.5rem; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-bottom: 1rem;
+    }
+    .section-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(212,168,67,.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+    }
+    .section-title { font-size: 1rem; font-weight: 600; }
+    .section-step {
+      margin-left: auto;
+      font-size: .75rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 2px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    /* ── FORM ── */
+    .field { margin-bottom: 1.25rem; }
+    .field:last-child { margin-bottom: 0; }
+    label {
+      display: block;
+      font-size: .8rem;
+      color: var(--muted);
+      margin-bottom: .4rem;
+      font-weight: 500;
+      letter-spacing: .3px;
+    }
+    label span.required { color: var(--red); margin-left: 2px; }
+    label .hint {
+      display: block;
+      font-size: .75rem;
+      color: var(--muted);
+      margin-top: 2px;
+      font-weight: 400;
+    }
+    input[type="text"], input[type="password"], input[type="url"], input[type="number"], select {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .65rem .9rem;
+      color: var(--text);
+      font-size: .9rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      transition: border-color .15s;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+    input.valid { border-color: var(--green); }
+    input.invalid { border-color: var(--red); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media(max-width:600px) { .field-row { grid-template-columns: 1fr; } }
+
+    /* ── INPUT WITH ICON ── */
+    .input-wrap { position: relative; }
+    .input-wrap input { padding-right: 2.5rem; }
+    .input-icon {
+      position: absolute;
+      right: .75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      cursor: pointer;
+      color: var(--muted);
+      transition: color .15s;
+    }
+    .input-icon:hover { color: var(--text); }
+
+    /* ── COPY FIELD ── */
+    .copy-field {
+      display: flex;
+      gap: .5rem;
+    }
+    .copy-field input { flex: 1; }
+    .copy-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .65rem .9rem;
+      color: var(--muted);
+      font-size: .85rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .15s;
+    }
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── PLANS GRID ── */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .plan-card {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .plan-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: .75rem;
+    }
+    .plan-name { font-size: .85rem; font-weight: 600; }
+    .plan-price { font-size: .8rem; color: var(--accent); font-weight: 700; }
+    .plan-badge {
+      font-size: .65rem;
+      background: rgba(212,168,67,.15);
+      color: var(--accent);
+      border: 1px solid rgba(212,168,67,.3);
+      padding: 1px 7px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .plan-status-row {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: .5rem;
+      font-size: .75rem;
+    }
+    .plan-status-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .plan-status-dot.ok { background: var(--green); }
+    .plan-status-dot.pending { background: var(--yellow); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      padding: .65rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+    .btn-primary:hover { background: #e8b84b; transform: translateY(-1px); }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-stripe {
+      background: var(--accent2);
+      color: #fff;
+    }
+    .btn-stripe:hover { background: #7b74ff; transform: translateY(-1px); }
+    .btn-danger { background: rgba(231,76,60,.1); color: var(--red); border: 1px solid rgba(231,76,60,.3); }
+    .btn-danger:hover { background: rgba(231,76,60,.2); }
+    .btn-sm { padding: .4rem .9rem; font-size: .8rem; }
+    .btn-row {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    /* ── CHECKLIST ── */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .88rem;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .check-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .check-text { flex: 1; }
+    .check-text strong { display: block; margin-bottom: 2px; }
+    .check-text span { color: var(--muted); font-size: .8rem; }
+    .check-action { flex-shrink: 0; }
+
+    /* ── CODE BLOCK ── */
+    .code-block {
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: .82rem;
+      color: #a8d8ea;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+    .code-block .comment { color: var(--muted); }
+    .code-block .key { color: var(--accent); }
+    .code-block .val { color: #2ecc71; }
+
+    /* ── INFO BOX ── */
+    .info-box {
+      background: rgba(99,91,255,.06);
+      border: 1px solid rgba(99,91,255,.2);
+      border-radius: 8px;
+      padding: .9rem 1rem;
+      font-size: .83rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 1rem;
+    }
+    .info-box a { color: var(--accent2); text-decoration: none; }
+    .info-box a:hover { text-decoration: underline; }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      gap: .25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+    .tab {
+      padding: .6rem 1.1rem;
+      font-size: .85rem;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+    .tab:hover:not(.active) { color: var(--text); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: .75rem 1.25rem;
+      font-size: .88rem;
+      display: none;
+      align-items: center;
+      gap: .6rem;
+      z-index: 9999;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      animation: slideIn .2s ease;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* ── WEBHOOK STATUS ── */
+    .webhook-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .webhook-row:last-child { border-bottom: none; }
+    .webhook-event { font-size: .85rem; font-family: monospace; color: #a8d8ea; }
+    .webhook-check { font-size: .9rem; }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+    /* ── PROGRESS TRACKER ── */
+    .progress-steps {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2rem;
+      overflow: hidden;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .progress-step {
+      flex: 1;
+      padding: .75rem .5rem;
+      text-align: center;
+      font-size: .75rem;
+      color: var(--muted);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      transition: all .15s;
+      position: relative;
+    }
+    .progress-step:last-child { border-right: none; }
+    .progress-step.done { background: rgba(46,204,113,.06); color: var(--green); }
+    .progress-step.active { background: rgba(212,168,67,.08); color: var(--accent); font-weight: 600; }
+    .progress-step .step-num {
+      display: block;
+      font-size: 1.1rem;
+      margin-bottom: 2px;
+    }
+
+    /* ── SAVE BAR ── */
+    .save-bar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: .85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 90;
+      transform: translateY(100%);
+      transition: transform .25s ease;
+    }
+    .save-bar.visible { transform: translateY(0); }
+    .save-bar-text { font-size: .85rem; color: var(--muted); }
+    .save-bar-text strong { color: var(--yellow); }
+
+    /* ── SECURITY MODAL TABS ── */
+    .sec-tab {
+      padding: .5rem 1rem;
+      font-size: .83rem;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      transition: all .15s;
+      font-weight: 500;
+    }
+    .sec-tab.active { color: var(--accent2); border-bottom-color: var(--accent2); font-weight: 700; }
+    .sec-tab:hover:not(.active) { color: var(--text); }
+  </style>
+<script src="cookie-consent.js"></script>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     QR SETUP MODAL (primeira vez)
+══════════════════════════════════════════ -->
+<div id="qr-setup" class="hidden">
+  <div class="qr-box">
+    <div style="font-size:2rem;margin-bottom:.75rem">📱</div>
+    <h3>Configurar Autenticador</h3>
+    <p>Escaneie o QR Code com <strong>Google Authenticator</strong>, <strong>Authy</strong> ou qualquer app TOTP.</p>
+    <canvas id="qr-canvas" width="180" height="180"></canvas>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:.5rem">Ou insira o código manualmente:</p>
+    <div class="qr-secret-box" id="qr-secret-display" onclick="copySecret()" title="Clique para copiar">
+      carregando...
+    </div>
+    <p style="font-size:.78rem;color:var(--muted);margin-bottom:.75rem">Digite o código de 6 dígitos do app para confirmar:</p>
+    <div class="qr-confirm-wrap">
+      <input type="text" class="qr-confirm-input" id="qr-confirm-input"
+        maxlength="6" placeholder="000000"
+        oninput="this.value=this.value.replace(/\D/g,'')"
+        onkeydown="if(event.key==='Enter')confirmTotpSetup()" />
+      <button class="qr-confirm-btn" onclick="confirmTotpSetup()">Confirmar</button>
+    </div>
+    <div class="auth-error" id="qr-error"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     AUTH GATE
+══════════════════════════════════════════ -->
+<div id="auth-gate">
+  <!-- ETAPA 1 — SENHA -->
+  <div class="auth-box" id="auth-step1-box">
+    <div class="auth-logo">🔐</div>
+    <div class="auth-title">Acesso Restrito</div>
+    <div class="auth-subtitle">Painel administrativo protegido.<br>Insira sua senha master para continuar.</div>
+
+    <div class="auth-step-indicator">
+      <div class="auth-step-dot active" id="dot1">1</div>
+      <div class="auth-step-line"></div>
+      <div class="auth-step-dot" id="dot2">2</div>
+    </div>
+
+    <div class="lockout-msg" id="lockout-msg"></div>
+    <div class="auth-error" id="pw-error"></div>
+
+    <div class="auth-input-wrap">
+      <input type="password" class="auth-input" id="pw-input"
+        placeholder="Senha master"
+        maxlength="64"
+        onkeydown="if(event.key==='Enter')submitPassword()" />
+      <span class="auth-input-eye" onclick="toggleAuthPw()">👁</span>
+    </div>
+
+    <button class="auth-btn" id="pw-btn" onclick="submitPassword()">Continuar →</button>
+    <div style="font-size:.75rem;color:var(--muted)">
+      Primeira vez? <a href="#" onclick="showSetupFlow(event)" style="color:var(--accent);text-decoration:none">Configurar autenticador</a>
+    </div>
+  </div>
+
+  <!-- ETAPA 2 — TOTP -->
+  <div class="auth-box" id="auth-step2-box" style="display:none">
+    <div class="auth-logo">📱</div>
+    <div class="auth-title">Verificação em 2 Etapas</div>
+    <div class="auth-subtitle">Abra seu aplicativo autenticador e insira o código de 6 dígitos.</div>
+
+    <div class="auth-step-indicator">
+      <div class="auth-step-dot done" id="dot1b">✓</div>
+      <div class="auth-step-line" style="background:var(--green)"></div>
+      <div class="auth-step-dot active" id="dot2b">2</div>
+    </div>
+
+    <div class="auth-timer">Código válido por <span id="totp-timer">30</span>s</div>
+    <div class="auth-error" id="otp-error"></div>
+
+    <div class="otp-wrap" id="otp-wrap">
+      <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" data-index="0" />
+      <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" data-index="1" />
+      <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" data-index="2" />
+      <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" data-index="3" />
+      <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" data-index="4" />
+      <input class="otp-digit" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" data-index="5" />
+    </div>
+
+    <button class="auth-btn" id="otp-btn" onclick="submitOtp()">Verificar →</button>
+    <button style="background:none;border:none;color:var(--muted);font-size:.8rem;cursor:pointer;text-decoration:underline" onclick="backToStep1()">← Voltar</button>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <span class="topbar-logo">Ec</span>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-title">Admin</span>
+  <span class="topbar-sep">/</span>
+  <span style="font-size:.9rem">Configuração Stripe</span>
+  <span class="topbar-badge">ADMIN</span>
+  <button onclick="openSecurityModal()" style="margin-left:.75rem;background:rgba(99,91,255,.12);border:1px solid rgba(99,91,255,.3);color:#a09cff;border-radius:8px;padding:.35rem .85rem;font-size:.8rem;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:.35rem">🔒 Segurança</button>
+  <button onclick="logoutAdmin()" style="background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.25);color:#e87a6f;border-radius:8px;padding:.35rem .85rem;font-size:.8rem;cursor:pointer;font-weight:600;margin-left:.35rem">Sair</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL DE SEGURANÇA
+══════════════════════════════════════════ -->
+<div id="security-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:8000;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2rem;max-width:460px;width:100%;position:relative">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1.75rem">
+      <div style="width:38px;height:38px;border-radius:10px;background:rgba(99,91,255,.12);display:flex;align-items:center;justify-content:center;font-size:1.2rem">🔒</div>
+      <div>
+        <div style="font-size:1rem;font-weight:700">Segurança da Conta</div>
+        <div style="font-size:.78rem;color:var(--muted)">Gerenciar senha e autenticador</div>
+      </div>
+      <button onclick="closeSecurityModal()" style="margin-left:auto;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1">×</button>
+    </div>
+
+    <!-- TABS -->
+    <div style="display:flex;gap:.25rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem">
+      <button class="sec-tab active" id="sectab-pw" onclick="switchSecTab('pw',this)">🔑 Trocar Senha</button>
+      <button class="sec-tab" id="sectab-totp" onclick="switchSecTab('totp',this)">📱 Autenticador</button>
+    </div>
+
+    <!-- PAINEL: TROCAR SENHA -->
+    <div id="sec-panel-pw">
+      <div class="field">
+        <label>Senha atual <span class="required">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="sec-pw-current" class="auth-input" style="border-radius:8px;padding:.6rem .9rem"
+            placeholder="Sua senha atual"
+            onkeydown="if(event.key==='Enter')changePassword()" />
+          <span class="input-icon" onclick="toggleSec('sec-pw-current')">👁</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Nova senha <span class="required">*</span>
+          <span class="hint">Mínimo 8 caracteres, 1 maiúscula, 1 número</span>
+        </label>
+        <div class="input-wrap">
+          <input type="password" id="sec-pw-new" class="auth-input" style="border-radius:8px;padding:.6rem .9rem"
+            placeholder="Nova senha"
+            oninput="checkPwStrength(this.value)"
+            onkeydown="if(event.key==='Enter')changePassword()" />
+          <span class="input-icon" onclick="toggleSec('sec-pw-new')">👁</span>
+        </div>
+        <!-- Barra de força -->
+        <div style="margin-top:.5rem;display:flex;gap:.25rem;height:4px;border-radius:4px;overflow:hidden">
+          <div id="str-bar-1" style="flex:1;background:var(--border);border-radius:4px;transition:background .2s"></div>
+          <div id="str-bar-2" style="flex:1;background:var(--border);border-radius:4px;transition:background .2s"></div>
+          <div id="str-bar-3" style="flex:1;background:var(--border);border-radius:4px;transition:background .2s"></div>
+          <div id="str-bar-4" style="flex:1;background:var(--border);border-radius:4px;transition:background .2s"></div>
+        </div>
+        <div id="str-label" style="font-size:.72rem;color:var(--muted);margin-top:.3rem"></div>
+      </div>
+      <div class="field">
+        <label>Confirmar nova senha <span class="required">*</span></label>
+        <div class="input-wrap">
+          <input type="password" id="sec-pw-confirm" class="auth-input" style="border-radius:8px;padding:.6rem .9rem"
+            placeholder="Repita a nova senha"
+            onkeydown="if(event.key==='Enter')changePassword()" />
+          <span class="input-icon" onclick="toggleSec('sec-pw-confirm')">👁</span>
+        </div>
+      </div>
+
+      <div id="sec-pw-error" style="display:none;background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--red);margin-bottom:.75rem"></div>
+      <div id="sec-pw-success" style="display:none;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);border-radius:8px;padding:.6rem .9rem;font-size:.82rem;color:var(--green);margin-bottom:.75rem"></div>
+
+      <button class="btn btn-primary" style="width:100%" onclick="changePassword()">💾 Salvar Nova Senha</button>
+
+      <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--muted)">
+        ⚠️ Após trocar a senha, copie e guarde o hash gerado. Para recuperar o acesso sem o hash, edite <code>admin-stripe.html</code> e substitua <code>PASSWORD_HASH</code>.
+      </div>
+    </div>
+
+    <!-- PAINEL: AUTENTICADOR -->
+    <div id="sec-panel-totp" style="display:none">
+      <div id="totp-status-box" style="border-radius:10px;padding:1rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;font-size:.85rem"></div>
+
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.25rem">
+        <li style="display:flex;align-items:center;justify-content:space-between;padding:.75rem;background:var(--input-bg);border:1px solid var(--border);border-radius:10px">
+          <div>
+            <div style="font-size:.88rem;font-weight:600">🔄 Reconfigurar Autenticador</div>
+            <div style="font-size:.76rem;color:var(--muted);margin-top:2px">Gera novo QR Code. O código anterior para de funcionar.</div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="closeSecurityModal();showSetupFlow(null)">Reconfigurar</button>
+        </li>
+        <li style="display:flex;align-items:center;justify-content:space-between;padding:.75rem;background:var(--input-bg);border:1px solid var(--border);border-radius:10px">
+          <div>
+            <div style="font-size:.88rem;font-weight:600">🗑️ Remover Autenticador</div>
+            <div style="font-size:.76rem;color:var(--muted);margin-top:2px">Desativa o 2º fator. Acesso só pela senha.</div>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="removeTotpConfirm()">Remover</button>
+        </li>
+      </ul>
+
+      <div style="background:rgba(243,156,18,.06);border:1px solid rgba(243,156,18,.25);border-radius:8px;padding:.75rem;font-size:.78rem;color:var(--muted);line-height:1.5">
+        💡 Se perdeu acesso ao autenticador, edite <code>admin-stripe.html</code> e remova a entrada <code>ec_admin_totp_secret</code> do localStorage, ou use o código de recuperação.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- STATUS BANNER -->
+  <div class="status-banner pending" id="globalStatus">
+    <div class="status-dot pending" id="statusDot"></div>
+    <div>
+      <strong id="statusTitle">Configuração pendente</strong>
+      <span id="statusMsg" style="color:var(--muted);font-size:.82rem;display:block;margin-top:1px">Preencha os campos abaixo para ativar pagamentos na plataforma.</span>
+    </div>
+  </div>
+
+  <!-- PROGRESSO -->
+  <div class="progress-steps" id="progressSteps">
+    <div class="progress-step active" id="step1" onclick="goStep(1)">
+      <span class="step-num">🔑</span>Chaves API
+    </div>
+    <div class="progress-step" id="step2" onclick="goStep(2)">
+      <span class="step-num">📦</span>Produtos
+    </div>
+    <div class="progress-step" id="step3" onclick="goStep(3)">
+      <span class="step-num">🔗</span>Webhook
+    </div>
+    <div class="progress-step" id="step4" onclick="goStep(4)">
+      <span class="step-num">🚀</span>Deploy
+    </div>
+    <div class="progress-step" id="step5" onclick="goStep(5)">
+      <span class="step-num">✅</span>Verificar
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 1 — CHAVES API
+  ══════════════════════════════════════════ -->
+  <div id="panel1">
+
+    <!-- CHAVE STRIPE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">🔑</div>
+        <span class="section-title">Chaves da API Stripe</span>
+        <span class="section-step">Passo 1</span>
+      </div>
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" onclick="switchMode('test', this)">Modo Teste</button>
+          <button class="tab" onclick="switchMode('live', this)">Produção (Live)</button>
+        </div>
+
+        <div id="mode-note-test" class="info-box" style="margin-bottom:1.25rem;margin-top:0">
+          ⚠️ <strong>Modo Teste ativo</strong> — Use cartões de teste do Stripe (ex: 4242 4242 4242 4242). Nenhuma cobrança real é feita. Ideal para desenvolvimento.
+        </div>
+        <div id="mode-note-live" class="info-box" style="margin-bottom:1.25rem;margin-top:0;display:none;border-color:rgba(231,76,60,.3);background:rgba(231,76,60,.06)">
+          🚨 <strong>Modo Live ativo</strong> — Cobranças REAIS serão feitas. Certifique-se de que tudo está testado antes de ativar.
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>
+              Publishable Key <span class="required">*</span>
+              <span class="hint">Usada no front-end (stripe-billing.js)</span>
+            </label>
+            <div class="input-wrap">
+              <input type="text" id="pubKey"
+                placeholder="pk_test_..."
+                oninput="validateKey(this, 'pk_')"
+                onchange="markDirty()" />
+              <span class="input-icon" onclick="openStripe('keys')">↗</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>
+              Secret Key <span class="required">*</span>
+              <span class="hint">Usada no backend (Edge Function)</span>
+            </label>
+            <div class="input-wrap">
+              <input type="password" id="secKey"
+                placeholder="sk_test_..."
+                oninput="validateKey(this, 'sk_')"
+                onchange="markDirty()" />
+              <span class="input-icon" id="secKeyEye" onclick="togglePassword('secKey','secKeyEye')">👁</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Webhook Secret <span class="hint">Gerado ao criar o webhook no Stripe Dashboard</span></label>
+          <div class="input-wrap">
+            <input type="password" id="webhookSecret"
+              placeholder="whsec_..."
+              oninput="validateKey(this, 'whsec_')"
+              onchange="markDirty()" />
+            <span class="input-icon" id="wsEye" onclick="togglePassword('webhookSecret','wsEye')">👁</span>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-stripe" onclick="openStripe('keys')">
+            ↗ Abrir Stripe Dashboard
+          </button>
+          <button class="btn btn-secondary" onclick="testKeys()">
+            🔍 Testar Chaves
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPABASE -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">🗄️</div>
+        <span class="section-title">Credenciais Supabase</span>
+      </div>
+      <div class="card">
+        <div class="field-row">
+          <div class="field">
+            <label>
+              Project URL <span class="required">*</span>
+              <span class="hint">Settings → API → Project URL</span>
+            </label>
+            <input type="url" id="sbUrl"
+              value="https://hwjplecfqsckfiwxiedo.supabase.co"
+              onchange="markDirty()" />
+          </div>
+          <div class="field">
+            <label>
+              Anon Key <span class="required">*</span>
+              <span class="hint">Settings → API → Project API Keys</span>
+            </label>
+            <div class="input-wrap">
+              <input type="password" id="sbAnonKey"
+                placeholder="eyJhbGciOiJI..."
+                onchange="markDirty()" />
+              <span class="input-icon" id="anonEye" onclick="togglePassword('sbAnonKey','anonEye')">👁</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>
+            Service Role Key
+            <span class="hint">Usado nas Edge Functions. Nunca expor no front-end.</span>
+          </label>
+          <div class="input-wrap">
+            <input type="password" id="sbServiceKey"
+              placeholder="eyJhbGciOiJI..."
+              onchange="markDirty()" />
+            <span class="input-icon" id="srEye" onclick="togglePassword('sbServiceKey','srEye')">👁</span>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="openSupabase('api')">
+            ↗ Abrir Supabase API Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="saveStep1(); goStep(2)">Salvar e Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 2 — PRODUTOS E PREÇOS
+  ══════════════════════════════════════════ -->
+  <div id="panel2" style="display:none">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">📦</div>
+        <span class="section-title">Produtos e Price IDs</span>
+        <span class="section-step">Passo 2</span>
+      </div>
+
+      <div class="info-box" style="margin-bottom:1.25rem">
+        Crie os 3 produtos abaixo no <a href="https://dashboard.stripe.com/products" target="_blank">Stripe Dashboard → Products</a> e cole aqui os <strong>Price IDs</strong> gerados (começam com <code style="color:var(--accent)">price_</code>).
+      </div>
+
+      <div class="plans-grid">
+        <!-- MENSAL -->
+        <div class="plan-card">
+          <div class="plan-card-header">
+            <span class="plan-name">🔄 Premium Mensal</span>
+            <span class="plan-badge">Popular</span>
+          </div>
+          <div class="plan-price">R$ 29,90/mês</div>
+          <div class="plan-status-row">
+            <div class="plan-status-dot" id="statusMensal"></div>
+            <span id="labelMensal" style="color:var(--muted)">Não configurado</span>
+          </div>
+        </div>
+        <!-- ANUAL -->
+        <div class="plan-card">
+          <div class="plan-card-header">
+            <span class="plan-name">📅 Premium Anual</span>
+            <span class="plan-badge">Melhor valor</span>
+          </div>
+          <div class="plan-price">R$ 19,90/mês</div>
+          <div class="plan-status-row">
+            <div class="plan-status-dot" id="statusAnual"></div>
+            <span id="labelAnual" style="color:var(--muted)">Não configurado</span>
+          </div>
+        </div>
+        <!-- VITALÍCIO -->
+        <div class="plan-card">
+          <div class="plan-card-header">
+            <span class="plan-name">♾️ Vitalício</span>
+            <span class="plan-badge">Único</span>
+          </div>
+          <div class="plan-price">R$ 497 único</div>
+          <div class="plan-status-row">
+            <div class="plan-status-dot" id="statusVitalicio"></div>
+            <span id="labelVitalicio" style="color:var(--muted)">Não configurado</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="field">
+          <label>
+            Price ID — Premium Mensal <span class="required">*</span>
+            <span class="hint">Tipo: Recurring · Período: Monthly · Moeda: BRL · Valor: 29.90</span>
+          </label>
+          <input type="text" id="priceIdMensal"
+            placeholder="price_1..."
+            oninput="validatePriceId(this, 'statusMensal', 'labelMensal')"
+            onchange="markDirty()" />
+        </div>
+
+        <div class="field">
+          <label>
+            Price ID — Premium Anual <span class="required">*</span>
+            <span class="hint">Tipo: Recurring · Período: Annual · Moeda: BRL · Valor: 238.80 (19.90×12)</span>
+          </label>
+          <input type="text" id="priceIdAnual"
+            placeholder="price_1..."
+            oninput="validatePriceId(this, 'statusAnual', 'labelAnual')"
+            onchange="markDirty()" />
+        </div>
+
+        <div class="field">
+          <label>
+            Price ID — Vitalício <span class="required">*</span>
+            <span class="hint">Tipo: One-time · Moeda: BRL · Valor: 497.00</span>
+          </label>
+          <input type="text" id="priceIdVitalicio"
+            placeholder="price_1..."
+            oninput="validatePriceId(this, 'statusVitalicio', 'labelVitalicio')"
+            onchange="markDirty()" />
+        </div>
+
+        <hr class="divider">
+
+        <!-- GUIA RÁPIDO PARA CRIAR OS PRODUTOS -->
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.75rem">📋 Passo a passo para criar no Stripe:</p>
+        <ul class="checklist">
+          <li>
+            <span class="check-icon">1️⃣</span>
+            <div class="check-text">
+              <strong>Criar produto Premium</strong>
+              <span>Dashboard → Products → Add product → Nome: "escola liberal Premium"</span>
+            </div>
+            <div class="check-action">
+              <button class="btn btn-stripe btn-sm" onclick="openStripe('products/create')">Criar</button>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">2️⃣</span>
+            <div class="check-text">
+              <strong>Adicionar preço Mensal</strong>
+              <span>No produto → Add price → Recurring · Monthly · BRL 29,90</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">3️⃣</span>
+            <div class="check-text">
+              <strong>Adicionar preço Anual</strong>
+              <span>No produto → Add price → Recurring · Annual · BRL 238,80</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">4️⃣</span>
+            <div class="check-text">
+              <strong>Criar produto Vitalício</strong>
+              <span>Dashboard → Add product → Nome: "escola liberal Vitalício" → One-time · BRL 497,00</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">5️⃣</span>
+            <div class="check-text">
+              <strong>Copiar os Price IDs</strong>
+              <span>Em cada preço, copie o ID (price_xxx) e cole nos campos acima</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(1)">← Voltar</button>
+      <button class="btn btn-primary" onclick="saveStep2(); goStep(3)">Salvar e Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 3 — WEBHOOK
+  ══════════════════════════════════════════ -->
+  <div id="panel3" style="display:none">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">🔗</div>
+        <span class="section-title">Configuração do Webhook</span>
+        <span class="section-step">Passo 3</span>
+      </div>
+
+      <div class="card">
+        <div class="field">
+          <label>URL do Endpoint (Supabase Edge Function)</label>
+          <div class="copy-field">
+            <input type="url" id="webhookUrl" readonly
+              value="" placeholder="Preencha a URL do Supabase acima primeiro..." />
+            <button class="copy-btn" onclick="copyWebhookUrl()">📋 Copiar</button>
+          </div>
+        </div>
+
+        <hr class="divider">
+
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.75rem">✅ Eventos necessários no webhook:</p>
+        <div class="webhook-row">
+          <span class="webhook-event">checkout.session.completed</span>
+          <span class="webhook-check">✅ Necessário</span>
+        </div>
+        <div class="webhook-row">
+          <span class="webhook-event">customer.subscription.updated</span>
+          <span class="webhook-check">✅ Necessário</span>
+        </div>
+        <div class="webhook-row">
+          <span class="webhook-event">customer.subscription.deleted</span>
+          <span class="webhook-check">✅ Necessário</span>
+        </div>
+        <div class="webhook-row">
+          <span class="webhook-event">invoice.payment_failed</span>
+          <span class="webhook-check">⚡ Recomendado</span>
+        </div>
+
+        <hr class="divider">
+
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:.75rem">📋 Como configurar:</p>
+        <ul class="checklist">
+          <li>
+            <span class="check-icon">1️⃣</span>
+            <div class="check-text">
+              <strong>Abrir Developers → Webhooks no Stripe</strong>
+              <span>Dashboard → Developers → Webhooks → Add endpoint</span>
+            </div>
+            <div class="check-action">
+              <button class="btn btn-stripe btn-sm" onclick="openStripe('webhooks/create')">Abrir</button>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">2️⃣</span>
+            <div class="check-text">
+              <strong>Colar a URL do endpoint</strong>
+              <span>Use o botão "Copiar" acima para copiar a URL da Edge Function</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">3️⃣</span>
+            <div class="check-text">
+              <strong>Selecionar os eventos</strong>
+              <span>Marque os 4 eventos listados acima</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon">4️⃣</span>
+            <div class="check-text">
+              <strong>Copiar o Webhook Secret</strong>
+              <span>Após criar, clique no webhook → Signing secret → Reveal → copie o whsec_xxx e cole no Passo 1</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(2)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(4)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 4 — DEPLOY EDGE FUNCTIONS
+  ══════════════════════════════════════════ -->
+  <div id="panel4" style="display:none">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">🚀</div>
+        <span class="section-title">Deploy das Edge Functions</span>
+        <span class="section-step">Passo 4</span>
+      </div>
+
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" onclick="switchDeployTab('cli', this)">Via CLI (Supabase)</button>
+          <button class="tab" onclick="switchDeployTab('manual', this)">Via Dashboard</button>
+        </div>
+
+        <!-- CLI TAB -->
+        <div id="deploy-cli" class="tab-panel active">
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">Execute no terminal, na raiz do projeto:</p>
+
+          <div class="field">
+            <label>1. Instalar Supabase CLI (se não tiver)</label>
+            <div class="code-block">npm install -g supabase</div>
+          </div>
+
+          <div class="field">
+            <label>2. Login e link com o projeto</label>
+            <div class="copy-field">
+              <div class="code-block" style="flex:1" id="cliLogin">supabase login
+supabase link --project-ref hwjplecfqsckfiwxiedo</div>
+              <button class="copy-btn" onclick="copyCode('cliLogin')">📋</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>3. Configurar variáveis de ambiente</label>
+            <div class="copy-field">
+              <div class="code-block" style="flex:1" id="cliSecrets">supabase secrets set STRIPE_SECRET_KEY=<span id="cliSecKey" style="color:var(--yellow)">sk_test_SUA_CHAVE</span>
+supabase secrets set STRIPE_WEBHOOK_SECRET=<span id="cliWsKey" style="color:var(--yellow)">whsec_SUA_CHAVE</span></div>
+              <button class="copy-btn" onclick="copyCode('cliSecrets')">📋</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>4. Deploy das funções</label>
+            <div class="copy-field">
+              <div class="code-block" style="flex:1" id="cliFunctions">supabase functions deploy create-checkout
+supabase functions deploy stripe-webhook</div>
+              <button class="copy-btn" onclick="copyCode('cliFunctions')">📋</button>
+            </div>
+          </div>
+
+          <div class="info-box">
+            Os arquivos <code>create-checkout.ts</code> e <code>stripe-webhook.ts</code> já estão no seu repositório. O Supabase CLI os detecta automaticamente na pasta raiz ou em <code>supabase/functions/</code>.
+          </div>
+        </div>
+
+        <!-- MANUAL TAB -->
+        <div id="deploy-manual" class="tab-panel">
+          <ul class="checklist">
+            <li>
+              <span class="check-icon">1️⃣</span>
+              <div class="check-text">
+                <strong>Acessar Supabase Edge Functions</strong>
+                <span>Supabase Dashboard → Edge Functions → New function</span>
+              </div>
+              <div class="check-action">
+                <button class="btn btn-secondary btn-sm" onclick="openSupabase('functions')">Abrir</button>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon">2️⃣</span>
+              <div class="check-text">
+                <strong>Criar função "create-checkout"</strong>
+                <span>Copiar o conteúdo de create-checkout.ts e colar no editor</span>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon">3️⃣</span>
+              <div class="check-text">
+                <strong>Criar função "stripe-webhook"</strong>
+                <span>Copiar o conteúdo de stripe-webhook.ts e colar no editor</span>
+              </div>
+            </li>
+            <li>
+              <span class="check-icon">4️⃣</span>
+              <div class="check-text">
+                <strong>Configurar secrets via Dashboard</strong>
+                <span>Settings → Vault → Add Secret: STRIPE_SECRET_KEY e STRIPE_WEBHOOK_SECRET</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ENV VARS PARA O FRONTEND -->
+      <div class="section" style="margin-top:1.5rem;margin-bottom:0">
+        <div class="section-header">
+          <div class="section-icon">⚙️</div>
+          <span class="section-title">Variáveis geradas para o código</span>
+        </div>
+        <div class="card">
+          <p style="font-size:.83rem;color:var(--muted);margin-bottom:1rem">Valores que serão aplicados em <code>stripe-billing.js</code> ao clicar em "Aplicar no Projeto":</p>
+          <div class="code-block" id="envPreview">
+<span class="comment">// stripe-billing.js — linha 22</span>
+<span class="key">const</span> STRIPE_PUBLISHABLE_KEY = '<span class="val" id="previewPubKey">pk_test_SUA-CHAVE-AQUI</span>';
+
+<span class="comment">// PLANS.mensal</span>
+<span class="key">priceId</span>: '<span class="val" id="previewMensal">price_SEU_PRICE_ID_MENSAL</span>'
+
+<span class="comment">// PLANS.anual</span>
+<span class="key">priceId</span>: '<span class="val" id="previewAnual">price_SEU_PRICE_ID_ANUAL</span>'
+
+<span class="comment">// PLANS.vitalicio</span>
+<span class="key">priceId</span>: '<span class="val" id="previewVitalicio">price_SEU_PRICE_ID_VITALICIO</span>'
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="applyToProject()">⚡ Aplicar no Projeto</button>
+            <button class="btn btn-secondary" onclick="copyEnvBlock()">📋 Copiar bloco</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(3)">← Voltar</button>
+      <button class="btn btn-primary" onclick="goStep(5)">Verificar Deploy →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       STEP 5 — VERIFICAÇÃO FINAL
+  ══════════════════════════════════════════ -->
+  <div id="panel5" style="display:none">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-icon">✅</div>
+        <span class="section-title">Verificação e Checklist Final</span>
+        <span class="section-step">Passo 5</span>
+      </div>
+
+      <div class="card">
+        <ul class="checklist" id="finalChecklist">
+          <li>
+            <span class="check-icon" id="chk1">⬜</span>
+            <div class="check-text">
+              <strong>Publishable Key configurada</strong>
+              <span id="chk1txt">Não preenchida</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon" id="chk2">⬜</span>
+            <div class="check-text">
+              <strong>Secret Key configurada</strong>
+              <span id="chk2txt">Não preenchida</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon" id="chk3">⬜</span>
+            <div class="check-text">
+              <strong>Price ID Mensal</strong>
+              <span id="chk3txt">Não preenchido</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon" id="chk4">⬜</span>
+            <div class="check-text">
+              <strong>Price ID Anual</strong>
+              <span id="chk4txt">Não preenchido</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon" id="chk5">⬜</span>
+            <div class="check-text">
+              <strong>Price ID Vitalício</strong>
+              <span id="chk5txt">Não preenchido</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon" id="chk6">⬜</span>
+            <div class="check-text">
+              <strong>Webhook Secret configurado</strong>
+              <span id="chk6txt">Não preenchido</span>
+            </div>
+          </li>
+          <li>
+            <span class="check-icon" id="chk7">⬜</span>
+            <div class="check-text">
+              <strong>Supabase Anon Key configurada</strong>
+              <span id="chk7txt">Não preenchida</span>
+            </div>
+          </li>
+        </ul>
+
+        <hr class="divider">
+
+        <!-- RESUMO CONFIGURAÇÃO -->
+        <div style="background:var(--input-bg);border-radius:8px;padding:1rem;margin-bottom:1rem">
+          <p style="font-size:.8rem;color:var(--muted);margin-bottom:.5rem">RESUMO</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.82rem">
+            <div><span style="color:var(--muted)">Modo:</span> <strong id="summaryMode">—</strong></div>
+            <div><span style="color:var(--muted)">Supabase URL:</span> <strong id="summaryUrl" style="font-family:monospace">—</strong></div>
+            <div><span style="color:var(--muted)">Pub Key:</span> <strong id="summaryPub" style="font-family:monospace">—</strong></div>
+            <div><span style="color:var(--muted)">Webhook:</span> <strong id="summaryWebhook">—</strong></div>
+            <div><span style="color:var(--muted)">Planos configurados:</span> <strong id="summaryPlans">0/3</strong></div>
+            <div><span style="color:var(--muted)">Pronto para:</span> <strong id="summaryReady">—</strong></div>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="runFullCheck()">🔄 Atualizar Checklist</button>
+          <button class="btn btn-stripe" onclick="openStripe('dashboard')">↗ Abrir Stripe</button>
+          <button class="btn btn-secondary" onclick="openSupabase('dashboard')">↗ Abrir Supabase</button>
+        </div>
+      </div>
+
+      <!-- TESTE DE CARTÃO -->
+      <div class="section" style="margin-top:1.5rem;margin-bottom:0">
+        <div class="section-header">
+          <div class="section-icon">💳</div>
+          <span class="section-title">Cartões de Teste (Stripe)</span>
+        </div>
+        <div class="card">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;font-size:.82rem">
+            <div style="background:var(--input-bg);border-radius:8px;padding:.75rem">
+              <div style="color:var(--green);font-weight:700;margin-bottom:.25rem">✅ Pagamento aprovado</div>
+              <div style="font-family:monospace;color:var(--text)">4242 4242 4242 4242</div>
+              <div style="color:var(--muted);margin-top:.2rem">CVC: qualquer · Validade: futura</div>
+            </div>
+            <div style="background:var(--input-bg);border-radius:8px;padding:.75rem">
+              <div style="color:var(--red);font-weight:700;margin-bottom:.25rem">❌ Cartão recusado</div>
+              <div style="font-family:monospace;color:var(--text)">4000 0000 0000 0002</div>
+              <div style="color:var(--muted);margin-top:.2rem">Teste de falha de pagamento</div>
+            </div>
+            <div style="background:var(--input-bg);border-radius:8px;padding:.75rem">
+              <div style="color:var(--yellow);font-weight:700;margin-bottom:.25rem">🔐 Requer autenticação</div>
+              <div style="font-family:monospace;color:var(--text)">4000 0025 0000 3155</div>
+              <div style="color:var(--muted);margin-top:.2rem">Testa o fluxo 3D Secure</div>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-secondary btn-sm" onclick="window.open('https://natozar.github.io/escola-conservadora/app.html','_blank')">
+              ↗ Abrir o App para testar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goStep(4)">← Voltar</button>
+      <button class="btn btn-primary" onclick="applyToProject()">⚡ Aplicar tudo no Projeto</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SAVE BAR -->
+<div class="save-bar" id="saveBar">
+  <span class="save-bar-text"><strong>Alterações não salvas</strong> — clique em Salvar ou Aplicar para confirmar</span>
+  <div style="display:flex;gap:.75rem">
+    <button class="btn btn-secondary btn-sm" onclick="discardChanges()">Descartar</button>
+    <button class="btn btn-primary btn-sm" onclick="saveAll()">💾 Salvar</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════
+// AUTH — 2FA (Senha Master + TOTP)
+// ════════════════════════════════════════════
+
+// ── Configurações de segurança ──
+// ATENÇÃO: troque PASSWORD_HASH por um hash SHA-256 da sua senha.
+// Para gerar: https://emn178.github.io/online-tools/sha256.html
+// Senha padrão inicial: Admin@2024  (troque ANTES de usar em produção)
+const AUTH_CONFIG = {
+  // SHA-256 de "Admin@2024"  ← troque por sua senha após o primeiro acesso
+  PASSWORD_HASH: 'd3fc50c8f714cebd16d6c827826df01205bf519529f9d34775293cf9b70a420e',
+  SESSION_KEY: 'ec_admin_auth',
+  SESSION_TTL: 4 * 60 * 60 * 1000,  // 4 horas
+  TOTP_KEY: 'ec_admin_totp_secret',
+  MAX_ATTEMPTS: 5,
+  LOCKOUT_KEY: 'ec_admin_lockout',
+  LOCKOUT_TTL: 15 * 60 * 1000       // 15 minutos de bloqueio
+};
+
+// ── TOTP (RFC 6238) — implementação pura em JS ──
+function base32ToBytes(base32) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bits = 0, value = 0;
+  const output = [];
+  for (const char of base32.toUpperCase().replace(/=+$/, '')) {
+    const idx = alphabet.indexOf(char);
+    if (idx === -1) continue;
+    value = (value << 5) | idx;
+    bits += 5;
+    if (bits >= 8) { bits -= 8; output.push((value >> bits) & 0xFF); }
+  }
+  return new Uint8Array(output);
+}
+
+async function hmacSHA1(keyBytes, msgBytes) {
+  const key = await crypto.subtle.importKey('raw', keyBytes, { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+  const sig = await crypto.subtle.sign('HMAC', key, msgBytes);
+  return new Uint8Array(sig);
+}
+
+async function generateTOTP(secret, timeStep) {
+  const epoch = Math.floor(Date.now() / 1000);
+  const counter = Math.floor(epoch / 30) + (timeStep || 0);
+  const msg = new ArrayBuffer(8);
+  const view = new DataView(msg);
+  view.setUint32(4, counter, false);
+  const keyBytes = base32ToBytes(secret);
+  const hash = await hmacSHA1(keyBytes, new Uint8Array(msg));
+  const offset = hash[hash.length - 1] & 0x0F;
+  const code = ((hash[offset] & 0x7F) << 24 |
+                 hash[offset+1] << 16 |
+                 hash[offset+2] << 8 |
+                 hash[offset+3]) % 1000000;
+  return String(code).padStart(6, '0');
+}
+
+async function verifyTOTP(secret, inputCode) {
+  // Aceita janela de ±1 intervalo (30s antes/depois)
+  for (const step of [-1, 0, 1]) {
+    const valid = await generateTOTP(secret, step);
+    if (valid === inputCode.trim()) return true;
+  }
+  return false;
+}
+
+function generateTotpSecret() {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let secret = '';
+  const arr = new Uint8Array(20);
+  crypto.getRandomValues(arr);
+  arr.forEach(b => { secret += alphabet[b % 32]; });
+  return secret;
+}
+
+// ── SHA-256 via Web Crypto ──
+async function sha256(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+// ── Lockout ──
+function getLockout() {
+  try { return JSON.parse(localStorage.getItem(AUTH_CONFIG.LOCKOUT_KEY) || '{}'); } catch { return {}; }
+}
+function setLockout(data) { localStorage.setItem(AUTH_CONFIG.LOCKOUT_KEY, JSON.stringify(data)); }
+
+function checkLockout() {
+  const lk = getLockout();
+  if (!lk.until) return null;
+  const remaining = lk.until - Date.now();
+  if (remaining > 0) return Math.ceil(remaining / 60000);
+  // Expirou — limpa
+  localStorage.removeItem(AUTH_CONFIG.LOCKOUT_KEY);
+  return null;
+}
+
+function incrementAttempts() {
+  const lk = getLockout();
+  lk.attempts = (lk.attempts || 0) + 1;
+  if (lk.attempts >= AUTH_CONFIG.MAX_ATTEMPTS) {
+    lk.until = Date.now() + AUTH_CONFIG.LOCKOUT_TTL;
+    lk.attempts = 0;
+  }
+  setLockout(lk);
+  return lk;
+}
+
+function resetAttempts() { localStorage.removeItem(AUTH_CONFIG.LOCKOUT_KEY); }
+
+// ── Sessão ──
+function getAuthSession() {
+  try {
+    const s = JSON.parse(sessionStorage.getItem(AUTH_CONFIG.SESSION_KEY) || '{}');
+    if (s.expires && Date.now() < s.expires && s.authenticated) return s;
+    sessionStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+  } catch {}
+  return null;
+}
+
+function setAuthSession() {
+  sessionStorage.setItem(AUTH_CONFIG.SESSION_KEY, JSON.stringify({
+    authenticated: true,
+    expires: Date.now() + AUTH_CONFIG.SESSION_TTL,
+    at: new Date().toISOString()
+  }));
+}
+
+// ── QR Code (canvas puro — sem dependência) ──
+function drawQR(canvas, text) {
+  // Usa URL de API pública para gerar QR (só na tela de setup, não expõe secret em URL pública)
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  const encoded = encodeURIComponent(text);
+  img.crossOrigin = 'anonymous';
+  img.onload = () => ctx.drawImage(img, 0, 0, 180, 180);
+  img.onerror = () => {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0,0,180,180);
+    ctx.fillStyle = '#333';
+    ctx.font = '13px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('QR indisponível.', 90, 80);
+    ctx.fillText('Use o código manual.', 90, 100);
+  };
+  img.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encoded}`;
+}
+
+// ── Fluxo de setup (primeira vez) ──
+let _setupSecret = '';
+
+function showSetupFlow(e) {
+  if (e) e.preventDefault();
+  // Verifica se já tem TOTP configurado — se sim, pede confirmação
+  const existing = localStorage.getItem(AUTH_CONFIG.TOTP_KEY);
+  if (existing) {
+    if (!confirm('Já existe um autenticador configurado.\nReconfigurar vai invalidar o anterior. Continuar?')) return;
+  }
+  _setupSecret = generateTotpSecret();
+  const issuer = 'EscolaConservadora';
+  const account = 'admin';
+  const otpUri = `otpauth://totp/${issuer}:${account}?secret=${_setupSecret}&issuer=${issuer}&algorithm=SHA1&digits=6&period=30`;
+
+  document.getElementById('qr-secret-display').textContent = _setupSecret;
+  drawQR(document.getElementById('qr-canvas'), otpUri);
+  document.getElementById('qr-confirm-input').value = '';
+  document.getElementById('qr-error').style.display = 'none';
+  document.getElementById('qr-setup').classList.remove('hidden');
+}
+
+function copySecret() {
+  navigator.clipboard && navigator.clipboard.writeText(_setupSecret);
+  document.getElementById('qr-secret-display').textContent = '✅ Copiado! ' + _setupSecret;
+  setTimeout(() => { document.getElementById('qr-secret-display').textContent = _setupSecret; }, 2000);
+}
+
+async function confirmTotpSetup() {
+  const code = document.getElementById('qr-confirm-input').value.trim();
+  const errEl = document.getElementById('qr-error');
+  if (code.length !== 6) {
+    errEl.textContent = 'Digite o código de 6 dígitos do app.';
+    errEl.style.display = 'block'; return;
+  }
+  const ok = await verifyTOTP(_setupSecret, code);
+  if (!ok) {
+    errEl.textContent = '❌ Código incorreto. Verifique se o app está sincronizado.';
+    errEl.style.display = 'block'; return;
+  }
+  localStorage.setItem(AUTH_CONFIG.TOTP_KEY, _setupSecret);
+  document.getElementById('qr-setup').classList.add('hidden');
+  errEl.style.display = 'none';
+  alert('✅ Autenticador configurado com sucesso!\n\nNão perca o segredo: ' + _setupSecret + '\n\nAnote em local seguro como backup.');
+}
+
+// ── Etapa 1 — Senha ──
+let _passwordOk = false;
+
+async function submitPassword() {
+  const lockedMin = checkLockout();
+  if (lockedMin) {
+    showLockout(lockedMin); return;
+  }
+
+  const pw = document.getElementById('pw-input').value;
+  if (!pw) return;
+
+  const hash = await sha256(pw);
+  if (hash !== AUTH_CONFIG.PASSWORD_HASH) {
+    const lk = incrementAttempts();
+    const remaining = AUTH_CONFIG.MAX_ATTEMPTS - (lk.attempts || 0);
+    const errEl = document.getElementById('pw-error');
+
+    if (lk.until) {
+      showLockout(Math.ceil(AUTH_CONFIG.LOCKOUT_TTL / 60000));
+    } else {
+      errEl.textContent = `❌ Senha incorreta. ${remaining} tentativa(s) restante(s).`;
+      errEl.style.display = 'block';
+      document.getElementById('pw-input').classList.add('shake');
+      setTimeout(() => document.getElementById('pw-input').classList.remove('shake'), 400);
+    }
+    return;
+  }
+
+  // Senha OK
+  resetAttempts();
+  _passwordOk = true;
+  document.getElementById('pw-error').style.display = 'none';
+
+  // Verifica se TOTP está configurado
+  const totpSecret = localStorage.getItem(AUTH_CONFIG.TOTP_KEY);
+  if (!totpSecret) {
+    // Não tem TOTP — ir para setup
+    if (confirm('Autenticador de dois fatores não configurado.\nDeseja configurar agora? (Altamente recomendado)')) {
+      showSetupFlow(null);
+    } else {
+      // Permite entrada sem 2FA (avisa)
+      grantAccess();
+    }
+    return;
+  }
+
+  // Avança para TOTP
+  goToStep2();
+}
+
+function showLockout(minutes) {
+  const lk = document.getElementById('lockout-msg');
+  lk.textContent = `🔒 Muitas tentativas incorretas. Tente novamente em ${minutes} minuto(s).`;
+  lk.style.display = 'block';
+  document.getElementById('pw-btn').disabled = true;
+  setTimeout(() => {
+    lk.style.display = 'none';
+    document.getElementById('pw-btn').disabled = false;
+  }, 30000);
+}
+
+function toggleAuthPw() {
+  const inp = document.getElementById('pw-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function goToStep2() {
+  document.getElementById('auth-step1-box').style.display = 'none';
+  document.getElementById('auth-step2-box').style.display = 'block';
+  startTotpTimer();
+  // Foca no primeiro dígito
+  setTimeout(() => {
+    const digits = document.querySelectorAll('.otp-digit');
+    if (digits[0]) digits[0].focus();
+  }, 100);
+}
+
+function backToStep1() {
+  _passwordOk = false;
+  document.getElementById('auth-step2-box').style.display = 'none';
+  document.getElementById('auth-step1-box').style.display = 'block';
+  document.getElementById('pw-input').value = '';
+  clearInterval(_totpTimerInterval);
+}
+
+// ── TOTP Digits Input ──
+document.addEventListener('DOMContentLoaded', () => {
+  const digits = document.querySelectorAll('.otp-digit');
+  digits.forEach((inp, i) => {
+    inp.addEventListener('input', () => {
+      inp.value = inp.value.replace(/\D/g, '');
+      if (inp.value && i < digits.length - 1) digits[i+1].focus();
+      inp.classList.toggle('filled', !!inp.value);
+      if (i === digits.length - 1 && inp.value) autoSubmitOtp();
+    });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !inp.value && i > 0) {
+        digits[i-1].value = '';
+        digits[i-1].classList.remove('filled');
+        digits[i-1].focus();
+      }
+      if (e.key === 'Enter') submitOtp();
+    });
+    inp.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'').substring(0,6);
+      paste.split('').forEach((ch, j) => {
+        if (digits[j]) { digits[j].value = ch; digits[j].classList.add('filled'); }
+      });
+      if (paste.length === 6) autoSubmitOtp();
+    });
+  });
+});
+
+function getOtpValue() {
+  return Array.from(document.querySelectorAll('.otp-digit')).map(d => d.value).join('');
+}
+
+function clearOtpDigits() {
+  document.querySelectorAll('.otp-digit').forEach(d => { d.value = ''; d.classList.remove('filled'); });
+}
+
+let _autoSubmitDebounce;
+function autoSubmitOtp() {
+  clearTimeout(_autoSubmitDebounce);
+  _autoSubmitDebounce = setTimeout(submitOtp, 300);
+}
+
+async function submitOtp() {
+  const code = getOtpValue();
+  if (code.length !== 6) return;
+
+  const secret = localStorage.getItem(AUTH_CONFIG.TOTP_KEY);
+  if (!secret) { grantAccess(); return; }
+
+  const ok = await verifyTOTP(secret, code);
+  if (!ok) {
+    const errEl = document.getElementById('otp-error');
+    errEl.textContent = '❌ Código inválido ou expirado. Verifique o app e tente novamente.';
+    errEl.style.display = 'block';
+    document.querySelectorAll('.otp-digit').forEach(d => {
+      d.classList.add('shake');
+      setTimeout(() => d.classList.remove('shake'), 400);
+    });
+    clearOtpDigits();
+    setTimeout(() => { document.querySelectorAll('.otp-digit')[0].focus(); }, 100);
+    return;
+  }
+
+  grantAccess();
+}
+
+function grantAccess() {
+  setAuthSession();
+  clearInterval(_totpTimerInterval);
+  document.getElementById('auth-gate').classList.add('hidden');
+  // Carrega dados salvos
+  loadSaved();
+  runFullCheck();
+}
+
+// ── Timer de 30s no TOTP ──
+let _totpTimerInterval;
+function startTotpTimer() {
+  clearInterval(_totpTimerInterval);
+  function update() {
+    const secs = 30 - (Math.floor(Date.now() / 1000) % 30);
+    const el = document.getElementById('totp-timer');
+    if (el) {
+      el.textContent = secs;
+      el.style.color = secs <= 5 ? 'var(--red)' : 'var(--accent)';
+    }
+    // Limpa o campo quando o código expira
+    if (secs === 30) { clearOtpDigits(); document.getElementById('otp-error').style.display = 'none'; }
+  }
+  update();
+  _totpTimerInterval = setInterval(update, 1000);
+}
+
+// ── Init auth ──
+function initAuth() {
+  const session = getAuthSession();
+  if (session) {
+    // Sessão válida — acesso direto
+    document.getElementById('auth-gate').classList.add('hidden');
+    return;
+  }
+  // Bloqueia o body scroll enquanto gate está aberto
+  document.body.style.overflow = 'hidden';
+  document.getElementById('auth-gate').addEventListener('click', () => {}, { once: false });
+}
+
+// Substituir o DOMContentLoaded original para incluir initAuth
+// (o original está preservado no final do script)
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let isDirty = false;
+let currentStep = 1;
+let stripeMode = 'test';
+let deployTab = 'cli';
+
+const STORAGE_KEY = 'ec_admin_stripe_config';
+
+function loadSaved() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if (saved.pubKey) document.getElementById('pubKey').value = saved.pubKey;
+    if (saved.secKey) document.getElementById('secKey').value = saved.secKey;
+    if (saved.webhookSecret) document.getElementById('webhookSecret').value = saved.webhookSecret;
+    if (saved.sbUrl) document.getElementById('sbUrl').value = saved.sbUrl;
+    if (saved.sbAnonKey) document.getElementById('sbAnonKey').value = saved.sbAnonKey;
+    if (saved.sbServiceKey) document.getElementById('sbServiceKey').value = saved.sbServiceKey;
+    if (saved.priceIdMensal) { document.getElementById('priceIdMensal').value = saved.priceIdMensal; validatePriceId(document.getElementById('priceIdMensal'), 'statusMensal', 'labelMensal'); }
+    if (saved.priceIdAnual) { document.getElementById('priceIdAnual').value = saved.priceIdAnual; validatePriceId(document.getElementById('priceIdAnual'), 'statusAnual', 'labelAnual'); }
+    if (saved.priceIdVitalicio) { document.getElementById('priceIdVitalicio').value = saved.priceIdVitalicio; validatePriceId(document.getElementById('priceIdVitalicio'), 'statusVitalicio', 'labelVitalicio'); }
+    if (saved.stripeMode) { stripeMode = saved.stripeMode; if (stripeMode === 'live') switchMode('live'); }
+    updateWebhookUrl();
+    updateEnvPreview();
+  } catch(e) {}
+}
+
+function saveAll() {
+  const config = getConfig();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  isDirty = false;
+  document.getElementById('saveBar').classList.remove('visible');
+  showToast('💾 Configurações salvas localmente');
+}
+
+function getConfig() {
+  return {
+    pubKey: document.getElementById('pubKey').value,
+    secKey: document.getElementById('secKey').value,
+    webhookSecret: document.getElementById('webhookSecret').value,
+    sbUrl: document.getElementById('sbUrl').value,
+    sbAnonKey: document.getElementById('sbAnonKey').value,
+    sbServiceKey: document.getElementById('sbServiceKey').value,
+    priceIdMensal: document.getElementById('priceIdMensal').value,
+    priceIdAnual: document.getElementById('priceIdAnual').value,
+    priceIdVitalicio: document.getElementById('priceIdVitalicio').value,
+    stripeMode
+  };
+}
+
+function discardChanges() {
+  loadSaved();
+  isDirty = false;
+  document.getElementById('saveBar').classList.remove('visible');
+  showToast('↩️ Alterações descartadas');
+}
+
+function markDirty() {
+  isDirty = true;
+  document.getElementById('saveBar').classList.add('visible');
+  updateWebhookUrl();
+  updateEnvPreview();
+}
+
+// ════════════════════════════════════════════
+// STEPS
+// ════════════════════════════════════════════
+function goStep(n) {
+  for (let i = 1; i <= 5; i++) {
+    const p = document.getElementById('panel' + i);
+    const s = document.getElementById('step' + i);
+    if (p) p.style.display = i === n ? 'block' : 'none';
+    if (s) {
+      s.classList.remove('active', 'done');
+      if (i === n) s.classList.add('active');
+      else if (i < n) s.classList.add('done');
+    }
+  }
+  currentStep = n;
+  if (n === 5) runFullCheck();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function saveStep1() {
+  const config = getConfig();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  isDirty = false;
+  document.getElementById('saveBar').classList.remove('visible');
+  showToast('✅ Chaves salvas');
+  document.getElementById('step1').classList.add('done');
+}
+
+function saveStep2() {
+  const config = getConfig();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  isDirty = false;
+  document.getElementById('saveBar').classList.remove('visible');
+  showToast('✅ Price IDs salvos');
+  document.getElementById('step2').classList.add('done');
+  updateEnvPreview();
+}
+
+// ════════════════════════════════════════════
+// VALIDATION
+// ════════════════════════════════════════════
+function validateKey(input, prefix) {
+  const val = input.value.trim();
+  if (!val) { input.className = ''; return; }
+  if (val.startsWith(prefix)) {
+    input.classList.add('valid');
+    input.classList.remove('invalid');
+  } else {
+    input.classList.add('invalid');
+    input.classList.remove('valid');
+  }
+  markDirty();
+}
+
+function validatePriceId(input, dotId, labelId) {
+  const val = input.value.trim();
+  const dot = document.getElementById(dotId);
+  const label = document.getElementById(labelId);
+  if (!val) {
+    dot.classList.remove('ok', 'pending');
+    label.textContent = 'Não configurado';
+    label.style.color = 'var(--muted)';
+    return;
+  }
+  if (val.startsWith('price_')) {
+    dot.classList.add('ok');
+    dot.classList.remove('pending');
+    label.textContent = val.substring(0, 20) + '...';
+    label.style.color = 'var(--green)';
+  } else {
+    dot.classList.add('pending');
+    dot.classList.remove('ok');
+    label.textContent = 'Formato inválido (deve começar com price_)';
+    label.style.color = 'var(--yellow)';
+  }
+  markDirty();
+}
+
+// ════════════════════════════════════════════
+// MODE SWITCH
+// ════════════════════════════════════════════
+function switchMode(mode, btn) {
+  stripeMode = mode;
+  const tabs = document.querySelectorAll('.tabs .tab');
+  tabs.forEach(t => {
+    if (t.textContent.toLowerCase().includes(mode === 'test' ? 'teste' : 'prod')) {
+      t.classList.add('active');
+    } else {
+      t.classList.remove('active');
+    }
+  });
+  document.getElementById('mode-note-test').style.display = mode === 'test' ? 'block' : 'none';
+  document.getElementById('mode-note-live').style.display = mode === 'live' ? 'block' : 'none';
+  markDirty();
+}
+
+// ════════════════════════════════════════════
+// DEPLOY TABS
+// ════════════════════════════════════════════
+function switchDeployTab(tab, btn) {
+  deployTab = tab;
+  document.getElementById('deploy-cli').classList.toggle('active', tab === 'cli');
+  document.getElementById('deploy-manual').classList.toggle('active', tab === 'manual');
+  const allTabs = document.querySelectorAll('#panel4 .tabs .tab');
+  allTabs.forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+
+// ════════════════════════════════════════════
+// WEBHOOK URL
+// ════════════════════════════════════════════
+function updateWebhookUrl() {
+  const sbUrl = document.getElementById('sbUrl').value.trim();
+  const url = sbUrl ? sbUrl + '/functions/v1/stripe-webhook' : '';
+  const el = document.getElementById('webhookUrl');
+  if (el) el.value = url;
+}
+
+function copyWebhookUrl() {
+  const url = document.getElementById('webhookUrl').value;
+  if (!url) { showToast('⚠️ Configure a URL do Supabase primeiro'); return; }
+  copyToClipboard(url);
+  showToast('📋 URL copiada!');
+}
+
+// ════════════════════════════════════════════
+// ENV PREVIEW
+// ════════════════════════════════════════════
+function updateEnvPreview() {
+  const pub = document.getElementById('pubKey').value || 'pk_test_SUA-CHAVE-AQUI';
+  const m = document.getElementById('priceIdMensal').value || 'price_SEU_PRICE_ID_MENSAL';
+  const a = document.getElementById('priceIdAnual').value || 'price_SEU_PRICE_ID_ANUAL';
+  const v = document.getElementById('priceIdVitalicio').value || 'price_SEU_PRICE_ID_VITALICIO';
+
+  const el = id => { const e = document.getElementById(id); if(e) e.textContent = arguments[1] || ''; };
+  document.getElementById('previewPubKey') && (document.getElementById('previewPubKey').textContent = pub);
+  document.getElementById('previewMensal') && (document.getElementById('previewMensal').textContent = m);
+  document.getElementById('previewAnual') && (document.getElementById('previewAnual').textContent = a);
+  document.getElementById('previewVitalicio') && (document.getElementById('previewVitalicio').textContent = v);
+
+  // Update CLI secrets preview
+  const sk = document.getElementById('secKey').value || 'sk_test_SUA_CHAVE';
+  const ws = document.getElementById('webhookSecret').value || 'whsec_SUA_CHAVE';
+  const cliSk = document.getElementById('cliSecKey');
+  const cliWs = document.getElementById('cliWsKey');
+  if (cliSk) cliSk.textContent = sk;
+  if (cliWs) cliWs.textContent = ws;
+}
+
+// ════════════════════════════════════════════
+// APPLY TO PROJECT — gera bloco de código
+// ════════════════════════════════════════════
+function applyToProject() {
+  const cfg = getConfig();
+  const missing = [];
+  if (!cfg.pubKey || cfg.pubKey.includes('SUA')) missing.push('Publishable Key');
+  if (!cfg.priceIdMensal || cfg.priceIdMensal.includes('SEU')) missing.push('Price ID Mensal');
+  if (!cfg.priceIdAnual || cfg.priceIdAnual.includes('SEU')) missing.push('Price ID Anual');
+  if (!cfg.priceIdVitalicio || cfg.priceIdVitalicio.includes('SEU')) missing.push('Price ID Vitalício');
+
+  if (missing.length) {
+    showToast('⚠️ Campos obrigatórios não preenchidos: ' + missing.join(', '));
+    return;
+  }
+
+  // Gera o bloco de configuração para stripe-billing.js
+  const block = `// ============================================
+// CONFIGURAÇÃO — gerado pelo painel admin
+// Data: ${new Date().toLocaleString('pt-BR')}
+// ============================================
+const STRIPE_PUBLISHABLE_KEY = '${cfg.pubKey}';
+
+// Atualize também o objeto PLANS:
+// PLANS.mensal.priceId  = '${cfg.priceIdMensal}'
+// PLANS.anual.priceId   = '${cfg.priceIdAnual}'
+// PLANS.vitalicio.priceId = '${cfg.priceIdVitalicio}'`;
+
+  copyToClipboard(block);
+  saveAll();
+
+  showToast('✅ Bloco de configuração copiado! Cole em stripe-billing.js nas linhas 22 e 49/69/87.');
+  runFullCheck();
+}
+
+// ════════════════════════════════════════════
+// FULL CHECK
+// ════════════════════════════════════════════
+function runFullCheck() {
+  const cfg = getConfig();
+  let done = 0;
+
+  function chk(id, txtId, val, successMsg, failMsg) {
+    const ok = val && !val.includes('SUA') && !val.includes('SEU');
+    document.getElementById(id).textContent = ok ? '✅' : '⬜';
+    document.getElementById(txtId).textContent = ok ? successMsg : failMsg;
+    document.getElementById(txtId).style.color = ok ? 'var(--green)' : 'var(--muted)';
+    if (ok) done++;
+  }
+
+  chk('chk1', 'chk1txt', cfg.pubKey, cfg.pubKey.substring(0,16) + '...', 'Não preenchida');
+  chk('chk2', 'chk2txt', cfg.secKey, 'Configurada (oculta)', 'Não preenchida');
+  chk('chk3', 'chk3txt', cfg.priceIdMensal, cfg.priceIdMensal, 'Não preenchido');
+  chk('chk4', 'chk4txt', cfg.priceIdAnual, cfg.priceIdAnual, 'Não preenchido');
+  chk('chk5', 'chk5txt', cfg.priceIdVitalicio, cfg.priceIdVitalicio, 'Não preenchido');
+  chk('chk6', 'chk6txt', cfg.webhookSecret, 'Configurado (oculto)', 'Não preenchido');
+  chk('chk7', 'chk7txt', cfg.sbAnonKey, 'Configurada (oculta)', 'Não preenchida');
+
+  // Summary
+  document.getElementById('summaryMode').textContent = cfg.stripeMode === 'live' ? '🔴 Live (Produção)' : '🟡 Teste';
+  document.getElementById('summaryUrl').textContent = (cfg.sbUrl || '—').replace('https://', '').substring(0,30);
+  document.getElementById('summaryPub').textContent = cfg.pubKey ? cfg.pubKey.substring(0,16) + '...' : '—';
+  document.getElementById('summaryWebhook').textContent = cfg.webhookSecret ? '✅ Configurado' : '⬜ Pendente';
+
+  const plans = [cfg.priceIdMensal, cfg.priceIdAnual, cfg.priceIdVitalicio].filter(p => p && p.startsWith('price_')).length;
+  document.getElementById('summaryPlans').textContent = plans + '/3';
+  document.getElementById('summaryReady').textContent = done >= 5 ? '✅ Produção' : done >= 3 ? '🟡 Testes' : '⬜ Configuração';
+
+  // Update global status
+  const banner = document.getElementById('globalStatus');
+  const dot = document.getElementById('statusDot');
+  const title = document.getElementById('statusTitle');
+  const msg = document.getElementById('statusMsg');
+
+  if (done === 7) {
+    banner.className = 'status-banner ok';
+    dot.className = 'status-dot ok';
+    title.textContent = 'Tudo configurado';
+    msg.textContent = 'Stripe está pronto. Aplique as configurações no stripe-billing.js e faça o deploy.';
+  } else if (done >= 3) {
+    banner.className = 'status-banner pending';
+    dot.className = 'status-dot pending';
+    title.textContent = `Configuração parcial (${done}/7)`;
+    msg.textContent = 'Alguns campos ainda precisam ser preenchidos para ativar todos os planos.';
+  } else {
+    banner.className = 'status-banner error';
+    dot.className = 'status-dot error';
+    title.textContent = 'Configuração pendente';
+    msg.textContent = 'Preencha os campos do Stripe e Supabase para ativar os pagamentos.';
+  }
+}
+
+// ════════════════════════════════════════════
+// UTILITIES
+// ════════════════════════════════════════════
+function togglePassword(inputId, eyeId) {
+  const input = document.getElementById(inputId);
+  const eye = document.getElementById(eyeId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    eye.textContent = '🙈';
+  } else {
+    input.type = 'password';
+    eye.textContent = '👁';
+  }
+}
+
+function copyCode(elementId) {
+  const el = document.getElementById(elementId);
+  copyToClipboard(el.textContent);
+  showToast('📋 Copiado!');
+}
+
+function copyEnvBlock() {
+  const cfg = getConfig();
+  const block = `STRIPE_PUBLISHABLE_KEY=${cfg.pubKey}\nSTRIPE_SECRET_KEY=${cfg.secKey}\nSTRIPE_WEBHOOK_SECRET=${cfg.webhookSecret}\nSUPABASE_URL=${cfg.sbUrl}\nSUPABASE_ANON_KEY=${cfg.sbAnonKey}\nSUPABASE_SERVICE_ROLE_KEY=${cfg.sbServiceKey}`;
+  copyToClipboard(block);
+  showToast('📋 Bloco .env copiado!');
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const el = document.createElement('textarea');
+  el.value = text;
+  el.style.position = 'fixed';
+  el.style.opacity = '0';
+  document.body.appendChild(el);
+  el.select();
+  document.execCommand('copy');
+  document.body.removeChild(el);
+}
+
+function openStripe(path) {
+  const base = stripeMode === 'live'
+    ? 'https://dashboard.stripe.com/'
+    : 'https://dashboard.stripe.com/test/';
+  window.open(base + path, '_blank');
+}
+
+function openSupabase(section) {
+  const sbUrl = document.getElementById('sbUrl').value;
+  const ref = sbUrl ? sbUrl.replace('https://', '').replace('.supabase.co', '') : '';
+  const base = ref
+    ? `https://supabase.com/dashboard/project/${ref}/`
+    : 'https://supabase.com/dashboard/';
+  window.open(base + section, '_blank');
+}
+
+function testKeys() {
+  const pub = document.getElementById('pubKey').value;
+  const sec = document.getElementById('secKey').value;
+  if (!pub || !sec) {
+    showToast('⚠️ Preencha Publishable Key e Secret Key primeiro');
+    return;
+  }
+  if (!pub.startsWith('pk_')) {
+    showToast('❌ Publishable Key inválida — deve começar com pk_test_ ou pk_live_');
+    return;
+  }
+  if (!sec.startsWith('sk_')) {
+    showToast('❌ Secret Key inválida — deve começar com sk_test_ ou sk_live_');
+    return;
+  }
+  const modeOk = (stripeMode === 'test' && pub.startsWith('pk_test_') && sec.startsWith('sk_test_'))
+    || (stripeMode === 'live' && pub.startsWith('pk_live_') && sec.startsWith('sk_live_'));
+  if (!modeOk) {
+    showToast('⚠️ As chaves não correspondem ao modo selecionado (' + stripeMode + ')');
+  } else {
+    showToast('✅ Formato das chaves válido! Faça um checkout de teste para confirmar.');
+  }
+}
+
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.display = 'flex';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+}
+
+// ════════════════════════════════════════════
+// SECURITY MODAL
+// ════════════════════════════════════════════
+
+function openSecurityModal() {
+  const modal = document.getElementById('security-modal');
+  modal.style.display = 'flex';
+  // Reset fields
+  ['sec-pw-current','sec-pw-new','sec-pw-confirm'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('sec-pw-error').style.display = 'none';
+  document.getElementById('sec-pw-success').style.display = 'none';
+  checkPwStrength('');
+  // Atualiza status do TOTP
+  refreshTotpStatus();
+}
+
+function closeSecurityModal() {
+  document.getElementById('security-modal').style.display = 'none';
+}
+
+function switchSecTab(tab, btn) {
+  document.getElementById('sec-panel-pw').style.display = tab === 'pw' ? 'block' : 'none';
+  document.getElementById('sec-panel-totp').style.display = tab === 'totp' ? 'block' : 'none';
+  document.querySelectorAll('.sec-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (tab === 'totp') refreshTotpStatus();
+}
+
+function toggleSec(id) {
+  const el = document.getElementById(id);
+  if (el) el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+// ── Força da senha ──
+function checkPwStrength(pw) {
+  const bars = [1,2,3,4].map(i => document.getElementById('str-bar-' + i));
+  const label = document.getElementById('str-label');
+  if (!bars[0] || !label) return;
+
+  let score = 0;
+  if (pw.length >= 8)  score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+  const colors = ['var(--border)','var(--red)','var(--yellow)','#3498db','var(--green)'];
+  const labels = ['','Fraca','Regular','Boa','Forte 💪'];
+
+  bars.forEach((bar, i) => {
+    bar.style.background = i < score ? colors[score] : 'var(--border)';
+  });
+  label.textContent = pw.length ? labels[score] : '';
+  label.style.color = colors[score];
+}
+
+// ── Trocar senha ──
+async function changePassword() {
+  const currentPw = document.getElementById('sec-pw-current').value;
+  const newPw     = document.getElementById('sec-pw-new').value;
+  const confirmPw = document.getElementById('sec-pw-confirm').value;
+  const errEl     = document.getElementById('sec-pw-error');
+  const okEl      = document.getElementById('sec-pw-success');
+
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  function showErr(msg) { errEl.textContent = msg; errEl.style.display = 'block'; }
+
+  if (!currentPw || !newPw || !confirmPw) {
+    showErr('❌ Preencha todos os campos.'); return;
+  }
+
+  // Verifica senha atual
+  const currentHash = await sha256(currentPw);
+  if (currentHash !== AUTH_CONFIG.PASSWORD_HASH) {
+    showErr('❌ Senha atual incorreta.'); return;
+  }
+
+  // Valida nova senha
+  if (newPw.length < 8) { showErr('❌ A nova senha deve ter pelo menos 8 caracteres.'); return; }
+  if (!/[A-Z]/.test(newPw)) { showErr('❌ A nova senha precisa ter ao menos 1 letra maiúscula.'); return; }
+  if (!/[0-9]/.test(newPw)) { showErr('❌ A nova senha precisa ter ao menos 1 número.'); return; }
+  if (newPw !== confirmPw) { showErr('❌ As senhas não coincidem.'); return; }
+
+  // Gera novo hash
+  const newHash = await sha256(newPw);
+
+  // Salva no localStorage para persistir entre recargas do painel
+  localStorage.setItem('ec_admin_pw_hash', newHash);
+
+  // Atualiza o hash em tempo de execução
+  AUTH_CONFIG.PASSWORD_HASH = newHash;
+
+  // Exibe confirmação com o hash (para o usuário atualizar no código)
+  okEl.innerHTML = `✅ Senha alterada com sucesso!<br><br>
+    <strong style="font-size:.78rem;color:var(--muted)">Cole este hash no arquivo admin-stripe.html (PASSWORD_HASH):</strong><br>
+    <code style="font-size:.78rem;color:var(--accent);word-break:break-all;cursor:pointer"
+      onclick="navigator.clipboard&&navigator.clipboard.writeText('${newHash}');this.textContent='✅ Copiado!';setTimeout(()=>this.textContent='${newHash}',2000)"
+      title="Clique para copiar">${newHash}</code>`;
+  okEl.style.display = 'block';
+
+  document.getElementById('sec-pw-current').value = '';
+  document.getElementById('sec-pw-new').value = '';
+  document.getElementById('sec-pw-confirm').value = '';
+  checkPwStrength('');
+}
+
+// ── TOTP status ──
+function refreshTotpStatus() {
+  const box = document.getElementById('totp-status-box');
+  if (!box) return;
+  const secret = localStorage.getItem(AUTH_CONFIG.TOTP_KEY);
+  if (secret) {
+    box.style.background = 'rgba(46,204,113,.08)';
+    box.style.border = '1px solid rgba(46,204,113,.3)';
+    box.innerHTML = '<span style="font-size:1.2rem">✅</span><div><strong>Autenticador ativo</strong><div style="font-size:.76rem;color:var(--muted);margin-top:2px">2º fator habilitado. Código TOTP exigido no login.</div></div>';
+  } else {
+    box.style.background = 'rgba(231,76,60,.08)';
+    box.style.border = '1px solid rgba(231,76,60,.3)';
+    box.innerHTML = '<span style="font-size:1.2rem">⚠️</span><div><strong style="color:var(--red)">Autenticador não configurado</strong><div style="font-size:.76rem;color:var(--muted);margin-top:2px">Configure o 2º fator para máxima segurança.</div></div>';
+  }
+}
+
+function removeTotpConfirm() {
+  if (!confirm('Remover o autenticador vai desativar o 2º fator.\nO acesso ficará protegido apenas pela senha.\n\nTem certeza?')) return;
+  localStorage.removeItem(AUTH_CONFIG.TOTP_KEY);
+  refreshTotpStatus();
+  showToast('⚠️ Autenticador removido. O 2º fator está desativado.');
+}
+
+function logoutAdmin() {
+  if (!confirm('Encerrar sessão agora?')) return;
+  sessionStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+  location.reload();
+}
+
+// Fechar modal ao clicar fora
+document.addEventListener('click', (e) => {
+  const modal = document.getElementById('security-modal');
+  if (modal && e.target === modal) closeSecurityModal();
+});
+
+// Recupera hash salvo no localStorage (se o usuário trocou a senha antes)
+(function restoreCustomHash() {
+  const saved = localStorage.getItem('ec_admin_pw_hash');
+  if (saved) AUTH_CONFIG.PASSWORD_HASH = saved;
+})();
+
+// ════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  initAuth();
+  // loadSaved() e runFullCheck() são chamados por grantAccess()
+  // Se a sessão já era válida, chamamos direto:
+  if (getAuthSession()) {
+    loadSaved();
+    runFullCheck();
+  }
+});
+</script>
+</body>
+</html>

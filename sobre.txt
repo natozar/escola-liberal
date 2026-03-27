@@ -1,0 +1,606 @@
+========================================================
+  escola liberal PARA BILIONÁRIO
+  PWA Educacional — Economia para Homeschooling
+========================================================
+
+DATA DE CRIAÇÃO: 22/03/2026
+ÚLTIMA ATUALIZAÇÃO: 22/03/2026
+AUTOR: Renato Cesar Rodrigues
+SLOGAN: "A educação que bilionários escondem dos seus filhos."
+STATUS: MVP Front-End COMPLETO — Próximo passo: Backend + Cobrança
+
+========================================================
+  RESUMO DO ANDAMENTO
+========================================================
+
+O MVP front-end está 100% funcional como PWA instalável.
+Tudo roda em arquivos estáticos (HTML/CSS/JS), sem dependências
+de backend, framework ou build tools. Estado salvo em localStorage.
+
+FASE ATUAL: Polimento completo do front-end antes de backend.
+PRÓXIMA FASE: Banco de dados → Sistema de cobrança/assinaturas.
+
+========================================================
+  ARQUIVOS DO PROJETO
+========================================================
+
+1. app.html (~293KB, ~3.621 linhas)
+   - Aplicação principal. Todo CSS + HTML + JS em arquivo único.
+   - Contém: 6 módulos × 10 aulas = 60 aulas + 60 quizzes.
+   - Design System v2 com tema dark e light.
+   - Toda a lógica de gamificação, navegação e interação.
+   - 57 funcionalidades completas.
+   - Experiência mobile nativa: bottom nav, swipe, haptic, safe areas.
+
+2. index.html (~33KB, ~535 linhas)
+   - Landing page com: Hero, Features, Módulos, Pensadores,
+     Depoimentos, FAQ (accordion), CTA, Footer.
+   - Meta tags Open Graph + Twitter Card para compartilhamento.
+   - SEO: meta description, keywords, author.
+   - Tema dark/light sincronizado com app via localStorage.
+   - Footer com links para Termos, Privacidade, Contato.
+
+3. offline.html (~1.7KB)
+   - Página exibida quando o usuário está sem internet.
+   - Design coerente com a marca, botão de retry, dica de instalação.
+
+4. sw.js (~2.3KB) — Service Worker v3
+   - Cache: index.html, app.html, offline.html, manifest, ícones, fontes.
+   - Navegação: network-first (tenta online, fallback cache, depois offline.html).
+   - Assets estáticos: cache-first.
+   - Notifica clientes quando há atualização disponível.
+
+5. manifest.json (~485 bytes)
+   - display: standalone, theme_color: #0f1729.
+   - Ícones 192px e 512px.
+
+6. assets/icons/
+   - favicon.svg — SVG responsivo com prefers-color-scheme
+     (dourado no dark, escuro no light).
+   - icon-192.png, icon-512.png — Ícones PWA gerados com Pillow.
+
+7. termos.html (~87 linhas)
+   - Página de Termos de Uso com 9 seções.
+   - Design coerente com a marca, tema dark/light.
+
+8. privacidade.html (~107 linhas)
+   - Política de Privacidade com destaque "dados ficam no seu dispositivo".
+   - Seções: coleta, armazenamento, terceiros, menores, direitos.
+
+9. contato.html (~132 linhas)
+   - Formulário de contato com fallback mailto.
+   - Cards de email e WhatsApp.
+   - Mensagem de sucesso após envio.
+
+10. netlify.toml (~31 linhas)
+    - Config de deploy Netlify com headers de segurança.
+    - Cache de assets estáticos, no-cache para SW.
+
+11. robots.txt (~5 linhas) + sitemap.xml (~33 linhas)
+    - SEO: permite indexação de landing e legal pages, bloqueia app.html.
+
+12. sobre.txt (este arquivo)
+    - Documentação completa do projeto e andamento.
+
+========================================================
+  DESIGN SYSTEM v2
+========================================================
+
+PALETA DE CORES:
+- Slate (base dark): #0f1729 / #141d32 / #1a2540 / #1e2d4a
+- Cream (base light): #f5f3ef / #eae7e1 / #ffffff / #f0ede8
+- Sage (primária): #4a9e7e / #5fbf96
+- Sky (info): #5b9bd5
+- Honey (destaque/XP): #dba550 / #f0c06a
+- Coral (erro/alerta): #e07460
+- Lavender (extra): #9b7ed8
+- Mint (extra): #5bd59b
+
+TIPOGRAFIA:
+- Headings: DM Serif Display (Google Fonts)
+- Body: DM Sans (Google Fonts)
+- Code/números: JetBrains Mono (Google Fonts)
+
+TEMAS:
+- Dark [data-theme="dark"] — padrão
+- Light [data-theme="light"]
+- Sincronização via localStorage key 'escola_theme'
+- Transição suave (0.3s) em todas as propriedades
+
+========================================================
+  FUNCIONALIDADES IMPLEMENTADAS
+========================================================
+
+--- NÚCLEO EDUCACIONAL ---
+
+1. 6 MÓDULOS DE CONTEÚDO (60 aulas, 60 quizzes)
+   - Módulo 1: O que é Dinheiro? (💰)
+   - Módulo 2: Oferta e Demanda (📊)
+   - Módulo 3: Empreendedorismo (🚀)
+   - Módulo 4: Finanças Pessoais (💼)
+   - Módulo 5: História Econômica (🏛️)
+   - Módulo 6: Pensamento Crítico (🧩)
+   - Cada aula: título, conteúdo HTML, XP, quiz com 4 opções + explicação.
+
+2. QUIZ POR AULA
+   - 4 alternativas, feedback visual (verde/vermelho).
+   - Explicação após resposta.
+   - +15 XP por acerto.
+
+3. CHAT TUTOR (Tirar Dúvidas)
+   - Base de conhecimento local: 29 entradas, 110 keywords.
+   - Matching por keywords normalizadas (sem acento).
+   - Sugestões contextuais baseadas no módulo atual.
+   - FAB flutuante com badge de notificação.
+   - role="dialog", aria-live="polite" para acessibilidade.
+
+4. GLOSSÁRIO ECONÔMICO
+   - 29 termos com definição, módulo e aula de referência.
+   - Busca/filtro em tempo real.
+   - Clique leva direto à aula relacionada.
+
+5. FLASHCARDS
+   - Flip 3D com preserve-3d.
+   - Filtro por módulo (tabs).
+   - Navegação anterior/próximo com contador.
+
+6. SISTEMA DE REVISÃO
+   - Mostra apenas quizzes errados.
+   - Filtro por módulo.
+   - Link direto para refazer a aula.
+
+--- GAMIFICAÇÃO ---
+
+7. SISTEMA DE XP E NÍVEIS
+   - XP por: aulas (+variável), quizzes (+15), desafio diário (+50).
+   - Fórmula: nível × 100 XP para subir.
+   - 6 tiers de nível:
+     Aprendiz (1-2) → Estudante (3-4) → Economista (5-7) →
+     Investidor (8-10) → Magnata (11-15) → Bilionário (16+)
+   - Confetti animation ao subir de nível.
+   - XP bar visual na sidebar.
+
+8. SEQUÊNCIA (STREAK)
+   - Conta dias consecutivos de estudo.
+   - Reset se pular um dia.
+   - Exibido na sidebar com 🔥.
+
+9. DESAFIO DIÁRIO
+   - 1 quiz por dia, determinístico por data (seed).
+   - +50 XP por acerto.
+   - Card especial no dashboard com tag "Novo!".
+
+10. MISSÕES SEMANAIS
+    - 3 missões por semana (baseadas no número da semana).
+    - Barra de progresso por missão.
+    - XP bônus ao completar.
+
+11. CONQUISTAS / BADGES (NOVO!)
+    - 23 badges no total com sistema de desbloqueio.
+    - Categorias: progresso de aulas, módulos, streak, quiz,
+      nível, notas, favoritos.
+    - Tela dedicada com grid visual.
+    - Badges bloqueados aparecem com blur e grayscale.
+    - Barra de progresso geral (X/23 desbloqueados).
+
+12. MARATONA DE QUIZ
+    - 10 questões aleatórias de todos os módulos.
+    - Timer cronometrado.
+    - Registro de melhor score (localStorage).
+    - Resultado com emoji de performance.
+
+13. SIMULADO / PROVA FORMAL (NOVO!)
+    - 2-3 questões por módulo (total ~15-18 questões).
+    - Navegação livre entre questões (anterior/próxima).
+    - Seleção persistente (pode mudar resposta).
+    - Resultado com nota percentual + breakdown por módulo.
+    - Aprovado (≥70%) com confetti, ou "Continue Estudando".
+    - Ideal para pais avaliarem o progresso.
+
+14. ANIMAÇÕES DE RECOMPENSA — CONFETTI (NOVO!)
+    - Partículas coloridas (60 peças) ao:
+      → Subir de nível
+      → Completar módulo
+      → Passar no simulado (≥70%)
+    - Cores da paleta do design system.
+    - Auto-remove após 4 segundos.
+
+--- FERRAMENTAS DE ESTUDO ---
+
+15. ANOTAÇÕES POR AULA
+    - Textarea com auto-save (debounce 500ms).
+    - Contador de anotações no toggle.
+    - aria-expanded e aria-controls para acessibilidade.
+    - Dados em localStorage key 'escola_notes'.
+
+16. FAVORITOS
+    - Botão ☆/★ em cada aula.
+    - Lista no dashboard com link direto.
+    - Remoção com botão ✕.
+    - localStorage key 'escola_favs'.
+
+17. BUSCA GLOBAL
+    - Busca em todo o conteúdo das aulas.
+    - Debounce 250ms.
+    - Resultados com snippet e módulo.
+    - Máximo 6 resultados.
+
+18. TEMPO DE LEITURA
+    - Calculado por: palavras / 200 wpm.
+    - Exibido na lista de aulas e no topo da aula.
+
+19. MODO FOCO
+    - Esconde sidebar, expande conteúdo.
+    - Centraliza aula (max-width 800px).
+    - Toggle via botão ou tecla F.
+
+20. TEXT-TO-SPEECH (TTS)
+    - Web Speech API em pt-BR.
+    - Botão 🔊 Ouvir / 🔇 Parar.
+    - Para automaticamente ao trocar de view.
+
+21. EXPORTAR PDF
+    - Abre nova janela com relatório completo formatado.
+    - Dados: aluno, nível, XP, streak, progresso por módulo.
+    - Print-ready com @media print.
+
+22. EXPORTAR CERTIFICADO COMO IMAGEM (NOVO!)
+    - Canvas API gera PNG 800×560px.
+    - Design: gradiente dark, borda dourada, selo, nome,
+      módulo, data, slogan.
+    - Botão "📥 Salvar Imagem" no overlay do certificado.
+    - Download automático como PNG.
+
+23. HISTÓRICO DE ESTUDO / TIMELINE (NOVO!)
+    - Registra automaticamente: aulas, quizzes, desafios,
+      simulados, subidas de nível, módulos completos.
+    - Agrupa por dia com data em pt-BR (dia da semana + data).
+    - Timeline visual com linha lateral + dots.
+    - Ícones por tipo de atividade.
+    - Máximo 200 entradas (rolling).
+    - localStorage key 'escola_timeline'.
+
+24. REVISÃO ESPAÇADA — MÉTODO LEITNER (NOVO!)
+    - Algoritmo de 5 caixas aplicado aos termos do glossário.
+    - Caixa 1: revisar hoje / Caixa 2: amanhã / Caixa 3: 3 dias /
+      Caixa 4: 7 dias / Caixa 5: 14 dias.
+    - Acertou → sobe de caixa. Errou → volta para caixa 1.
+    - Interface: mostra termo → clique revela definição →
+      botões "Não lembrei" / "Lembrei!".
+    - Stats: termos para revisar, dominados, total.
+    - Lista completa com indicador de caixa colorido.
+    - localStorage key 'escola_spaced'.
+
+--- PERFIS E SEGURANÇA ---
+
+25. MULTI-PERFIL
+    - Perfis separados em localStorage (escola_v2_p_<timestamp>).
+    - Switch rápido na sidebar.
+    - Botão + para adicionar perfil.
+
+26. PAINEL DO RESPONSÁVEL COM PIN (NOVO!)
+    - Protegido por PIN de 4 dígitos.
+    - Teclado numérico visual (funciona no mobile).
+    - Primeiro acesso: cria o PIN. Depois: pede para entrar.
+    - Dots visuais de preenchimento.
+    - Animação shake em erro.
+    - Botão de redefinir PIN dentro do painel.
+    - Mostra progresso de todos os perfis.
+    - localStorage key 'escola_pin'.
+
+--- UX E ACESSIBILIDADE ---
+
+27. ONBOARDING
+    - 3 steps: nome → avatar → features preview.
+    - Overlay fullscreen com animação.
+    - 8 opções de avatar emoji.
+
+28. SPLASH SCREEN
+    - Barra de progresso animada.
+    - Fade out após 1.1 segundo.
+
+29. ATALHOS DE TECLADO
+    - → / ← : navegar entre aulas
+    - F : modo foco
+    - S : ouvir aula (TTS)
+    - Esc : voltar
+    - ? : mostrar/esconder hint de atalhos
+
+30. ACESSIBILIDADE
+    - Skip link "Pular para conteúdo principal".
+    - :focus-visible outline (2px sage) em todos os interativos.
+    - role="button" + tabindex="0" + onkeydown em nav items (div).
+    - role="navigation" na sidebar.
+    - role="main" no conteúdo.
+    - role="dialog" + aria-modal no certificado e chat.
+    - role="log" + aria-live="polite" no chat body e toast.
+    - aria-expanded em: menu mobile, chat, notas.
+    - aria-label em: botões de ícone, inputs, FAB, close buttons.
+    - aria-hidden em ícones decorativos.
+    - @media (prefers-reduced-motion: reduce) desabilita animações.
+
+31. PWA / OFFLINE
+    - manifest.json com display standalone.
+    - Service worker v3 com cache inteligente.
+    - Página offline dedicada.
+    - Favicon SVG responsivo (dark/light).
+    - Meta tags OG + Twitter Card.
+
+32. BANNER DE INSTALAÇÃO PWA
+    - Intercepta evento beforeinstallprompt.
+    - Banner personalizado na parte inferior da tela.
+    - Botão instalar + dispensar.
+    - Memoriza se já foi dispensado (localStorage).
+
+33. VERSIONAMENTO + "O QUE HÁ DE NOVO"
+    - Constante APP_VERSION e array CHANGELOG.
+    - Modal exibido ao atualizar versão.
+    - Armazena última versão vista em localStorage.
+
+34. BACKUP / IMPORTAÇÃO (JSON)
+    - Exporta todas as chaves relevantes em JSON.
+    - Importa backup com validação e confirmação.
+    - Acessível na sidebar (menu Backup).
+
+35. INDICADOR DE SALVAMENTO AUTOMÁTICO
+    - Intercepta a função save() original.
+    - Exibe "✓ Progresso salvo" temporariamente no topo.
+
+36. NOTIFICAÇÕES DE ESTUDO
+    - Usa Notification API do navegador.
+    - Pede permissão antes de ativar.
+    - Agenda lembrete diário (padrão 19h).
+    - Toggle on/off no sidebar.
+
+37. COMPARTILHAR PROGRESSO (PNG)
+    - Gera imagem 600×400 via Canvas API.
+    - Mostra: nome, nível, XP, aulas, sequência, acerto.
+    - Barras de progresso e módulos visuais.
+    - Download direto como PNG.
+
+38. PÁGINAS DE DEPLOY
+    - termos.html — Termos de uso com 9 seções.
+    - privacidade.html — Política com destaque "dados locais".
+    - contato.html — Formulário + email + WhatsApp.
+    - netlify.toml — Config de deploy com headers de segurança.
+    - robots.txt — Allow geral, block app.html.
+    - sitemap.xml — 5 URLs indexáveis.
+
+39. MODO ESCURO AUTOMÁTICO
+    - Detecta prefers-color-scheme do sistema na primeira visita.
+    - Atualiza automaticamente se o sistema mudar (sem override manual).
+    - Toggle manual marca preferência explícita (não é sobrescrita).
+
+40. TRANSIÇÕES DE VIEW
+    - Animação fade+slide ao trocar entre telas (viewSlideIn 0.3s).
+    - Aplicado em goDash(), goMod(), openL() e views extras.
+
+41. SKELETON LOADING
+    - Placeholder animado com shimmer gradient.
+    - Componentes: skel-card, skel-text, skel-circle, skel-row.
+
+42. FEEDBACK HÁPTICO NOS QUIZZES
+    - Shake (0.5s) na opção errada.
+    - Pulse (0.6s) na opção correta.
+    - CSS-only, sem JavaScript adicional.
+
+43. BARRA DE PROGRESSO GLOBAL
+    - Fixa no topo da página (3px).
+    - Gradiente sage→honey mostrando % total do curso.
+    - Atualizada automaticamente ao navegar.
+
+44. REVISÃO DE ERROS
+    - View dedicada listando todas as questões erradas.
+    - Clique para refazer com feedback visual.
+    - Se acertar, atualiza o quiz para "correto" no estado.
+    - Acessível na sidebar.
+
+45. DIFICULDADE ADAPTATIVA NO MARATHON
+    - Rastreia sequência de acertos consecutivos.
+    - 3+ acertos seguidos puxa questões de módulos mais avançados.
+
+46. RESUMO SEMANAL COMPARATIVO
+    - Card no dashboard comparando semana atual vs anterior.
+    - Métricas: aulas, quizzes, atividades.
+    - Setas visuais (↑ verde, ↓ vermelho, = neutro).
+
+47. META DIÁRIA CONFIGURÁVEL
+    - Seletor de 1 a 10 aulas por dia.
+    - Barra de progresso com % atingido.
+    - Celebração visual ao atingir meta.
+    - Persistida em localStorage.
+
+48. ERROR BOUNDARY GLOBAL
+    - Captura window.onerror e unhandledrejection.
+    - Tela amigável com botão "Recarregar".
+    - Impede tela branca em caso de erro JS.
+
+49. ACESSIBILIDADE ARIA COMPLETA
+    - Toast region com role="status" e aria-live="polite".
+    - aria-current="page" dinâmico no nav ativo.
+    - aria-hidden em ícones decorativos.
+    - aria-label no conteúdo principal.
+
+50. PRELOAD DE FONTES
+    - preconnect para fonts.googleapis.com e fonts.gstatic.com.
+    - preload do CSS das fontes para eliminar flash.
+
+--- MOBILE NATIVO ---
+
+51. BOTTOM NAVIGATION BAR
+    - 5 abas fixas: Início, Módulos, Progresso, Conquistas, Menu.
+    - Visível apenas em telas ≤900px.
+    - Indicador visual da aba ativa.
+    - Safe area para iPhone com notch.
+
+52. HEADER MOBILE APP-LIKE
+    - Fixo no topo com título dinâmico.
+    - Botão voltar contextual (muda conforme a tela).
+    - Exibe XP atual à direita.
+
+53. SWIPE GESTURES (AULAS)
+    - Deslize para esquerda = próxima aula.
+    - Deslize para direita = aula anterior.
+    - Dica visual na primeira vez.
+    - Só ativa dentro da view de aulas.
+
+54. HAPTIC FEEDBACK
+    - Vibração sutil (15ms) ao tocar botões.
+    - Usa navigator.vibrate API.
+
+55. SAFE AREAS (NOTCH)
+    - env(safe-area-inset-*) em body, header, nav, chat.
+    - viewport-fit=cover para tela cheia.
+    - Apple meta tags para PWA iOS.
+
+56. TOUCH TARGETS OTIMIZADOS
+    - Mínimo 44px em todos os botões.
+    - Quiz options com 48px mínimo.
+    - Nav items com 44px mínimo.
+    - -webkit-tap-highlight-color transparente.
+
+57. SIDEBAR MOBILE COM OVERLAY
+    - Abre via botão Menu no bottom nav.
+    - Overlay escuro clicável para fechar.
+    - Fecha automaticamente ao navegar.
+
+========================================================
+  CHAVES DE LOCALSTORAGE
+========================================================
+
+- escola_v2          — Estado principal (name, avatar, xp, lvl, streak, done, quiz, cMod, cLes)
+- escola_v2_p_<id>   — Estado de perfis adicionais
+- escola_notes       — Anotações por aula {chave: texto}
+- escola_favs        — Array de favoritos ["0-1", "2-3", ...]
+- escola_theme       — "dark" ou "light"
+- escola_daily       — {date, answered, correct}
+- escola_missions    — {week, claimed: [...]}
+- escola_marathon_best — {score, time}
+- escola_profiles    — {default: {name}, p_123: {name}, ...}
+- escola_pin         — PIN de 4 dígitos (string)
+- escola_timeline    — Array de {type, text, ts} (máx 200)
+- escola_spaced      — {termo: {box, next, reviews}, ...}
+- escola_sfx         — "on" ou "off" (sons)
+- escola_last_version — Versão do app vista (ex: "2.5.0")
+- escola_install_dismissed — "1" se banner de instalação foi dispensado
+- escola_notif       — {enabled, hour, minute} (configuração de notificações)
+- escola_daily_goal  — {target: N} (meta diária de aulas)
+- escola_theme_manual — "1" se tema foi escolhido manualmente
+- escola_swipe_shown  — "1" se dica de swipe já foi exibida
+
+========================================================
+  STACK TÉCNICO ATUAL (MVP)
+========================================================
+
+FRONT-END:
+- HTML/CSS/JS puro — arquivo único (app.html)
+- Zero dependências de framework
+- Google Fonts CDN (DM Serif Display, DM Sans, JetBrains Mono)
+- CSS Custom Properties para temas
+- Web Speech API para TTS
+- Canvas API para exportar certificado como imagem
+- localStorage para persistência
+
+LANDING PAGE:
+- HTML/CSS puro (index.html)
+- Open Graph + Twitter Card meta tags
+- FAQ com accordion JS puro
+
+PWA:
+- Service Worker v3 (sw.js)
+- manifest.json
+- Página offline (offline.html)
+- Favicon SVG responsivo
+
+========================================================
+  ROADMAP
+========================================================
+
+[✅] FASE 1: MVP Front-End (COMPLETO)
+  ✅ 6 módulos × 10 aulas = 60 aulas + 60 quizzes
+  ✅ Design System v2 (dark + light)
+  ✅ Gamificação completa (XP, níveis, streak, missões, badges)
+  ✅ Chat tutor local (keyword matching)
+  ✅ Glossário, flashcards, revisão, busca, notas, favoritos
+  ✅ Multi-perfil com painel pai (PIN)
+  ✅ Maratona + Simulado formal
+  ✅ Timeline de estudo + Revisão espaçada (Leitner)
+  ✅ Confetti + Certificado exportável como PNG
+  ✅ TTS, modo foco, atalhos de teclado
+  ✅ PWA instalável com offline support
+  ✅ Landing page com OG meta tags
+  ✅ Acessibilidade (ARIA, focus, reduced motion)
+
+[⬜] FASE 2: Backend + Autenticação
+  - Supabase ou Firebase para auth + database
+  - Migrar localStorage para banco de dados
+  - Login/signup com email ou Google
+  - Sincronização entre dispositivos
+  - Backup de progresso na nuvem
+
+[⬜] FASE 3: Cobrança e Assinaturas
+  - Stripe ou Mercado Pago para pagamentos
+  - Plano gratuito: Módulos 1-2
+  - Plano premium: Todos os módulos + ferramentas
+  - Plano família: Multi-perfil ilimitado + painel avançado
+  - Certificados verificáveis (com hash/código)
+
+[⬜] FASE 4: IA e Personalização
+  - Chat tutor com IA (GPT/Claude) para respostas avançadas
+  - Geração de exercícios personalizados
+  - Adaptação de dificuldade ao nível do aluno
+  - Cenários econômicos para debate em família
+
+[⬜] FASE 5: Comunidade e Expansão
+  - Fórum de pais
+  - Ranking de famílias
+  - Versão em inglês
+  - App nativo (Capacitor/React Native)
+  - Marketplace de materiais complementares
+
+========================================================
+  CONCEITO E ESTRATÉGIA
+========================================================
+
+CONCEITO:
+PWA educacional focado em ensinar Economia com valores
+conservadores para famílias que praticam homeschooling.
+Público-alvo: pais e filhos que querem educação econômica prática,
+baseada em livre mercado, empreendedorismo e responsabilidade fiscal.
+
+POSICIONAMENTO:
+A plataforma NÃO tenta ser "neutra" — se posiciona claramente como
+educação econômica com valores conservadores e de livre mercado.
+Isso é o diferencial, não o problema. O público-alvo QUER isso.
+Neutralidade é commodity. Posicionamento é valor.
+
+REFERÊNCIAS ECONÔMICAS:
+- Escola Austríaca: Mises, Hayek, Rothbard (simplificado)
+- Escola de Chicago: Milton Friedman, Thomas Sowell
+- Empreendedorismo: histórias reais de self-made entrepreneurs
+- Finanças pessoais: poupança, investimento, juros compostos
+- História econômica: por que o capitalismo funciona (cases reais)
+
+MODELOS DE MONETIZAÇÃO:
+- Freemium: conteúdo básico gratuito, avançado pago
+- Assinatura mensal: R$29-49/mês (família)
+- Certificados de conclusão
+- Licenciamento para escolas e cooperativas de homeschool
+- Cursos premium com especialistas convidados
+- Kits físicos: "Caixa do Empreendedor Mirim"
+
+PARCERIAS ESTRATÉGICAS:
+- Associações de homeschooling (ANED no Brasil)
+- Institutos liberais (Mises Brasil, FEE)
+- Influencers conservadores de educação financeira
+- Igrejas e comunidades com programas educacionais
+
+MÉTRICAS DE SUCESSO:
+- Retenção: alunos que completam módulos (>60%)
+- Engajamento: tempo médio na plataforma (>20min/sessão)
+- NPS: satisfação dos pais (>70)
+- Crescimento: 1.000 famílias ativas em 12 meses
+
+========================================================
+  "Ensine seu filho a pescar — e a montar uma empresa de pesca."
+========================================================

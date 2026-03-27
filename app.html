@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="1UpkKfHu1UniJljUkSWYhy12dmZkIqLlTv8rF_KOBwk">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline' https://js.stripe.com https://cdn.jsdelivr.net https://api.qrserver.com https://www.googletagmanager.com https://www.google-analytics.com https://tagmanager.google.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://js.stripe.com https://cdn.jsdelivr.net https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com; frame-src https://js.stripe.com; worker-src 'self' blob:;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f1729">
+<meta name="robots" content="noindex, nofollow">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="escola liberal">
+<link rel="icon" href="assets/icons/favicon.ico" sizes="48x48">
+<link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<link rel="manifest" href="manifest.json">
+<title>escola liberal — Aprendizado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" as="style">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<script src="cookie-consent.js"></script>
+</head>
+<body>
+
+<!-- GLOBAL PROGRESS BAR -->
+<div class="global-progress"><div class="global-progress-fill" id="globalProgressFill" style="width:0%"></div></div>
+
+<!-- ERROR BOUNDARY -->
+<div class="error-screen" id="errorScreen" style="display:none">
+  <div class="err-emoji">😵</div>
+  <h2>Ops, algo deu errado</h2>
+  <p>Um erro inesperado aconteceu. Seus dados estão salvos. Tente recarregar a página.</p>
+  <button class="btn btn-primary" onclick="location.reload()">Recarregar</button>
+</div>
+
+<!-- PWA INSTALL MODAL -->
+<div class="pwa-overlay" id="pwaOverlay" onclick="_pwaOverlayClick(event)">
+  <div class="pwa-card" id="pwaCard">
+    <div class="pwa-handle"></div>
+    <div class="pwa-header">
+      <div class="pwa-app-icon">🎓</div>
+      <div class="pwa-app-info">
+        <div class="pwa-app-name">escola liberal</div>
+        <div class="pwa-app-url">natozar.github.io</div>
+      </div>
+      <button class="pwa-close" onclick="dismissInstall()" aria-label="Fechar">✕</button>
+    </div>
+    <div class="pwa-divider"></div>
+
+    <!-- Android / Chrome: botão direto -->
+    <div class="pwa-android-body" id="pwaAndroid">
+      <div class="pwa-perks">
+        <div class="pwa-perk"><span>⚡</span><span>Acesso rápido</span></div>
+        <div class="pwa-perk"><span>📶</span><span>Funciona offline</span></div>
+        <div class="pwa-perk"><span>🔔</span><span>Sem distrações</span></div>
+        <div class="pwa-perk"><span>💾</span><span>Sem loja de apps</span></div>
+      </div>
+      <button class="pwa-install-btn" onclick="doInstall()">Adicionar à tela inicial</button>
+      <span class="pwa-dismiss-link" onclick="dismissInstall()">Agora não</span>
+    </div>
+
+    <!-- iOS Safari: passo a passo -->
+    <div class="pwa-ios-body" id="pwaIos" style="display:none">
+      <div class="pwa-ios-title">Como instalar no iPhone</div>
+      <div class="pwa-ios-steps">
+        <div class="pwa-ios-step">
+          <div class="pwa-ios-step-num">1</div>
+          <div class="pwa-ios-step-text">Toque em <b>Compartilhar</b> na barra inferior do Safari</div>
+          <div class="pwa-ios-step-icon">⬆️</div>
+        </div>
+        <div class="pwa-ios-step">
+          <div class="pwa-ios-step-num">2</div>
+          <div class="pwa-ios-step-text">Role a lista e toque em <b>"Adicionar à Tela de Início"</b></div>
+          <div class="pwa-ios-step-icon">➕</div>
+        </div>
+        <div class="pwa-ios-step">
+          <div class="pwa-ios-step-num">3</div>
+          <div class="pwa-ios-step-text">Toque em <b>Adicionar</b> no canto superior direito</div>
+          <div class="pwa-ios-step-icon">✅</div>
+        </div>
+      </div>
+      <button class="pwa-ios-ok-btn" onclick="dismissInstall()">Entendi</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSTALL BANNER (legado — oculto) -->
+<div style="display:none" id="installBanner">
+  <div class="ib-title">Instalar escola liberal</div>
+    <div class="ib-sub">Acesse offline, sem navegador, como um app nativo</div>
+  </div>
+  <div class="ib-actions">
+    <button class="ib-btn ib-dismiss" onclick="dismissInstall()">Agora não</button>
+    <button class="ib-btn ib-install" onclick="doInstall()">Instalar</button>
+  </div>
+</div>
+
+<!-- WHAT'S NEW MODAL -->
+<div class="wn-overlay" id="wnOverlay" onclick="if(event.target===this)closeWhatsNew()">
+  <div class="wn-card">
+    <h2>O que há de novo? 🚀</h2>
+    <div class="wn-ver" id="wnVer"></div>
+    <div id="wnItems"></div>
+    <button class="wn-close" onclick="closeWhatsNew()">Entendi, vamos lá!</button>
+  </div>
+</div>
+
+<!-- SAVE INDICATOR -->
+<div class="save-indicator" id="saveIndicator">✓ Progresso salvo</div>
+
+<!-- SHARE PREVIEW -->
+<div class="share-preview" id="sharePreview" onclick="if(event.target===this)closeShare()">
+  <canvas id="shareCanvas" width="600" height="400"></canvas>
+</div>
+
+<!-- SPLASH -->
+<div class="splash" id="splash">
+  <div class="splash-logo">🎓</div>
+  <div class="splash-title">escola liberal</div>
+  <div class="splash-sub">Carregando seu aprendizado...</div>
+  <div class="splash-bar"><div class="splash-fill" id="splashFill"></div></div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="onboard-overlay" id="onboard">
+  <div class="onboard-card">
+    <div class="onboard-step active" id="obStep1">
+      <div class="onboard-logo">🎓</div>
+      <h2>Bem-vindo à escola liberal</h2>
+      <p>A educação econômica que vai transformar o jeito que você pensa sobre dinheiro, mercado e liberdade.</p>
+      <input class="onboard-input" id="obName" placeholder="Qual é seu nome?" maxlength="30" onkeydown="if(event.key==='Enter')obNext(1)">
+      <button class="btn btn-sage" onclick="obNext(1)" style="width:100%">Continuar →</button>
+    </div>
+    <div class="onboard-step" id="obStep2">
+      <h2>Escolha seu avatar</h2>
+      <p>Esse será seu perfil durante o curso.</p>
+      <div class="onboard-avatars" id="obAvatars"></div>
+      <button class="btn btn-sage" onclick="obNext(2)" style="width:100%">Continuar →</button>
+    </div>
+    <div class="onboard-step" id="obStep3">
+      <h2>O que te espera</h2>
+      <p>6 módulos completos para dominar economia de verdade.</p>
+      <div class="onboard-features">
+        <div class="onboard-feat"><strong>📚 60 Aulas</strong>Conteúdo interativo e progressivo</div>
+        <div class="onboard-feat"><strong>🧪 60 Quizzes</strong>Teste seu conhecimento</div>
+        <div class="onboard-feat"><strong>🏅 Conquistas</strong>XP, níveis e certificados</div>
+        <div class="onboard-feat"><strong>💬 Tutor IA</strong>Tire dúvidas em tempo real</div>
+      </div>
+      <button class="btn btn-sage" onclick="obFinish()" style="width:100%">Começar a Aprender 🚀</button>
+    </div>
+  </div>
+</div>
+
+<a href="#mainC" class="skip-link">Pular para conteúdo principal</a>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button class="focus-btn" id="focusBtn" onclick="toggleFocus()" title="Modo Foco" aria-label="Alternar modo foco">⛶</button>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header" id="mobileHeader">
+  <div class="mh-back" id="mhBack" onclick="mobileBack()">←</div>
+  <div class="mh-title" id="mhTitle">escola liberal</div>
+  <div class="mh-xp" id="mhXP"></div>
+</div>
+
+<div class="shell">
+  <!-- SIDEBAR -->
+  <aside class="side" id="side" role="navigation" aria-label="Menu principal">
+    <a href="index.html" class="side-logo">
+      <div class="side-mark">Ec</div>
+      <div class="side-name">Escola <em>Conservadora</em></div>
+    </a>
+
+    <div class="profile">
+      <div class="profile-row">
+        <div class="avatar" id="avatarI">A</div>
+        <div>
+          <div class="profile-name" id="pName">Aluno</div>
+          <div class="profile-lvl">Nível <span id="uLvl">1</span> · Aprendiz</div>
+        </div>
+      </div>
+      <div class="xp-track"><div class="xp-bar" id="xpBar" style="width:0%"></div></div>
+      <div class="xp-label"><span id="xpNow">0</span>/<span id="xpMax">100</span> XP</div>
+      <div class="profile-switch" id="profileSwitch"></div>
+    </div>
+
+    <div class="side-stats">
+      <div class="ss"><div class="ss-val" id="sXP">0</div><div class="ss-lbl">XP Total</div></div>
+      <div class="ss"><div class="ss-val" id="sStreak">0🔥</div><div class="ss-lbl">Sequência</div></div>
+      <div class="ss"><div class="ss-val" id="sLessons">0</div><div class="ss-lbl">Aulas</div></div>
+      <div class="ss"><div class="ss-val" id="sQuiz">0%</div><div class="ss-lbl">Acertos</div></div>
+    </div>
+
+    <div class="side-label">Navegação</div>
+    <div class="ni active" onclick="goDash()" id="nDash" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goDash()">
+      <div class="ni-icon ic-dash">🏠</div>
+      <div><div class="ni-txt">Dashboard</div><div class="ni-sub">Visão geral</div></div>
+    </div>
+    <!-- Módulos gerados dinamicamente por buildSidebar() -->
+    <div id="modNav"></div>
+
+    <div class="side-label" style="margin-top:1rem">Ferramentas</div>
+    <div class="ni" onclick="goGlossary()" id="nGloss" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goGlossary()">
+      <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">📖</div>
+      <div><div class="ni-txt">Glossário</div><div class="ni-sub">Termos econômicos</div></div>
+    </div>
+    <div class="ni" onclick="goFlashcards()" id="nFlash" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goFlashcards()">
+      <div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)">🃏</div>
+      <div><div class="ni-txt">Flashcards</div><div class="ni-sub">Memorização ativa</div></div>
+    </div>
+    <div class="ni" onclick="goReview()" id="nReview" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goReview()">
+      <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">🔄</div>
+      <div><div class="ni-txt">Revisão</div><div class="ni-sub">Quizzes errados</div></div>
+    </div>
+    <div class="ni" onclick="goPerf()" id="nPerf" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goPerf()">
+      <div class="ni-icon" style="background:var(--lavender-muted);color:var(--lavender)">📊</div>
+      <div><div class="ni-txt">Desempenho</div><div class="ni-sub">Suas estatísticas</div></div>
+    </div>
+    <div class="ni" onclick="startMarathon()" id="nMarathon" role="button" tabindex="0" onkeydown="if(event.key==='Enter')startMarathon()">
+      <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">⚡</div>
+      <div><div class="ni-txt">Maratona</div><div class="ni-sub">Quiz contra o relógio</div></div>
+    </div>
+    <div class="ni" onclick="startExam()" id="nExam" role="button" tabindex="0" onkeydown="if(event.key==='Enter')startExam()">
+      <div class="ni-icon" style="background:var(--lavender-muted);color:var(--lavender)">📝</div>
+      <div><div class="ni-txt">Simulado</div><div class="ni-sub">Prova formal</div></div>
+    </div>
+    <div class="ni" onclick="goBadges()" id="nBadges" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goBadges()">
+      <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">🏅</div>
+      <div><div class="ni-txt">Conquistas</div><div class="ni-sub">Suas medalhas</div></div>
+    </div>
+    <div class="ni" onclick="goTimeline()" id="nTimeline" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goTimeline()">
+      <div class="ni-icon" style="background:var(--sage-muted);color:var(--sage)">📅</div>
+      <div><div class="ni-txt">Histórico</div><div class="ni-sub">Timeline de estudo</div></div>
+    </div>
+    <div class="ni" onclick="goSpaced()" id="nSpaced" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goSpaced()">
+      <div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)">🧠</div>
+      <div><div class="ni-txt">Revisão Espaçada</div><div class="ni-sub">Método Leitner</div></div>
+    </div>
+    <div class="ni" onclick="goErrorReview()" id="nErrorReview" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goErrorReview()">
+      <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">❌</div>
+      <div><div class="ni-txt">Revisão de Erros</div><div class="ni-sub">Refaça questões erradas</div></div>
+    </div>
+    <div class="ni" onclick="goGame()" id="nGame" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goGame()">
+      <div class="ni-icon" style="background:rgba(91,213,155,.1);color:#5bd59b">🍋</div>
+      <div><div class="ni-txt">Mini-Jogo</div><div class="ni-sub">Barraquinha de Limonada</div></div>
+    </div>
+
+    <div class="side-bottom">
+      <div class="ni" onclick="showBackupMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')showBackupMenu()">
+        <div class="ni-icon" style="background:var(--sage-muted);color:var(--sage-light)">💾</div>
+        <div><div class="ni-txt">Backup</div><div class="ni-sub">Exportar / Importar</div></div>
+      </div>
+      <div class="ni" onclick="shareProgress()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')shareProgress()">
+        <div class="ni-icon" style="background:var(--lavender-muted);color:var(--lavender)">📤</div>
+        <div><div class="ni-txt">Compartilhar</div><div class="ni-sub">Progresso em imagem</div></div>
+      </div>
+      <div class="ni" onclick="exportPDF()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')exportPDF()">
+        <div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)">📄</div>
+        <div><div class="ni-txt">Exportar PDF</div><div class="ni-sub">Relatório de progresso</div></div>
+      </div>
+      <div class="ni" onclick="toggleSfx()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleSfx()" id="sfxToggle">
+        <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">🔊</div>
+        <div><div class="ni-txt" id="sfxLabel">Sons Ligados</div><div class="ni-sub">Efeitos sonoros</div></div>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema claro e escuro">
+        <div class="theme-switch"></div>
+        <div><div class="theme-label" id="themeLabel">Modo Claro</div><div class="theme-sub" id="themeSub">Trocar aparência</div></div>
+      </button>
+      <div class="ni" onclick="resetAll()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')resetAll()">
+        <div class="ni-icon ic-reset">↺</div>
+        <div><div class="ni-txt">Resetar</div><div class="ni-sub">Recomeçar do zero</div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main" id="mainC" role="main" aria-label="Conteúdo principal">
+    <div class="mobile-bar">
+      <button class="menu-btn" onclick="const s=document.getElementById('side');s.classList.toggle('open');this.setAttribute('aria-expanded',s.classList.contains('open'))" aria-label="Abrir menu de navegação" aria-expanded="false">☰ Menu</button>
+      <span style="font-weight:600;font-size:.85rem;color:var(--sage-light)">escola liberal</span>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="dash" id="vDash">
+      <div class="welcome">
+        <h2>Bem-vindo, <span id="wName">Aluno</span></h2>
+        <p>Continue aprendendo economia. Cada aula te aproxima de pensar como um verdadeiro empreendedor.</p>
+        <div class="streak" id="streakB">🔥 Comece sua sequência!</div>
+      </div>
+      <div id="continueSection"></div>
+      <div id="quoteSection"></div>
+      <div id="progressChart"></div>
+      <div id="favSection"></div>
+      <div id="dailyChallenge"></div>
+      <div id="missionsSection"></div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-box" id="searchBox" placeholder="Buscar em todas as aulas..." oninput="doSearch(this.value)">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="mcards" id="mcards"></div>
+      <div class="ach-title">Conquistas</div>
+      <div class="achs" id="achs"></div>
+    </div>
+
+    <!-- MODULE VIEW -->
+    <div class="modv" id="vMod">
+      <div class="modv-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div>
+          <h2 id="mvT"></h2>
+          <div class="modv-sub" id="mvS"></div>
+        </div>
+      </div>
+      <div class="lessons" id="lsnList"></div>
+    </div>
+
+    <!-- LESSON VIEW -->
+    <div class="lesv" id="vLes">
+      <div class="lesv-nav">
+        <button class="btn btn-ghost" onclick="goBackMod()">← Módulo</button>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <button class="tts-btn" id="ttsBtn" onclick="toggleTTS()" title="Ouvir aula" aria-label="Ouvir aula em áudio">🔊 Ouvir</button>
+          <button class="print-btn" onclick="printLesson()" title="Imprimir aula" aria-label="Imprimir aula">🖨️</button>
+          <div class="reading-time" id="readTime">⏱ ~3 min</div>
+          <button class="fav-btn" id="favBtn" onclick="toggleFav()" title="Favoritar" aria-label="Adicionar aos favoritos">☆</button>
+          <div class="lesv-prog" id="lvProg"></div>
+        </div>
+      </div>
+      <div class="lesv-body" id="lvBody"></div>
+      <div class="notes-section">
+        <button class="notes-toggle" id="notesToggle" onclick="toggleNotes()" aria-expanded="false" aria-controls="notesArea">
+          <span class="notes-arrow">▶</span> 📝 Minhas Anotações <span class="notes-count" id="notesCount"></span>
+        </button>
+        <div class="notes-area" id="notesArea">
+          <textarea class="notes-textarea" id="notesTxt" placeholder="Anote pontos importantes desta aula..." oninput="saveNote()" aria-label="Suas anotações para esta aula"></textarea>
+          <div class="notes-saved" id="notesSaved">✓ Salvo automaticamente</div>
+        </div>
+      </div>
+      <div class="lesv-foot">
+        <button class="btn btn-ghost" id="bPrev" onclick="prevL()">← Anterior</button>
+        <button class="btn btn-sage" id="bNext" onclick="nextL()">Próxima →</button>
+      </div>
+    </div>
+    <!-- GLOSSARY VIEW -->
+    <div class="xview" id="vGloss">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>📖 Glossário Econômico</h2></div>
+      </div>
+      <div style="position:relative">
+        <span class="search-icon">🔍</span>
+        <input class="glossary-search" id="glossSearch" placeholder="Buscar termo..." oninput="filterGlossary(this.value)" aria-label="Buscar no glossário">
+      </div>
+      <div id="glossList"></div>
+    </div>
+
+    <!-- FLASHCARDS VIEW -->
+    <div class="xview" id="vFlash">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>🃏 Flashcards</h2></div>
+      </div>
+      <div class="xview-tabs" id="flashTabs"></div>
+      <div class="flash-container" onclick="flipFlash()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' ')flipFlash()" aria-label="Virar flashcard">
+        <div class="flash-card" id="flashCard">
+          <div class="flash-front"><span>🔄 Clique para revelar</span><h4 id="flashTerm"></h4><span id="flashMod"></span></div>
+          <div class="flash-back"><p id="flashDef"></p></div>
+        </div>
+      </div>
+      <div class="flash-nav">
+        <button class="btn btn-ghost" onclick="prevFlash()">← Anterior</button>
+        <span class="flash-counter" id="flashCounter">1/10</span>
+        <button class="btn btn-ghost" onclick="nextFlash()">Próximo →</button>
+      </div>
+    </div>
+
+    <!-- REVIEW VIEW -->
+    <div class="xview" id="vReview">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>🔄 Revisão de Quizzes</h2></div>
+      </div>
+      <div class="xview-tabs" id="reviewTabs"></div>
+      <div id="reviewList"></div>
+    </div>
+
+    <!-- PERFORMANCE VIEW -->
+    <div class="xview" id="vPerf">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>📊 Meu Desempenho</h2></div>
+      </div>
+      <div class="perf-grid" id="perfGrid"></div>
+      <h3 style="font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:600;color:var(--text-muted);margin-bottom:.75rem">Por Módulo</h3>
+      <div class="perf-modules" id="perfModules"></div>
+    </div>
+
+    <!-- MARATHON VIEW -->
+    <div class="xview" id="vMarathon">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="endMarathon()">← Sair</button>
+        <div><h2>⚡ Quiz Maratona</h2></div>
+      </div>
+      <div class="marathon" id="marathonContent"></div>
+    </div>
+
+    <!-- PARENT DASHBOARD -->
+    <div class="parent-dash" id="vParent">
+      <div class="parent-overview">
+        <h3>👨‍👩‍👧‍👦 Painel do Responsável</h3>
+        <p>Acompanhe o progresso de todos os perfis cadastrados.</p>
+      </div>
+      <div class="parent-cards" id="parentCards"></div>
+    </div>
+
+    <!-- ACHIEVEMENTS/BADGES VIEW -->
+    <div class="xview" id="vBadges">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>🏅 Conquistas</h2></div>
+      </div>
+      <div class="badges-progress" id="badgesProgress"></div>
+      <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+
+    <!-- EXAM/SIMULADO VIEW -->
+    <div class="xview" id="vExam">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="endExam()">← Sair</button>
+        <div><h2>📝 Simulado</h2></div>
+      </div>
+      <div class="exam" id="examContent"></div>
+    </div>
+
+    <!-- STUDY TIMELINE VIEW -->
+    <div class="xview" id="vTimeline">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>📅 Histórico de Estudo</h2></div>
+      </div>
+      <div class="timeline" id="timelineContent"></div>
+    </div>
+
+    <!-- SPACED REPETITION VIEW -->
+    <div class="xview" id="vSpaced">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>🧠 Revisão Espaçada</h2></div>
+      </div>
+      <div class="sr-stats" id="spacedStats"></div>
+      <div id="spacedContent"></div>
+    </div>
+
+    <!-- MINI-GAME VIEW -->
+    <div class="xview" id="vGame">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>🍋 Barraquinha de Limonada</h2></div>
+      </div>
+      <div class="game-container" id="gameContent"></div>
+    </div>
+
+    <!-- ERROR REVIEW VIEW -->
+    <div class="xview" id="vErrorReview">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="goDash()">← Voltar</button>
+        <div><h2>❌ Revisão de Erros</h2></div>
+      </div>
+      <div class="error-review" id="errorReviewContent"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottomNav" aria-label="Navegação rápida">
+  <button class="bnav-item active" id="bn-dash" onclick="goDash()"><span class="bnav-icon">🏠</span><span class="bnav-label">Início</span></button>
+  <button class="bnav-item" id="bn-mod" onclick="openModulesView()"><span class="bnav-icon">📚</span><span class="bnav-label">Módulos</span></button>
+  <button class="bnav-item" id="bn-progress" onclick="goPerf()"><span class="bnav-icon">📊</span><span class="bnav-label">Progresso</span></button>
+  <button class="bnav-item" id="bn-badges" onclick="goBadges()"><span class="bnav-icon">🏅</span><span class="bnav-label">Conquistas</span></button>
+  <button class="bnav-item" id="bn-menu" onclick="toggleSideMobile()"><span class="bnav-icon">☰</span><span class="bnav-label">Menu</span></button>
+</nav>
+
+<!-- SWIPE HINT -->
+<div class="swipe-hint" id="swipeHint">← Deslize para navegar →</div>
+
+<!-- KEYBOARD HINT -->
+<div class="kbd-hint" id="kbdHint">
+  <strong style="color:var(--text-primary)">Atalhos</strong><br>
+  <kbd>→</kbd> Próxima aula &nbsp; <kbd>←</kbd> Anterior<br>
+  <kbd>F</kbd> Modo foco &nbsp; <kbd>Esc</kbd> Voltar<br>
+  <kbd>S</kbd> Ouvir aula &nbsp; <kbd>?</kbd> Atalhos
+</div>
+
+<!-- CERTIFICATE OVERLAY -->
+<div class="cert-overlay" id="certOverlay" onclick="if(event.target===this)closeCert()" role="dialog" aria-label="Certificado de conclusão" aria-modal="true">
+  <div class="cert-card">
+    <div class="cert-seal" aria-hidden="true">🏅</div>
+    <div class="cert-title">Certificado de Conclusão</div>
+    <div class="cert-sub">escola liberal para Bilionário</div>
+    <div class="cert-name" id="certName"></div>
+    <div class="cert-module" id="certModule"></div>
+    <div class="cert-date" id="certDate"></div>
+    <div style="display:flex;gap:.75rem;justify-content:center;margin-top:.5rem">
+      <button class="cert-close" onclick="exportCertImage(certModIdx)" aria-label="Salvar como imagem" style="border-color:var(--honey);color:var(--honey)">📥 Salvar Imagem</button>
+      <button class="cert-close" onclick="closeCert()" aria-label="Fechar certificado">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT TUTOR -->
+<button class="chat-fab" id="chatFab" onclick="toggleChat()" title="Tutor Virtual" aria-label="Abrir tutor virtual" aria-expanded="false">
+  💬
+  <span class="chat-badge" id="chatBadge" aria-label="1 mensagem não lida">1</span>
+</button>
+<div class="chat-panel" id="chatPanel" role="dialog" aria-label="Tutor Econômico">
+  <div class="chat-head">
+    <div class="chat-head-icon" aria-hidden="true">🎓</div>
+    <div class="chat-head-info"><h4>Tutor Econômico</h4><span>Tire suas dúvidas</span></div>
+    <button class="chat-close" onclick="toggleChat()" aria-label="Fechar tutor">✕</button>
+  </div>
+  <div class="chat-body" id="chatBody" role="log" aria-live="polite"></div>
+  <div class="chat-suggestions" id="chatSugs" role="group" aria-label="Sugestões de perguntas"></div>
+  <div class="chat-input-area">
+    <input class="chat-input" id="chatIn" placeholder="Pergunte sobre economia..." onkeydown="if(event.key==='Enter')sendChat()" aria-label="Digite sua pergunta">
+    <button class="chat-send" id="chatSendBtn" onclick="sendChat()" aria-label="Enviar pergunta">➤</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

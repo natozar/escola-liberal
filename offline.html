@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="1UpkKfHu1UniJljUkSWYhy12dmZkIqLlTv8rF_KOBwk">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline' https://js.stripe.com https://cdn.jsdelivr.net https://api.qrserver.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://js.stripe.com; frame-src https://js.stripe.com; worker-src 'self' blob:;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f1729">
+<title>escola liberal — Offline</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f1729;color:#e8e6e1;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem}
+.card{max-width:420px}
+.icon{font-size:4rem;margin-bottom:1.5rem;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+h1{font-size:1.6rem;margin-bottom:.5rem}
+p{color:#9ba3b5;font-size:.95rem;line-height:1.7;margin-bottom:2rem}
+.btn{display:inline-block;padding:.7rem 2rem;border-radius:9999px;background:#4a9e7e;color:#fff;text-decoration:none;font-weight:600;font-size:.9rem;transition:all .25s;border:none;cursor:pointer}
+.btn:hover{background:#5fbf96;transform:translateY(-2px);box-shadow:0 6px 20px rgba(74,158,126,.25)}
+.tip{margin-top:2.5rem;padding:1rem;background:rgba(219,165,80,.08);border:1px solid rgba(219,165,80,.15);border-radius:12px;font-size:.82rem;color:#dba550;line-height:1.6}
+</style>
+<script src="cookie-consent.js"></script>
+</head>
+<body>
+<div class="card">
+  <div class="icon">📡</div>
+  <h1>Você está offline</h1>
+  <p>Sem conexão com a internet no momento. Mas não se preocupe — seu progresso está salvo localmente.</p>
+  <button class="btn" onclick="location.reload()">Tentar Novamente</button>
+  <div class="tip">💡 <strong>Dica:</strong> Instale o app na tela inicial do celular para ter acesso mesmo offline. Procure "Adicionar à tela inicial" no menu do navegador.</div>
+</div>
+</body>
+</html>

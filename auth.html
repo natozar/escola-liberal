@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="1UpkKfHu1UniJljUkSWYhy12dmZkIqLlTv8rF_KOBwk">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline' https://js.stripe.com https://cdn.jsdelivr.net https://api.qrserver.com https://www.googletagmanager.com https://www.google-analytics.com https://tagmanager.google.com; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com https://js.stripe.com https://cdn.jsdelivr.net https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com; frame-src https://js.stripe.com; worker-src 'self' blob:;">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f1729">
+<meta name="robots" content="noindex, nofollow">
+<title>escola liberal — Entrar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg-primary:#0f1729;--bg-secondary:#141d32;--bg-card:#1a2540;--bg-elevated:#1e2d4a;
+  --sage:#4a9e7e;--sage-light:#5fbf96;--sage-muted:rgba(74,158,126,.12);
+  --honey:#dba550;--honey-light:#f0c06a;
+  --coral:#e07460;
+  --text-primary:#e8e6e1;--text-secondary:#9ba3b5;--text-muted:#6b7488;
+  --border:rgba(255,255,255,.06);--border-hover:rgba(255,255,255,.12);
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:24px;--r-full:9999px;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --shadow-card:0 2px 12px rgba(0,0,0,.2);
+  --shadow-elevated:0 8px 32px rgba(0,0,0,.25);
+}
+[data-theme="light"]{
+  --bg-primary:#f5f3ef;--bg-secondary:#eae7e1;--bg-card:#ffffff;--bg-elevated:#f0ede8;
+  --sage:#3d8b6e;--sage-light:#2e7a5f;--sage-muted:rgba(61,139,110,.1);
+  --honey:#c48f3a;--honey-light:#b07e2e;
+  --coral:#d4604e;
+  --text-primary:#1a1a2e;--text-secondary:#4a4a5e;--text-muted:#7a7a8e;
+  --border:rgba(0,0,0,.08);--border-hover:rgba(0,0,0,.15);
+  --shadow-card:0 2px 12px rgba(0,0,0,.06);
+  --shadow-elevated:0 8px 32px rgba(0,0,0,.08);
+}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+
+.auth-container{width:100%;max-width:420px}
+
+/* Logo */
+.auth-logo{text-align:center;margin-bottom:2rem}
+.auth-logo-mark{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;background:linear-gradient(135deg,var(--sage),var(--sage-light));border-radius:var(--r-lg);font-family:'DM Serif Display',serif;font-size:1.4rem;color:#fff;margin-bottom:.75rem}
+.auth-logo h1{font-family:'DM Serif Display',serif;font-size:1.5rem;font-weight:400;margin-bottom:.25rem}
+.auth-logo h1 em{font-style:italic;color:var(--sage-light)}
+.auth-logo p{color:var(--text-muted);font-size:.85rem}
+
+/* Card */
+.auth-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;box-shadow:var(--shadow-elevated)}
+
+/* Tabs */
+.auth-tabs{display:flex;gap:.5rem;margin-bottom:1.75rem;background:var(--bg-primary);border-radius:var(--r-full);padding:4px}
+.auth-tab{flex:1;padding:.6rem;text-align:center;border-radius:var(--r-full);cursor:pointer;font-size:.85rem;font-weight:500;color:var(--text-muted);transition:all .2s var(--ease);border:none;background:transparent}
+.auth-tab.active{background:var(--sage);color:#fff;font-weight:600}
+.auth-tab:hover:not(.active){color:var(--text-primary)}
+
+/* Form */
+.auth-form{display:none}
+.auth-form.active{display:block}
+.auth-field{margin-bottom:1rem}
+.auth-field label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:.4rem}
+.auth-field input{width:100%;padding:.75rem 1rem;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text-primary);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
+.auth-field input:focus{border-color:var(--sage)}
+.auth-field input::placeholder{color:var(--text-muted)}
+
+/* Buttons */
+.auth-btn{width:100%;padding:.8rem;border:none;border-radius:var(--r-md);font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:.5rem}
+.auth-btn-primary{background:linear-gradient(135deg,var(--sage),var(--sage-light));color:#fff;margin-bottom:.75rem}
+.auth-btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(74,158,126,.3)}
+.auth-btn-primary:active{transform:translateY(0)}
+.auth-btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.auth-btn-google{background:var(--bg-primary);border:1px solid var(--border);color:var(--text-primary)}
+.auth-btn-google:hover{border-color:var(--border-hover);background:var(--bg-elevated)}
+.auth-btn-google svg{width:18px;height:18px}
+
+.auth-divider{display:flex;align-items:center;gap:1rem;margin:1.25rem 0;color:var(--text-muted);font-size:.8rem}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Forgot password */
+.auth-forgot{display:block;text-align:right;font-size:.8rem;color:var(--sage-light);text-decoration:none;margin-top:-.25rem;margin-bottom:1rem}
+.auth-forgot:hover{text-decoration:underline}
+
+/* Error */
+.auth-error{background:var(--coral);color:#fff;padding:.6rem 1rem;border-radius:var(--r-sm);font-size:.8rem;margin-bottom:1rem;display:none;animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* Success */
+.auth-success{background:var(--sage-muted);color:var(--sage-light);padding:.6rem 1rem;border-radius:var(--r-sm);font-size:.8rem;margin-bottom:1rem;display:none}
+
+/* Skip */
+.auth-skip{text-align:center;margin-top:1.25rem}
+.auth-skip a{color:var(--text-muted);font-size:.8rem;text-decoration:none}
+.auth-skip a:hover{color:var(--text-secondary);text-decoration:underline}
+
+/* Reset password view */
+.auth-reset{display:none}
+
+/* Loading spinner */
+.auth-spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Theme toggle */
+.theme-toggle{position:fixed;top:1rem;right:1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-full);width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .2s}
+.theme-toggle:hover{border-color:var(--border-hover)}
+
+/* Responsive */
+@media(max-width:480px){
+  .auth-card{padding:1.5rem}
+  .auth-logo h1{font-size:1.3rem}
+}
+</style>
+<script src="cookie-consent.js"></script>
+</head>
+<body>
+
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema">🌙</button>
+
+<div class="auth-container">
+  <div class="auth-logo">
+    <div class="auth-logo-mark">E</div>
+    <h1>Escola <em>Conservadora</em></h1>
+    <p>A educação que bilionários escondem dos seus filhos.</p>
+  </div>
+
+  <div class="auth-card">
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="showTab('login')">Entrar</button>
+      <button class="auth-tab" onclick="showTab('signup')">Criar Conta</button>
+    </div>
+
+    <!-- Error/Success -->
+    <div id="authError" class="auth-error"></div>
+    <div id="authSuccess" class="auth-success"></div>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+      <div class="auth-field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="seu@email.com" required autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label for="loginPass">Senha</label>
+        <input type="password" id="loginPass" placeholder="Sua senha" required autocomplete="current-password" minlength="6">
+      </div>
+      <a href="#" class="auth-forgot" onclick="showReset(event)">Esqueci a senha</a>
+      <button type="submit" class="auth-btn auth-btn-primary" id="loginBtn">Entrar</button>
+      <div class="auth-divider">ou</div>
+      <button type="button" class="auth-btn auth-btn-google" onclick="handleGoogle()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Entrar com Google
+      </button>
+    </form>
+
+    <!-- Signup Form -->
+    <form id="signupForm" class="auth-form" onsubmit="handleSignup(event)">
+      <div class="auth-field">
+        <label for="signupName">Nome</label>
+        <input type="text" id="signupName" placeholder="Seu nome" required autocomplete="name">
+      </div>
+      <div class="auth-field">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" placeholder="seu@email.com" required autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label for="signupPass">Senha</label>
+        <input type="password" id="signupPass" placeholder="Mínimo 6 caracteres" required autocomplete="new-password" minlength="6">
+      </div>
+      <div class="auth-field" style="margin-bottom:1.25rem">
+        <label style="display:flex;align-items:flex-start;gap:.5rem;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:400;font-size:.8rem;color:var(--text-secondary);line-height:1.5">
+          <input type="checkbox" id="signupTerms" style="margin-top:3px;min-width:16px;accent-color:var(--sage)">
+          <span>Li e concordo com os <a href="termos.html" target="_blank" style="color:var(--sage-light)">Termos de Uso</a> e a <a href="privacidade.html" target="_blank" style="color:var(--sage-light)">Política de Privacidade</a>.</span>
+        </label>
+      </div>
+      <button type="submit" class="auth-btn auth-btn-primary" id="signupBtn">Criar Conta</button>
+      <div class="auth-divider">ou</div>
+      <button type="button" class="auth-btn auth-btn-google" onclick="handleGoogle()">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Criar com Google
+      </button>
+    </form>
+
+    <!-- Reset Password -->
+    <form id="resetForm" class="auth-reset" onsubmit="handleReset(event)">
+      <p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:1rem">Digite seu email para receber o link de redefinição de senha.</p>
+      <div class="auth-field">
+        <label for="resetEmail">Email</label>
+        <input type="email" id="resetEmail" placeholder="seu@email.com" required autocomplete="email">
+      </div>
+      <button type="submit" class="auth-btn auth-btn-primary" id="resetBtn">Enviar Link</button>
+      <div style="text-align:center;margin-top:1rem">
+        <a href="#" style="color:var(--sage-light);font-size:.8rem;text-decoration:none" onclick="hideReset(event)">← Voltar para login</a>
+      </div>
+    </form>
+
+    <!-- New Password (recovery flow) -->
+    <form id="newPassForm" class="auth-reset" onsubmit="handleNewPassword(event)" style="display:none">
+      <p style="color:var(--text-secondary);font-size:.85rem;margin-bottom:1rem">Escolha uma nova senha para sua conta.</p>
+      <div class="auth-field">
+        <label for="newPass">Nova Senha</label>
+        <input type="password" id="newPass" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+      </div>
+      <div class="auth-field">
+        <label for="confirmPass">Confirmar Senha</label>
+        <input type="password" id="confirmPass" placeholder="Repita a senha" required minlength="6" autocomplete="new-password">
+      </div>
+      <button type="submit" class="auth-btn auth-btn-primary" id="newPassBtn">Salvar Nova Senha</button>
+    </form>
+
+    <!-- Skip -->
+    <div class="auth-skip" id="skipLink">
+      <a href="app.html">Continuar sem conta →</a>
+    </div>
+    <p style="text-align:center;font-size:.7rem;color:var(--text-muted);margin-top:1rem;line-height:1.5">Ao entrar com Google, você concorda com nossos <a href="termos.html" target="_blank" style="color:var(--sage-light)">Termos de Uso</a> e <a href="privacidade.html" target="_blank" style="color:var(--sage-light)">Política de Privacidade</a>.</p>
+  </div>
+</div>
+
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-client.js"></script>
+
+<script>
+// ========== THEME ==========
+(function(){
+  const t = localStorage.getItem('escola_theme');
+  if(t === 'light') document.documentElement.setAttribute('data-theme','light');
+  updateThemeIcon();
+})();
+
+function toggleTheme(){
+  const curr = document.documentElement.getAttribute('data-theme');
+  const next = curr === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('escola_theme', next);
+  localStorage.setItem('escola_theme_manual', '1');
+  updateThemeIcon();
+}
+
+function updateThemeIcon(){
+  const btn = document.querySelector('.theme-toggle');
+  if(btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? '☀️' : '🌙';
+}
+
+// ========== ERROR TRANSLATION ==========
+function translateError(msg) {
+  if (!msg) return 'Ocorreu um erro. Tente novamente.';
+  const map = {
+    'Invalid login credentials': 'Email ou senha incorretos.',
+    'Invalid Login Credentials': 'Email ou senha incorretos.',
+    'Email not confirmed': 'Confirme seu email antes de entrar. Verifique sua caixa de entrada.',
+    'User already registered': 'Este email já está cadastrado. Tente entrar.',
+    'Password should be at least 6 characters': 'A senha deve ter pelo menos 6 caracteres.',
+    'Signup requires a valid password': 'Escolha uma senha mais forte.',
+    'User not found': 'Nenhuma conta encontrada com este email.',
+    'Email rate limit exceeded': 'Muitas tentativas. Aguarde alguns minutos e tente novamente.',
+    'Too many requests': 'Muitas tentativas. Aguarde alguns minutos.',
+    'For security purposes': 'Por segurança, aguarde alguns minutos antes de tentar novamente.',
+    'New password should be different': 'A nova senha deve ser diferente da senha atual.',
+    'Auth session missing': 'Sessão expirada. Faça login novamente.',
+    'JWT expired': 'Sessão expirada. Faça login novamente.',
+    'Network request failed': 'Erro de conexão. Verifique sua internet.',
+    'Failed to fetch': 'Erro de conexão. Verifique sua internet.',
+  };
+  // Partial match for common patterns
+  for (const [key, val] of Object.entries(map)) {
+    if (msg.includes(key)) return val;
+  }
+  return msg;
+}
+
+// ========== TABS ==========
+function showTab(tab){
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>{
+    t.classList.toggle('active', (tab==='login'?i===0:i===1));
+  });
+  document.getElementById('loginForm').classList.toggle('active', tab==='login');
+  document.getElementById('signupForm').classList.toggle('active', tab==='signup');
+  document.getElementById('resetForm').style.display = 'none';
+  hideMessages();
+}
+
+// ========== RESET PASSWORD VIEW ==========
+function showReset(e){
+  e.preventDefault();
+  document.getElementById('loginForm').classList.remove('active');
+  document.getElementById('signupForm').classList.remove('active');
+  document.getElementById('resetForm').style.display = 'block';
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.remove('active'));
+  hideMessages();
+}
+function hideReset(e){
+  e.preventDefault();
+  document.getElementById('resetForm').style.display = 'none';
+  showTab('login');
+}
+
+// ========== MESSAGES ==========
+function showError(msg){
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('authSuccess').style.display = 'none';
+}
+function showSuccess(msg){
+  const el = document.getElementById('authSuccess');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('authError').style.display = 'none';
+}
+function hideMessages(){
+  document.getElementById('authError').style.display = 'none';
+  document.getElementById('authSuccess').style.display = 'none';
+}
+
+function setLoading(btnId, loading){
+  const btn = document.getElementById(btnId);
+  if(loading){
+    btn.disabled = true;
+    btn.dataset.text = btn.textContent;
+    btn.innerHTML = '<span class="auth-spinner"></span> Aguarde...';
+  } else {
+    btn.disabled = false;
+    btn.textContent = btn.dataset.text || 'Entrar';
+  }
+}
+
+// ========== HANDLERS ==========
+async function handleLogin(e){
+  e.preventDefault();
+  hideMessages();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+
+  if(!email || !pass){ showError('Preencha todos os campos.'); return; }
+
+  setLoading('loginBtn', true);
+  const result = await signInEmail(email, pass);
+  setLoading('loginBtn', false);
+
+  if(result.success){
+    window.location.href = 'app.html';
+  } else {
+    showError(translateError(result.error));
+  }
+}
+
+async function handleSignup(e){
+  e.preventDefault();
+  hideMessages();
+  const name = document.getElementById('signupName').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pass = document.getElementById('signupPass').value;
+
+  if(!name || !email || !pass){ showError('Preencha todos os campos.'); return; }
+  if(pass.length < 6){ showError('A senha deve ter pelo menos 6 caracteres.'); return; }
+  if(!document.getElementById('signupTerms').checked){ showError('Você precisa aceitar os Termos de Uso e a Política de Privacidade para criar uma conta.'); return; }
+
+  setLoading('signupBtn', true);
+  const result = await signUpEmail(email, pass, name);
+  setLoading('signupBtn', false);
+
+  if(result.success){
+    if(result.needsConfirmation){
+      showSuccess('Conta criada! Verifique seu email para confirmar o cadastro.');
+    } else {
+      window.location.href = 'app.html';
+    }
+  } else {
+    showError(translateError(result.error));
+  }
+}
+
+async function handleGoogle(){
+  hideMessages();
+  const result = await signInGoogle();
+  if(!result.success){
+    showError('Erro ao conectar com Google. Tente novamente.');
+  }
+}
+
+async function handleReset(e){
+  e.preventDefault();
+  hideMessages();
+  const email = document.getElementById('resetEmail').value.trim();
+  if(!email){ showError('Digite seu email.'); return; }
+
+  setLoading('resetBtn', true);
+  const result = await resetPassword(email);
+  setLoading('resetBtn', false);
+
+  if(result.success){
+    showSuccess('Link enviado! Verifique seu email para redefinir a senha.');
+  } else {
+    showError(translateError(result.error));
+  }
+}
+
+// ========== NEW PASSWORD HANDLER ==========
+async function handleNewPassword(e) {
+  e.preventDefault();
+  hideMessages();
+  const pass = document.getElementById('newPass').value;
+  const confirm = document.getElementById('confirmPass').value;
+
+  if (pass !== confirm) { showError('As senhas não coincidem.'); return; }
+  if (pass.length < 6) { showError('A senha deve ter pelo menos 6 caracteres.'); return; }
+
+  setLoading('newPassBtn', true);
+  try {
+    const { error } = await sbClient.auth.updateUser({ password: pass });
+    if (error) {
+      showError(translateError(error.message));
+    } else {
+      showSuccess('Senha alterada com sucesso! Redirecionando...');
+      setTimeout(() => { window.location.href = 'app.html'; }, 2000);
+    }
+  } catch(err) {
+    showError('Erro ao salvar senha. Tente novamente.');
+  }
+  setLoading('newPassBtn', false);
+}
+
+// ========== RECOVERY FLOW DETECTION ==========
+function checkRecoveryFlow() {
+  // Supabase sends token in the URL hash: #access_token=...&type=recovery
+  const hash = window.location.hash;
+  const params = new URLSearchParams(hash.replace('#', '?'));
+  const type = params.get('type');
+  const accessToken = params.get('access_token');
+
+  if (type === 'recovery' && accessToken) {
+    // Hide tabs, skip, show new password form
+    document.querySelector('.auth-tabs').style.display = 'none';
+    document.getElementById('skipLink').style.display = 'none';
+    document.getElementById('loginForm').classList.remove('active');
+    document.getElementById('signupForm').classList.remove('active');
+    document.getElementById('newPassForm').style.display = 'block';
+    showSuccess('Link válido! Agora escolha sua nova senha.');
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+    return true;
+  }
+  return false;
+}
+
+// ========== OAUTH ERROR HANDLER ==========
+function checkOAuthError() {
+  const sp = new URLSearchParams(location.search);
+  if (!sp.get('oauth_error')) return false;
+  const errCode = sp.get('error_code') || '';
+  const errDesc = sp.get('error_description') || '';
+  let msg = 'Erro ao entrar com Google. Tente novamente.';
+  if (errCode === 'unexpected_failure' || errCode === 'server_error') {
+    msg = 'O servidor de autenticação retornou um erro inesperado. Aguarde alguns instantes e tente novamente.';
+  } else if (errCode === 'access_denied') {
+    msg = 'Acesso negado. Você cancelou o login com Google.';
+  } else if (errDesc) {
+    msg = translateError(decodeURIComponent(errDesc));
+  }
+  // Clean URL
+  window.history.replaceState({}, '', location.pathname);
+  // Show error on the login tab
+  showTab('login');
+  setTimeout(() => showError(msg), 200);
+  return true;
+}
+
+// ========== INIT ==========
+(function init(){
+  // Check if recovery flow (password reset link)
+  if(checkRecoveryFlow()) return;
+  // Check if OAuth error redirect
+  if(checkOAuthError()) return;
+  // Default: show login tab
+  showTab('login');
+  // Check if user is already logged in
+  if(typeof sbClient !== 'undefined' && sbClient){
+    sbClient.auth.getSession().then(function(res){
+      if(res.data && res.data.session){
+        window.location.href = 'app.html';
+      }
+    }).catch(function(){});
+  }
+  // Tab from URL param
+  var sp = new URLSearchParams(location.search);
+  if(sp.get('tab') === 'signup') showTab('signup');
+})();
+</script>
+</body>
+</html>

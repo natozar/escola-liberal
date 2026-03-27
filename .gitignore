@@ -1,0 +1,36 @@
+# Dependências
+node_modules/
+.npm/
+
+# Variáveis de ambiente — NUNCA versionar chaves secretas
+.env
+.env.*
+.env.local
+.env.*.local
+.env.stripe
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build / temporários
+dist/
+build/
+.cache/
+
+# Supabase local (CLI)
+.supabase/
+
+# Arquivo deprecado — mantido apenas para referência histórica
+# supabase-auth.js  ← não ignorar pois está no repo com aviso de deprecação

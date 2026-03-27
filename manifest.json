@@ -1,0 +1,50 @@
+{
+  "name": "escola liberal para Bilionário",
+  "short_name": "EscolaLib",
+  "description": "Educação econômica prática para famílias homeschool",
+  "start_url": "./app.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1729",
+  "theme_color": "#0f1729",
+  "orientation": "any",
+  "lang": "pt-BR",
+  "categories": ["education", "finance"],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tela principal do app"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Continuar Estudando",
+      "url": "./app.html",
+      "description": "Abrir lição atual",
+      "icons": [{ "src": "assets/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

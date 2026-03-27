@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /app.html
+Disallow: /auth.html
+Disallow: /perfil.html
+Disallow: /admin-stripe.html
+Disallow: /supabase-schema.sql
+Disallow: /supabase-client.js
+Disallow: /stripe-billing.js
+Disallow: /cookie-consent.js
+
+Sitemap: https://escolaliberal.com.br/sitemap.xml
