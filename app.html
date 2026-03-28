@@ -46,7 +46,7 @@
       <div class="pwa-app-icon">🎓</div>
       <div class="pwa-app-info">
         <div class="pwa-app-name">escola liberal</div>
-        <div class="pwa-app-url">natozar.github.io</div>
+        <div class="pwa-app-url">escolaliberal.com.br</div>
       </div>
       <button class="pwa-close" onclick="dismissInstall()" aria-label="Fechar">✕</button>
     </div>
@@ -92,8 +92,7 @@
 <!-- INSTALL BANNER (legado — oculto) -->
 <div style="display:none" id="installBanner">
   <div class="ib-title">Instalar escola liberal</div>
-    <div class="ib-sub">Acesse offline, sem navegador, como um app nativo</div>
-  </div>
+  <div class="ib-sub">Acesse offline, sem navegador, como um app nativo</div>
   <div class="ib-actions">
     <button class="ib-btn ib-dismiss" onclick="dismissInstall()">Agora não</button>
     <button class="ib-btn ib-install" onclick="doInstall()">Instalar</button>
@@ -218,13 +217,13 @@
     </a>
 
     <div class="profile">
-      <div class="profile-row">
+      <a href="perfil.html" class="profile-row" style="text-decoration:none;color:inherit" title="Ver meu perfil">
         <div class="avatar" id="avatarI">A</div>
         <div>
           <div class="profile-name" id="pName">Aluno</div>
           <div class="profile-lvl">Nível <span id="uLvl">1</span> · Aprendiz</div>
         </div>
-      </div>
+      </a>
       <div class="xp-track"><div class="xp-bar" id="xpBar" style="width:0%"></div></div>
       <div class="xp-label"><span id="xpNow">0</span>/<span id="xpMax">100</span> XP</div>
       <div class="profile-switch" id="profileSwitch"></div>
@@ -245,24 +244,26 @@
     <!-- Módulos gerados dinamicamente por buildSidebar() -->
     <div id="modNav"></div>
 
-    <div class="side-label side-label-toggle" style="margin-top:1rem;cursor:pointer" onclick="toggleSideSection('toolsSection')">Ferramentas <span id="toolsArrow" class="rotated">▾</span></div>
-    <div class="side-section" id="toolsSection">
-    <div class="ni" onclick="goGlossary()" id="nGloss" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goGlossary()">
-      <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">📖</div>
-      <div><div class="ni-txt">Glossário</div><div class="ni-sub">Termos econômicos</div></div>
+    <div class="side-label" style="margin-top:1rem">Estudo</div>
+    <div class="ni" onclick="goPerf()" id="nPerf" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goPerf()">
+      <div class="ni-icon" style="background:var(--lavender-muted);color:var(--lavender)">📊</div>
+      <div><div class="ni-txt">Desempenho</div><div class="ni-sub">Suas estatísticas</div></div>
+    </div>
+    <div class="ni" onclick="goBadges()" id="nBadges" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goBadges()">
+      <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">🏅</div>
+      <div><div class="ni-txt">Conquistas</div><div class="ni-sub">Suas medalhas</div></div>
     </div>
     <div class="ni" onclick="goFlashcards()" id="nFlash" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goFlashcards()">
       <div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)">🃏</div>
       <div><div class="ni-txt">Flashcards</div><div class="ni-sub">Memorização ativa</div></div>
     </div>
-    <div class="ni" onclick="goReview()" id="nReview" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goReview()">
-      <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">🔄</div>
-      <div><div class="ni-txt">Revisão</div><div class="ni-sub">Quizzes errados</div></div>
+    <div class="ni" onclick="goGlossary()" id="nGloss" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goGlossary()">
+      <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">📖</div>
+      <div><div class="ni-txt">Glossário</div><div class="ni-sub">Termos econômicos</div></div>
     </div>
-    <div class="ni" onclick="goPerf()" id="nPerf" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goPerf()">
-      <div class="ni-icon" style="background:var(--lavender-muted);color:var(--lavender)">📊</div>
-      <div><div class="ni-txt">Desempenho</div><div class="ni-sub">Suas estatísticas</div></div>
-    </div>
+
+    <div class="side-label side-label-toggle" style="margin-top:1rem;cursor:pointer" onclick="toggleSideSection('toolsSection')">Prática Avançada <span id="toolsArrow">▾</span></div>
+    <div class="side-section collapsed" id="toolsSection">
     <div class="ni" onclick="startMarathon()" id="nMarathon" role="button" tabindex="0" onkeydown="if(event.key==='Enter')startMarathon()">
       <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">⚡</div>
       <div><div class="ni-txt">Maratona</div><div class="ni-sub">Quiz contra o relógio</div></div>
@@ -271,21 +272,21 @@
       <div class="ni-icon" style="background:var(--lavender-muted);color:var(--lavender)">📝</div>
       <div><div class="ni-txt">Simulado</div><div class="ni-sub">Prova formal</div></div>
     </div>
-    <div class="ni" onclick="goBadges()" id="nBadges" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goBadges()">
-      <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">🏅</div>
-      <div><div class="ni-txt">Conquistas</div><div class="ni-sub">Suas medalhas</div></div>
+    <div class="ni" onclick="goReview()" id="nReview" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goReview()">
+      <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">🔄</div>
+      <div><div class="ni-txt">Revisão de Quizzes</div><div class="ni-sub">Quizzes com erros</div></div>
     </div>
-    <div class="ni" onclick="goTimeline()" id="nTimeline" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goTimeline()">
-      <div class="ni-icon" style="background:var(--sage-muted);color:var(--sage)">📅</div>
-      <div><div class="ni-txt">Histórico</div><div class="ni-sub">Timeline de estudo</div></div>
+    <div class="ni" onclick="goErrorReview()" id="nErrorReview" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goErrorReview()">
+      <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">❌</div>
+      <div><div class="ni-txt">Revisão de Erros</div><div class="ni-sub">Refaça questões erradas</div></div>
     </div>
     <div class="ni" onclick="goSpaced()" id="nSpaced" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goSpaced()">
       <div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)">🧠</div>
       <div><div class="ni-txt">Revisão Espaçada</div><div class="ni-sub">Método Leitner</div></div>
     </div>
-    <div class="ni" onclick="goErrorReview()" id="nErrorReview" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goErrorReview()">
-      <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">❌</div>
-      <div><div class="ni-txt">Revisão de Erros</div><div class="ni-sub">Refaça questões erradas</div></div>
+    <div class="ni" onclick="goTimeline()" id="nTimeline" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goTimeline()">
+      <div class="ni-icon" style="background:var(--sage-muted);color:var(--sage)">📅</div>
+      <div><div class="ni-txt">Histórico</div><div class="ni-sub">Timeline de estudo</div></div>
     </div>
     <div class="ni" onclick="goGame()" id="nGame" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goGame()">
       <div class="ni-icon" style="background:rgba(91,213,155,.1);color:#5bd59b">🍋</div>
@@ -294,6 +295,10 @@
     </div><!-- /toolsSection -->
 
     <div class="side-bottom">
+      <a href="perfil.html" class="ni" role="link" tabindex="0" style="text-decoration:none;color:inherit">
+        <div class="ni-icon" style="background:var(--sage-muted);color:var(--sage-light)">👤</div>
+        <div><div class="ni-txt">Meu Perfil</div><div class="ni-sub">Conta, progresso e assinatura</div></div>
+      </a>
       <div class="ni" onclick="showBackupMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')showBackupMenu()">
         <div class="ni-icon" style="background:var(--sage-muted);color:var(--sage-light)">💾</div>
         <div><div class="ni-txt">Backup</div><div class="ni-sub">Exportar / Importar</div></div>
@@ -327,22 +332,16 @@
 
   <!-- MAIN -->
   <main class="main" id="mainC" role="main" aria-label="Conteúdo principal">
-    <div class="mobile-bar">
-      <button class="menu-btn" onclick="const s=document.getElementById('side');s.classList.toggle('open');this.setAttribute('aria-expanded',s.classList.contains('open'))" aria-label="Abrir menu de navegação" aria-expanded="false">☰ Menu</button>
-      <span style="font-weight:600;font-size:.85rem;color:var(--sage-light)">escola liberal</span>
-    </div>
+    <!-- mobile-bar removed: mobile-header handles mobile nav -->
 
     <!-- DASHBOARD -->
     <div class="dash" id="vDash">
       <div class="welcome">
         <h2>Bem-vindo, <span id="wName">Aluno</span></h2>
-        <p>Continue aprendendo economia. Cada aula te aproxima de pensar como um verdadeiro empreendedor.</p>
+        <p id="welcomeMsg">Cada aula te aproxima de pensar como um verdadeiro pensador autônomo.</p>
         <div class="streak" id="streakB">🔥 Comece sua sequência!</div>
       </div>
       <div id="continueSection"></div>
-      <div id="quoteSection"></div>
-      <div id="progressChart"></div>
-      <div id="favSection"></div>
       <div id="dailyChallenge"></div>
       <div id="missionsSection"></div>
       <div class="search-wrap">
@@ -351,6 +350,9 @@
         <div class="search-results" id="searchResults"></div>
       </div>
       <div class="mcards" id="mcards"></div>
+      <div id="progressChart"></div>
+      <div id="favSection"></div>
+      <div id="quoteSection"></div>
       <div class="ach-title">Conquistas</div>
       <div class="achs" id="achs"></div>
     </div>
@@ -533,7 +535,7 @@
   <button class="bnav-item active" id="bn-dash" onclick="goDash()" aria-label="Ir para tela inicial"><span class="bnav-icon">🏠</span><span class="bnav-label">Início</span></button>
   <button class="bnav-item" id="bn-mod" onclick="openModulesView()" aria-label="Ver módulos de aulas"><span class="bnav-icon">📚</span><span class="bnav-label">Módulos</span></button>
   <button class="bnav-item" id="bn-progress" onclick="goPerf()" aria-label="Ver seu progresso"><span class="bnav-icon">📊</span><span class="bnav-label">Progresso</span></button>
-  <button class="bnav-item" id="bn-badges" onclick="goBadges()" aria-label="Ver suas conquistas"><span class="bnav-icon">🏅</span><span class="bnav-label">Conquistas</span></button>
+  <button class="bnav-item" id="bn-profile" onclick="location.href='perfil.html'" aria-label="Ir para seu perfil"><span class="bnav-icon">👤</span><span class="bnav-label">Perfil</span></button>
   <button class="bnav-item" id="bn-menu" onclick="toggleSideMobile()" aria-label="Abrir menu principal"><span class="bnav-icon">☰</span><span class="bnav-label">Menu</span></button>
 </nav>
 

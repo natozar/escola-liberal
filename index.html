@@ -94,6 +94,7 @@ img{display:block;max-width:100%}
 /* ========== NAV ========== */
 nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;transition:all .4s var(--ease)}
 nav.scrolled{background:rgba(15,23,41,.92);backdrop-filter:blur(20px) saturate(1.4);border-bottom:1px solid var(--border)}
+[data-theme="light"] nav.scrolled{background:rgba(245,243,239,.92)}
 .logo{display:flex;align-items:center;gap:.6rem}
 .logo-mark{width:32px;height:32px;background:linear-gradient(135deg,var(--sage),var(--sage-light));border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:1rem;color:#fff;letter-spacing:-1px}
 .logo-type{font-family:'DM Serif Display',serif;font-size:1rem;color:var(--text-primary)}
@@ -243,7 +244,10 @@ footer .tagline{font-family:'DM Serif Display',serif;font-style:italic;color:var
 }
 @media(max-width:640px){
   nav{padding:0 1.25rem}
-  .nav-links{display:none}
+  .nav-links{display:none;position:fixed;top:64px;left:0;right:0;background:var(--bg-secondary);border-bottom:1px solid var(--border);flex-direction:column;padding:1rem 1.25rem;gap:.25rem;z-index:99;box-shadow:0 8px 32px rgba(0,0,0,.25)}
+  .nav-links.show{display:flex}
+  .nav-links a{padding:.75rem 1rem;border-radius:var(--r-md);font-size:.95rem;width:100%}
+  .nav-cta{text-align:center;margin-top:.5rem}
   .hamburger{display:block}
   .hero{padding:5rem 1.25rem 3rem}
   .hero h1{font-size:2.2rem}
@@ -275,10 +279,11 @@ footer .tagline{font-family:'DM Serif Display',serif;font-style:italic;color:var
     <a href="#features">Recursos</a>
     <a href="#method">Método</a>
     <a href="#faq">FAQ</a>
+    <a href="auth.html" style="color:var(--sage-light)">Entrar</a>
     <a href="app.html" class="nav-cta">Começar Grátis</a>
     <button onclick="toggleTheme()" style="background:var(--bg-card);border:1px solid var(--border);border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .2s;color:var(--text-secondary);margin-left:.25rem" title="Trocar tema" id="themeBtn">🌙</button>
   </div>
-  <button class="hamburger" onclick="this.parentElement.querySelector('.nav-links').classList.toggle('show')" aria-label="Menu">
+  <button class="hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
   </button>
 </nav>
@@ -557,7 +562,8 @@ footer .tagline{font-family:'DM Serif Display',serif;font-style:italic;color:var
 <!-- FOOTER -->
 <footer role="contentinfo">
   <p>&copy; 2026 Escola Liberal — Plataforma Curricular Homeschool</p>
-  <p style="margin-top:.5rem;font-size:.78rem"><a href="termos.html" style="color:var(--sage);text-decoration:none">Termos de Uso</a> · <a href="privacidade.html" style="color:var(--sage);text-decoration:none">Privacidade</a> · <a href="contato.html" style="color:var(--sage);text-decoration:none">Contato</a></p>
+  <p style="margin-top:.5rem;font-size:.78rem"><a href="app.html" style="color:var(--sage);text-decoration:none">Acessar Plataforma</a> · <a href="auth.html" style="color:var(--sage);text-decoration:none">Entrar / Criar Conta</a></p>
+  <p style="margin-top:.35rem;font-size:.78rem"><a href="termos.html" style="color:var(--text-muted);text-decoration:none">Termos de Uso</a> · <a href="privacidade.html" style="color:var(--text-muted);text-decoration:none">Privacidade</a> · <a href="contato.html" style="color:var(--text-muted);text-decoration:none">Contato</a></p>
   <p class="tagline">"A liberdade econômica é um requisito para a liberdade política." — Milton Friedman</p>
 </footer>
 
@@ -645,6 +651,30 @@ setTimeout(()=>{
 },800)
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{})
 
+// Mobile menu
+function toggleMobileMenu(){
+  const nl=document.querySelector('.nav-links');
+  const btn=document.getElementById('hamburgerBtn');
+  nl.classList.toggle('show');
+  btn.setAttribute('aria-expanded',nl.classList.contains('show'));
+}
+// Close mobile menu when clicking a link or outside
+document.addEventListener('click',function(e){
+  const nl=document.querySelector('.nav-links');
+  const hb=document.getElementById('hamburgerBtn');
+  if(!nl||!nl.classList.contains('show'))return;
+  if(!nl.contains(e.target)&&!hb.contains(e.target)){
+    nl.classList.remove('show');
+    hb.setAttribute('aria-expanded','false');
+  }
+});
+document.querySelectorAll('.nav-links a').forEach(function(a){
+  a.addEventListener('click',function(){
+    document.querySelector('.nav-links').classList.remove('show');
+    document.getElementById('hamburgerBtn').setAttribute('aria-expanded','false');
+  });
+});
+
 // Theme
 const THEME_KEY='escola_theme';
 function initTheme(){
@@ -660,10 +690,30 @@ function toggleTheme(){
   updateThemeBtn();
 }
 function updateThemeBtn(){
-  const btn=document.querySelector('.theme-toggle');
+  const btn=document.getElementById('themeBtn');
   if(btn) btn.textContent=document.documentElement.getAttribute('data-theme')==='dark'?'☀️':'🌙';
 }
 initTheme();
+
+// Show logged-in state in nav if user has progress
+(function checkUserState(){
+  try{
+    var raw=localStorage.getItem('escola_v2');
+    if(!raw)return;
+    var state=JSON.parse(raw);
+    if(state&&state.name&&state.name!=='Aluno'){
+      // Update nav CTA to show "Ir para App" instead of "Começar Grátis"
+      var cta=document.querySelector('.nav-cta');
+      if(cta){cta.textContent='Ir para o App →';cta.href='app.html'}
+      // Update hero CTA
+      var heroCta=document.querySelector('.hero-actions .btn-sage');
+      if(heroCta){heroCta.textContent='Continuar Estudando →';heroCta.href='app.html'}
+      // Update final CTA
+      var finalCta=document.querySelector('.cta-actions .btn-sage');
+      if(finalCta){finalCta.textContent='Voltar ao App →';finalCta.href='app.html'}
+    }
+  }catch(e){}
+})();
 </script>
 </body>
 </html>

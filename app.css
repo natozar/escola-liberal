@@ -62,7 +62,8 @@ h1,h2,h3{font-family:'DM Serif Display',Georgia,serif;font-weight:400;line-heigh
 
 /* Profile */
 .profile{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:1rem;margin-bottom:1.25rem}
-.profile-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem}
+.profile-row{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem;border-radius:var(--r-sm);padding:.25rem;margin:-.25rem -.25rem .65rem;transition:background .15s}
+a.profile-row:hover{background:var(--bg-hover)}
 .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--sage-light));display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:.8rem}
 .profile-name{font-weight:600;font-size:.85rem}
 .profile-lvl{font-size:.7rem;color:var(--sage-light);font-weight:500}
@@ -967,3 +968,35 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;-webkit-touc
 .disc-icon{font-size:1.3rem}
 .disc-title{font-family:'DM Serif Display',serif;font-size:1.1rem;font-weight:400;color:var(--text-primary);margin:0}
 .side-disc{font-size:.65rem;letter-spacing:.06em;color:var(--text-secondary);font-weight:600;text-transform:uppercase;padding:.4rem .75rem;margin-bottom:0}
+
+/* ============================================================
+   UX IMPROVEMENTS — Navigation & Flow
+   ============================================================ */
+
+/* Empty state helper for new users */
+.empty-hint{text-align:center;padding:2rem 1.5rem;color:var(--text-muted);font-size:.88rem;line-height:1.6}
+.empty-hint .empty-icon{font-size:2.5rem;margin-bottom:.75rem;display:block}
+.empty-hint .btn{margin-top:1rem}
+
+/* Module cards: clearer click affordance */
+.mc::after{content:'Abrir →';position:absolute;bottom:1rem;right:1.25rem;font-size:.7rem;font-weight:600;color:var(--text-muted);opacity:0;transition:opacity .2s}
+.mc{position:relative}
+.mc:hover::after{opacity:1}
+
+/* Sidebar profile link highlight */
+.side-bottom .ni[role="link"]{border:1px solid var(--border);border-radius:var(--r-md);margin-bottom:.5rem}
+.side-bottom .ni[role="link"]:hover{border-color:var(--sage);background:var(--sage-subtle)}
+
+/* Bottom nav: smoother transitions */
+.bnav-item{transition:color .15s,transform .1s}
+
+/* Lesson view: clearer next button hierarchy */
+.lesv-foot .btn-sage{font-size:.9rem;padding:.7rem 1.5rem;animation:ctaPulse 2s ease-in-out infinite}
+
+/* Dashboard: search moved higher prominence */
+.search-wrap{margin-bottom:2rem}
+
+/* Mobile: ensure no content hidden behind fixed elements */
+@media(max-width:900px){
+  .dash{padding-top:.5rem}
+}

@@ -108,6 +108,17 @@ function ui(){
   if(xpBar){xpBar.style.width=xpPct+'%';xpBar.setAttribute('role','progressbar');xpBar.setAttribute('aria-valuenow',S.xp);xpBar.setAttribute('aria-valuemin','0');xpBar.setAttribute('aria-valuemax',need);xpBar.setAttribute('aria-label',`Experiência: ${S.xp}/${need} XP (${xpPct}%)`);}
   _s('xpNow',S.xp);_s('xpMax',need);_s('sXP',totalXP());_s('sStreak',S.streak+'🔥');
   _s('wName',S.name);_s('pName',S.name);_s('avatarI',S.avatar||S.name[0]);
+  // Dynamic welcome message based on progress
+  var wmEl=document.getElementById('welcomeMsg');
+  if(wmEl){
+    var doneN=Object.keys(S.done).length;
+    var totalN=M.reduce(function(s,m){return s+m.lessons.length},0);
+    if(doneN===0) wmEl.textContent='Comece sua jornada! Escolha um módulo abaixo e mergulhe no aprendizado.';
+    else if(doneN<5) wmEl.textContent='Ótimo começo! Continue explorando — cada aula desbloqueia novas conquistas.';
+    else if(doneN<20) wmEl.textContent='Você está indo muito bem! Já completou '+doneN+' aulas de '+totalN+'. Continue assim!';
+    else if(doneN<totalN) wmEl.textContent='Impressionante! '+doneN+' de '+totalN+' aulas concluídas. O caminho para mestre está cada vez mais perto!';
+    else wmEl.textContent='Parabéns! Você completou todas as '+totalN+' aulas. Você é um verdadeiro mestre!';
+  }
   // Level name badge
   const lvlEl=document.querySelector('.profile-lvl');
   if(lvlEl)lvlEl.innerHTML=`Nível ${S.lvl} · <span class="level-badge ${li.cls}">${li.emoji} ${li.name}</span>`;
@@ -2395,7 +2406,7 @@ const _origGoBadges=goBadges;
 if(typeof goBadges==='function'){
   goBadges=function(){
     _origGoBadges();
-    updateBottomNav('badges');
+    updateBottomNav('menu');
     updateMobileHeader('🏅 Conquistas',true);
     _mobileBackFn=()=>goDash()
   }
