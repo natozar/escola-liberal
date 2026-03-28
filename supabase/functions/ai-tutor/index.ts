@@ -124,8 +124,11 @@ serve(async (req: Request) => {
 
     if (!response.ok) {
       const err = await response.text()
-      console.error('[AI Tutor] Claude API error:', err)
-      return new Response(JSON.stringify({ error: 'Erro ao consultar o tutor. Tente novamente.' }), {
+      console.error('[AI Tutor] Claude API error:', response.status, err)
+      return new Response(JSON.stringify({
+        error: 'Erro ao consultar o tutor. Tente novamente.',
+        debug: { status: response.status, detail: err.substring(0, 200) }
+      }), {
         status: 502,
         headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
       })
@@ -149,9 +152,10 @@ serve(async (req: Request) => {
       headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
     })
 
-  } catch (e) {
-    console.error('[AI Tutor] Error:', e)
-    return new Response(JSON.stringify({ error: 'Erro interno do tutor.' }), {
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e)
+    console.error('[AI Tutor] Error:', msg)
+    return new Response(JSON.stringify({ error: 'Erro interno do tutor.', debug: msg.substring(0, 200) }), {
       status: 500,
       headers: { ...getCorsHeaders(req), 'Content-Type': 'application/json' }
     })
