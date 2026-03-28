@@ -115,14 +115,20 @@ function ui(){
   sb.textContent=S.streak>0?`🔥 ${S.streak} dia${S.streak>1?'s':''} de sequência!`:'🔥 Comece sua sequência!';
   // Sidebar module progress
   M.forEach((m,mi)=>{
-    const el=document.getElementById('nM'+mi);
+    const el=_origById('nM'+mi);
     if(!el)return;
     const d=m.lessons.filter((_,li)=>S.done[`${mi}-${li}`]).length;
     const pct=Math.round(d/m.lessons.length*100);
     const clr=getModColor(m.color||'sage');
     let progEl=el.querySelector('.ni-prog');
-    if(!progEl){progEl=document.createElement('div');progEl.className='ni-prog';progEl.innerHTML='<div class="ni-prog-bar"></div>';el.querySelector('.ni-txt').parentElement.appendChild(progEl)}
-    progEl.querySelector('.ni-prog-bar').style.cssText=`width:${pct}%;background:${clr}`
+    if(!progEl){
+      const txtParent=el.querySelector('.ni-txt');
+      if(!txtParent||!txtParent.parentElement)return;
+      progEl=document.createElement('div');progEl.className='ni-prog';progEl.innerHTML='<div class="ni-prog-bar"></div>';
+      txtParent.parentElement.appendChild(progEl)
+    }
+    const bar=progEl.querySelector('.ni-prog-bar');
+    if(bar)bar.style.cssText=`width:${pct}%;background:${clr}`
   });
   renderCards();renderAch()
 }
@@ -196,14 +202,24 @@ function renderAch(){
 // NAV
 function goDash(){
   hideAllViews();
-  const vd=document.getElementById('vDash');
+  const vd=_origById('vDash');
   if(!vd)return;
   vd.style.display='block';vd.classList.add('view-enter');
   setTimeout(()=>vd.classList.remove('view-enter'),350);
-  const fb=document.getElementById('focusBtn');if(fb)fb.style.display='none';
+  const fb=_origById('focusBtn');if(fb)fb.style.display='none';
   if(document.body.classList.contains('focus-mode'))toggleFocus();
-  setNav('nDash');ui();renderContinue();renderQuote();renderProgressChart();renderDaily();renderMissions();renderFavs();renderProfileSwitch();
-  updateGlobalProgress();renderWeeklySummary();renderDailyGoal()
+  setNav('nDash');
+  try{ui()}catch(e){console.warn('[goDash] ui:',e.message)}
+  try{renderContinue()}catch(e){console.warn('[goDash] renderContinue:',e.message)}
+  try{renderQuote()}catch(e){console.warn('[goDash] renderQuote:',e.message)}
+  try{renderProgressChart()}catch(e){console.warn('[goDash] renderProgressChart:',e.message)}
+  try{renderDaily()}catch(e){console.warn('[goDash] renderDaily:',e.message)}
+  try{renderMissions()}catch(e){console.warn('[goDash] renderMissions:',e.message)}
+  try{renderFavs()}catch(e){console.warn('[goDash] renderFavs:',e.message)}
+  try{renderProfileSwitch()}catch(e){console.warn('[goDash] renderProfileSwitch:',e.message)}
+  try{updateGlobalProgress()}catch(e){console.warn('[goDash] updateGlobalProgress:',e.message)}
+  try{renderWeeklySummary()}catch(e){console.warn('[goDash] renderWeeklySummary:',e.message)}
+  try{renderDailyGoal()}catch(e){console.warn('[goDash] renderDailyGoal:',e.message)}
 }
 function goMod(i){
   if(!M[i])return;
@@ -843,20 +859,21 @@ function obNext(step){
   document.getElementById('obStep'+(step+1)).classList.add('active')
 }
 function obFinish(){
-  S.avatar=obAvatar;
-  S.ageGroup=obAgeGroup;
-  S.lang=obLangPref;
-  save();
-  // Salvar lead no Supabase
-  if(S.email&&typeof saveLeadEmail==='function')saveLeadEmail(S.email,S.name,obAgeGroup,obLangPref);
-  if(typeof setLang==='function')setLang(obLangPref);
-  if(typeof updateLangToggle==='function')updateLangToggle();
-  // GA4: onboarding completo
-  if(typeof gtag==='function')gtag('event','onboarding_complete',{name:S.name,age_group:obAgeGroup,lang:obLangPref,has_email:!!S.email});
-  const el=document.getElementById('onboard');
-  el.classList.add('hide');
-  setTimeout(()=>{el.style.display='none'},500);
-  goDash()
+  try{
+    S.avatar=obAvatar;
+    S.ageGroup=obAgeGroup;
+    S.lang=obLangPref;
+    save();
+    // Salvar lead no Supabase
+    if(S.email&&typeof saveLeadEmail==='function')saveLeadEmail(S.email,S.name,obAgeGroup,obLangPref);
+    if(typeof setLang==='function')setLang(obLangPref);
+    if(typeof updateLangToggle==='function')updateLangToggle();
+    // GA4: onboarding completo
+    if(typeof gtag==='function')gtag('event','onboarding_complete',{name:S.name,age_group:obAgeGroup,lang:obLangPref,has_email:!!S.email});
+    const el=_origById('onboard');
+    if(el){el.classList.add('hide');setTimeout(()=>{el.style.display='none'},500)}
+    goDash()
+  }catch(e){console.error('[obFinish]',e.message);goDash()}
 }
 
 // ============================================================
@@ -2166,12 +2183,13 @@ function renderWeeklySummary(){
   const cL=comp(twLessons,pwLessons),cQ=comp(twQuiz,pwQuiz),cX=comp(twXP,pwXP);
 
   // Find or create container
-  let el=document.getElementById('weeklySummary');
+  let el=_origById('weeklySummary');
   if(!el){
+    const dash=_origById('vDash');
+    const mcards=_origById('mcards');
+    if(!dash)return;
     el=document.createElement('div');el.id='weeklySummary';el.className='weekly-summary';
-    const dash=document.getElementById('vDash');
-    const mcards=document.getElementById('mcards');
-    dash.insertBefore(el,mcards)
+    if(mcards)dash.insertBefore(el,mcards);else dash.appendChild(el)
   }
   el.innerHTML=`<h3>📊 Resumo Semanal</h3>
     <div class="ws-grid">
@@ -2198,13 +2216,14 @@ function renderDailyGoal(){
   const pct=Math.min(100,Math.round(done/g.target*100));
   const reached=done>=g.target;
 
-  let el=document.getElementById('dailyGoalSection');
+  let el=_origById('dailyGoalSection');
   if(!el){
+    const dash=_origById('vDash');
+    if(!dash)return;
     el=document.createElement('div');el.id='dailyGoalSection';el.className='daily-goal';
-    const dash=document.getElementById('vDash');
-    const ws=document.getElementById('weeklySummary');
-    if(ws)dash.insertBefore(el,ws);
-    else{const mc=document.getElementById('mcards');dash.insertBefore(el,mc)}
+    const ws=_origById('weeklySummary');
+    if(ws&&ws.parentNode===dash)dash.insertBefore(el,ws);
+    else{const mc=_origById('mcards');if(mc&&mc.parentNode===dash)dash.insertBefore(el,mc);else dash.appendChild(el)}
   }
   el.innerHTML=`<h3>🎯 Meta Diária</h3>
     <div class="dg-bar-track"><div class="dg-bar-fill" style="width:${pct}%"></div></div>
@@ -2227,11 +2246,17 @@ function changeDailyGoal(v){
 // ============================================================
 // ERROR BOUNDARY
 // ============================================================
+// Error counter: only show error screen after 3+ rapid errors (real crash)
+let _errCount=0,_errTimer=null;
 window.onerror=function(msg,url,line,col,err){
-  console.error('App error:',msg,url,line);
-  try{
-    document.getElementById('errorScreen').style.display='flex'
-  }catch(e){}
+  console.warn('[App warn]',msg,'at line',line);
+  _errCount++;
+  if(_errTimer)clearTimeout(_errTimer);
+  _errTimer=setTimeout(()=>{_errCount=0},2000);
+  // Only show error screen for 3+ errors in 2 seconds (cascade = real crash)
+  if(_errCount>=3){
+    try{_origById('errorScreen').style.display='flex'}catch(e){}
+  }
   return true
 };
 window.addEventListener('unhandledrejection',e=>{

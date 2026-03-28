@@ -1,7 +1,7 @@
-// Escola Liberal PWA — Service Worker v11
+// Escola Liberal PWA — Service Worker v12
 // Estratégia: Network-first (navegação) + Stale-While-Revalidate (assets) + Cache-first (fonts)
-const CACHE_NAME = 'escola-liberal-v11';
-const STATIC_CACHE = 'escola-static-v11';
+const CACHE_NAME = 'escola-liberal-v12';
+const STATIC_CACHE = 'escola-static-v12';
 const FONT_CACHE = 'escola-fonts-v1';
 
 // Core assets — cached on install
@@ -39,7 +39,7 @@ self.addEventListener('install', e => {
 });
 
 self.addEventListener('activate', e => {
-  const keepCaches = [CACHE_NAME, STATIC_CACHE, FONT_CACHE];
+  const keepCaches = ['escola-liberal-v12', 'escola-static-v12', FONT_CACHE];
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => !keepCaches.includes(k)).map(k => caches.delete(k)))
