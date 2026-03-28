@@ -201,7 +201,8 @@ function renderAch(){
     {e:'💎',n:'100% Quiz',on:Object.keys(S.quiz).length>=totalQuizzes&&Object.values(S.quiz).every(v=>v)},
     {e:'👑',n:'Mestre Total',on:doneCount>=totalLessons}
   );
-  document.getElementById('achs').innerHTML=a.map(x=>`<div class="ach ${x.on?'on':'off'}"><span class="ach-em">${x.e}</span><div class="ach-nm">${x.n}</div></div>`).join('')
+  const achUnlocked=a.filter(x=>x.on).length;
+  document.getElementById('achs').innerHTML=a.map(x=>`<div class="ach ${x.on?'on':'off'}" onclick="goBadges()" style="cursor:pointer"><span class="ach-em">${x.e}</span><div class="ach-nm">${x.n}</div></div>`).join('')+(achUnlocked===0?'<div style="text-align:center;font-size:.75rem;color:var(--text-muted);margin-top:.5rem">Complete aulas para desbloquear conquistas!</div>':'')
 }
 
 // NAV
@@ -225,6 +226,12 @@ function goDash(){
   try{updateGlobalProgress()}catch(e){console.warn('[goDash] updateGlobalProgress:',e.message)}
   try{renderWeeklySummary()}catch(e){console.warn('[goDash] renderWeeklySummary:',e.message)}
   try{renderDailyGoal()}catch(e){console.warn('[goDash] renderDailyGoal:',e.message)}
+  // Hide empty sections for new users
+  try{
+    const doneCount=Object.keys(S.done).length;
+    const pc=document.getElementById('progressChart');if(pc)pc.style.display=doneCount>0?'':'none';
+    const fv=document.getElementById('favSection');if(fv&&!fv.innerHTML.trim())fv.style.display='none';
+  }catch(e){}
 }
 function goMod(i){
   if(!M[i])return;
@@ -233,8 +240,8 @@ function goMod(i){
   document.getElementById('mvS').textContent=m.desc;
   const allDone=m.lessons.every((_,li)=>S.done[`${i}-${li}`]);
   document.getElementById('lsnList').innerHTML=m.lessons.map((l,li)=>{
-    const k=`${i}-${li}`,d=S.done[k],cur=!d&&(li===0||S.done[`${i}-${li-1}`]),lock=!d&&!cur;
-    return`<div class="lsn ${d?'done':cur?'cur':lock?'lock':''}" onclick="${lock?'':'openL('+i+','+li+')'}">`+
+    const k=`${i}-${li}`,d=S.done[k],cur=!d&&(li===0||S.done[`${i}-${li-1}`]),lock=false; // MODO TESTE: todas as aulas abertas
+    return`<div class="lsn ${d?'done':cur?'cur':''}" onclick="openL(${i},${li})">`+
       `<div class="lsn-n">${d?'✓':li+1}</div><div class="lsn-info"><h4>${l.title}</h4><p>${l.sub}</p></div><div class="lsn-meta"><div class="reading-time">⏱ ~${calcReadTime(l.content)} min</div><div class="lsn-xp">+${l.xp} XP</div></div></div>`
   }).join('')+(allDone?`<div style="text-align:center;margin-top:1.25rem"><button class="btn btn-sage" onclick="showCert(${i})">🏅 Ver Certificado</button></div>`:'');
   hideAllViews();
@@ -1046,10 +1053,19 @@ function renderMissions(){
     const pct=Math.round(prog/m.target*100);
     const done=prog>=m.target;
     const claimed=data.claimed.includes(m.id);
-    html+=`<div class="mission${done?' done':''}"><div class="mission-icon">${m.icon}</div><div class="mission-info"><div class="mission-name">${m.name}</div><div class="mission-prog">${prog}/${m.target}${claimed?' · ✓ Resgatado':''}</div><div class="mission-bar"><div class="mission-fill" style="width:${pct}%${done?';background:var(--honey)':''}"></div></div></div><div class="mission-xp">${done&&!claimed?`<button class="btn btn-sage" style="font-size:.7rem;padding:.25rem .6rem" onclick="claimMission('${m.id}',${m.xp})">+${m.xp} XP</button>`:`+${m.xp} XP`}</div></div>`
+    const mAction=m.id==='lessons5'?'goNextLesson()':m.id==='quiz3row'?'goNextQuiz()':'goDash()';
+    html+=`<div class="mission${done?' done':''}" onclick="${done&&!claimed?'':mAction}" style="cursor:pointer"><div class="mission-icon">${m.icon}</div><div class="mission-info"><div class="mission-name">${m.name}</div><div class="mission-prog">${prog}/${m.target}${claimed?' · ✓ Resgatado':''}</div><div class="mission-bar"><div class="mission-fill" style="width:${pct}%${done?';background:var(--honey)':''}"></div></div>${!done?'<div class="mission-hint">Toque para ir →</div>':''}</div><div class="mission-xp">${done&&!claimed?`<button class="btn btn-sage" style="font-size:.7rem;padding:.25rem .6rem" onclick="event.stopPropagation();claimMission('${m.id}',${m.xp})">+${m.xp} XP</button>`:`+${m.xp} XP`}</div></div>`
   });
   html+='</div>';
   document.getElementById('missionsSection').innerHTML=html
+}
+function goNextLesson(){
+  for(let mi=0;mi<M.length;mi++){if(!isModUnlocked(mi))continue;for(let li=0;li<M[mi].lessons.length;li++){if(!S.done[`${mi}-${li}`]){openL(mi,li);return}}}
+  toast('🏆 Todas as aulas concluídas!');
+}
+function goNextQuiz(){
+  for(let mi=0;mi<M.length;mi++){if(!isModUnlocked(mi))continue;for(let li=0;li<M[mi].lessons.length;li++){if(M[mi].lessons[li].quiz&&S.quiz[`${mi}-${li}`]===undefined){openL(mi,li);return}}}
+  toast('🎯 Todos os quizzes respondidos!');
 }
 function claimMission(id,xp){
   const data=getMissions();
@@ -1213,7 +1229,10 @@ function goBadges(){
   document.getElementById('badgesProgress').innerHTML=`<div class="bp-num">${unlocked}/${total}</div><div class="bp-info"><div class="bp-label">${pct}% das conquistas desbloqueadas</div><div class="bp-bar"><div class="bp-fill" style="width:${pct}%"></div></div></div>`;
   document.getElementById('badgesGrid').innerHTML=badges.map(b=>{
     const on=b.check();
-    return`<div class="badge-card ${on?'unlocked':'locked'}"><span class="badge-icon">${b.e}</span><div class="badge-name">${b.n}</div><div class="badge-desc">${b.d}</div>${on?'<div class="badge-check">✓</div>':''}</div>`
+    const safeName=b.n.replace(/'/g,"\\'");
+    const badgeAction=on?`onclick="toast('${b.e} ${safeName} — Conquista desbloqueada!')"`:b.id.startsWith('mod')?`onclick="goMod(${b.id.replace('mod','')})"`:b.id==='first'||b.id==='five'||b.id==='ten'||b.id==='twenty'||b.id==='thirty'||b.id==='half'||b.id==='master'?`onclick="goNextLesson()"`:b.id.startsWith('streak')?`onclick="goDash()"`:b.id.startsWith('quiz')?`onclick="goNextQuiz()"`:`onclick="goDash()"`;
+
+    return`<div class="badge-card ${on?'unlocked':'locked'}" ${badgeAction} style="cursor:pointer"><span class="badge-icon">${b.e}</span><div class="badge-name">${b.n}</div><div class="badge-desc">${b.d}</div>${on?'<div class="badge-check">✓</div>':'<div class="badge-hint">Toque para avançar →</div>'}</div>`
   }).join('')
 }
 

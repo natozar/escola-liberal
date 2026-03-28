@@ -527,6 +527,9 @@ body.focus-mode .mobile-bar{display:none !important}
 .mission.done .mission-name{text-decoration:line-through;color:var(--text-muted)}
 .mission.done .mission-fill{background:var(--honey)}
 .mission-xp{font-size:.7rem;font-weight:700;color:var(--honey);flex-shrink:0}
+.mission-hint{font-size:.65rem;color:var(--sage);margin-top:.2rem;opacity:.7}
+.mission:active{transform:scale(.97);transition:transform .1s}
+.badge-hint{font-size:.6rem;color:var(--text-muted);margin-top:.25rem}
 
 /* ========== AUDIO / TTS ========== */
 .tts-btn{display:inline-flex;align-items:center;gap:.35rem;padding:.35rem .75rem;border-radius:var(--r-full);background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;font-size:.78rem;font-family:'DM Sans',sans-serif;transition:all .15s}
@@ -699,7 +702,8 @@ body.focus-mode .mobile-bar{display:none !important}
 .continue-card .cc-info{flex:1}
 .continue-card .cc-title{font-size:.9rem;font-weight:700;margin-bottom:.15rem}
 .continue-card .cc-sub{font-size:.75rem;color:var(--text-secondary)}
-.continue-card .cc-btn{padding:.4rem .9rem;background:var(--sage);color:#fff;border-radius:var(--r-full);font-size:.75rem;font-weight:600;flex-shrink:0}
+.continue-card .cc-btn{padding:.4rem .9rem;background:var(--sage);color:#fff;border-radius:var(--r-full);font-size:.75rem;font-weight:600;flex-shrink:0;animation:ctaPulse 2s ease-in-out infinite}
+@keyframes ctaPulse{0%,100%{box-shadow:0 0 0 0 rgba(74,158,126,.4)}50%{box-shadow:0 0 0 8px rgba(74,158,126,0)}}
 
 /* ========== QUOTES ========== */
 .quote-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1.5rem;position:relative}

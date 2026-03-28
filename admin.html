@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Admin — Painel de Gestão | Escola Liberal</title>
+  <meta name="robots" content="noindex,nofollow">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--bg:#0d1520;--surface:#131e2e;--card:#1a2535;--border:#243044;--accent:#d4a843;--sage:#4a9e7e;--green:#2ecc71;--red:#e74c3c;--yellow:#f39c12;--blue:#3498db;--text:#e8e6e1;--muted:#7a8ca3;--input-bg:#0d1520}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+    /* AUTH GATE */
+    #authGate{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem}
+    #authGate.hidden{display:none}
+    .auth-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:400px;text-align:center}
+    .auth-logo{width:52px;height:52px;background:rgba(212,168,67,.15);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto 1.25rem}
+    .auth-title{font-size:1.2rem;font-weight:700;margin-bottom:.35rem}
+    .auth-sub{font-size:.83rem;color:var(--muted);margin-bottom:1.75rem;line-height:1.5}
+    .auth-input{width:100%;padding:.75rem 1rem;background:var(--input-bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:1rem;text-align:center;letter-spacing:.3em;outline:none;margin-bottom:1rem}
+    .auth-input:focus{border-color:var(--accent)}
+    .auth-btn{width:100%;padding:.75rem;background:var(--accent);color:#0d1520;border:none;border-radius:10px;font-size:.9rem;font-weight:700;cursor:pointer}
+    .auth-btn:hover{opacity:.9}
+    .auth-err{color:var(--red);font-size:.8rem;margin-top:.5rem;min-height:1.2em}
+
+    /* LAYOUT */
+    .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+    .topbar h1{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+    .topbar-actions{display:flex;gap:.5rem}
+    .tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.5rem;overflow-x:auto}
+    .tab{padding:.75rem 1.25rem;font-size:.82rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
+    .tab:hover{color:var(--text)}
+    .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+    .content{max-width:1200px;margin:0 auto;padding:1.5rem}
+    .panel{display:none}
+    .panel.active{display:block}
+
+    /* CARDS */
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-bottom:1.5rem}
+    .stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem}
+    .stat-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem}
+    .stat-val{font-size:1.8rem;font-weight:700}
+    .stat-sub{font-size:.72rem;color:var(--muted);margin-top:.25rem}
+    .stat-val.green{color:var(--green)}
+    .stat-val.accent{color:var(--accent)}
+    .stat-val.blue{color:var(--blue)}
+
+    /* TABLE */
+    .tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem}
+    .tbl-head{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem}
+    .tbl-head h3{font-size:.9rem;font-weight:700}
+    .tbl-search{padding:.5rem .75rem;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.8rem;width:240px;outline:none}
+    .tbl-search:focus{border-color:var(--accent)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:.65rem 1rem;text-align:left;font-size:.8rem;border-bottom:1px solid var(--border)}
+    th{color:var(--muted);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;background:rgba(0,0,0,.15);position:sticky;top:0}
+    tr:hover{background:rgba(212,168,67,.04)}
+    .badge{padding:.15rem .5rem;border-radius:6px;font-size:.68rem;font-weight:600}
+    .badge-green{background:rgba(46,204,113,.15);color:var(--green)}
+    .badge-yellow{background:rgba(243,156,18,.15);color:var(--yellow)}
+    .badge-red{background:rgba(231,76,60,.15);color:var(--red)}
+    .badge-blue{background:rgba(52,152,219,.15);color:var(--blue)}
+    .tbl-scroll{max-height:500px;overflow-y:auto}
+
+    /* BUTTONS */
+    .btn{padding:.5rem 1rem;border:none;border-radius:8px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:.35rem}
+    .btn-accent{background:var(--accent);color:#0d1520}
+    .btn-sage{background:var(--sage);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text)}
+    .btn-red{background:var(--red);color:#fff}
+    .btn:hover{opacity:.85;transform:translateY(-1px)}
+    .btn:active{transform:scale(.97)}
+
+    /* PUSH PANEL */
+    .push-form{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem}
+    .push-form h3{font-size:.9rem;font-weight:700;margin-bottom:1rem}
+    .form-group{margin-bottom:1rem}
+    .form-label{display:block;font-size:.75rem;color:var(--muted);margin-bottom:.35rem;font-weight:600}
+    .form-input,.form-textarea,.form-select{width:100%;padding:.6rem .8rem;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.82rem;outline:none;font-family:inherit}
+    .form-textarea{min-height:80px;resize:vertical}
+    .form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--accent)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .form-hint{font-size:.68rem;color:var(--muted);margin-top:.25rem}
+
+    /* AUTO RULES */
+    .rule-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:.75rem;display:flex;align-items:center;justify-content:space-between}
+    .rule-info{flex:1}
+    .rule-name{font-size:.82rem;font-weight:600;margin-bottom:.2rem}
+    .rule-desc{font-size:.72rem;color:var(--muted)}
+    .toggle{position:relative;width:44px;height:24px;cursor:pointer}
+    .toggle input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:var(--border);border-radius:12px;transition:.3s}
+    .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;left:3px;top:3px;transition:.3s}
+    .toggle input:checked+.toggle-slider{background:var(--sage)}
+    .toggle input:checked+.toggle-slider::before{transform:translateX(20px)}
+
+    /* CHART */
+    .chart-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1.5rem}
+    .chart-card h3{font-size:.9rem;font-weight:700;margin-bottom:1rem}
+    .bar-chart{display:flex;align-items:flex-end;gap:6px;height:160px;padding-top:.5rem}
+    .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+    .bar{background:var(--sage);border-radius:4px 4px 0 0;width:100%;min-height:2px;transition:height .5s}
+    .bar-label{font-size:.6rem;color:var(--muted)}
+    .bar-val{font-size:.6rem;color:var(--text);font-weight:600}
+
+    /* TOAST */
+    .adm-toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;z-index:10000;transform:translateY(100px);opacity:0;transition:all .3s}
+    .adm-toast.show{transform:translateY(0);opacity:1}
+
+    /* LOADING */
+    .loading{text-align:center;padding:3rem;color:var(--muted)}
+    .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* LOG */
+    .log-entry{padding:.5rem 1rem;border-bottom:1px solid var(--border);font-size:.78rem;display:flex;align-items:center;gap:.75rem}
+    .log-time{color:var(--muted);font-size:.7rem;flex-shrink:0;width:130px}
+    .log-msg{flex:1}
+
+    /* RESPONSIVE */
+    @media(max-width:600px){
+      .stats{grid-template-columns:1fr 1fr}
+      .form-row{grid-template-columns:1fr}
+      .tbl-search{width:100%}
+      .tbl-head{flex-direction:column;align-items:stretch}
+      .topbar-actions{flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH GATE -->
+<div id="authGate">
+  <div class="auth-box">
+    <div class="auth-logo">🛡️</div>
+    <div class="auth-title">Painel Administrativo</div>
+    <div class="auth-sub">Digite a senha de administrador para acessar</div>
+    <input class="auth-input" id="adminPass" type="password" placeholder="••••••" maxlength="32" onkeydown="if(event.key==='Enter')authAdmin()">
+    <button class="auth-btn" onclick="authAdmin()">Entrar</button>
+    <div class="auth-err" id="authErr"></div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div id="mainApp" style="display:none">
+
+  <div class="topbar">
+    <h1>🛡️ Admin — Escola Liberal</h1>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="loadAllData()">🔄 Atualizar</button>
+      <button class="btn btn-ghost" onclick="window.location.href='app.html'">← Plataforma</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('dashboard')">📊 Dashboard</div>
+    <div class="tab" onclick="switchTab('users')">👥 Usuários</div>
+    <div class="tab" onclick="switchTab('push')">🔔 Push & Lembretes</div>
+    <div class="tab" onclick="switchTab('export')">📦 Exportar</div>
+    <div class="tab" onclick="switchTab('logs')">📋 Logs</div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panDashboard">
+      <div class="stats" id="statsCards">
+        <div class="stat"><div class="stat-label">Total Usuários</div><div class="stat-val accent" id="stTotal">—</div><div class="stat-sub" id="stTotalSub"></div></div>
+        <div class="stat"><div class="stat-label">Ativos (7 dias)</div><div class="stat-val green" id="stActive">—</div><div class="stat-sub" id="stActiveSub"></div></div>
+        <div class="stat"><div class="stat-label">Novos (30 dias)</div><div class="stat-val blue" id="stNew">—</div><div class="stat-sub" id="stNewSub"></div></div>
+        <div class="stat"><div class="stat-label">Média XP</div><div class="stat-val" id="stXP">—</div><div class="stat-sub">por usuário</div></div>
+        <div class="stat"><div class="stat-label">Aulas Concluídas</div><div class="stat-val green" id="stLessons">—</div><div class="stat-sub">total na plataforma</div></div>
+        <div class="stat"><div class="stat-label">Taxa Conclusão Quiz</div><div class="stat-val" id="stQuiz">—</div><div class="stat-sub">acertos / total</div></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>📈 Cadastros por Dia (últimos 30 dias)</h3>
+        <div class="bar-chart" id="signupChart"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🏆 Top 10 Usuários por XP</h3>
+        <div id="topUsers"></div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="panel" id="panUsers">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <h3>👥 Todos os Usuários</h3>
+          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+            <input class="tbl-search" id="userSearch" placeholder="Buscar por nome ou email..." oninput="filterUsers()">
+            <select class="form-select" id="userFilter" style="width:auto" onchange="filterUsers()">
+              <option value="all">Todos</option>
+              <option value="active">Ativos (7d)</option>
+              <option value="inactive">Inativos (30d+)</option>
+              <option value="premium">Premium</option>
+              <option value="free">Free</option>
+            </select>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr>
+              <th>Usuário</th><th>Email</th><th>Plano</th><th>XP</th><th>Nível</th><th>Aulas</th><th>Streak</th><th>Último Acesso</th><th>Cadastro</th>
+            </tr></thead>
+            <tbody id="usersBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+        <button class="btn btn-accent" onclick="exportXML()">📦 Exportar XML</button>
+        <button class="btn btn-sage" onclick="exportCSV()">📄 Exportar CSV</button>
+        <div style="font-size:.72rem;color:var(--muted);align-self:center" id="userCount"></div>
+      </div>
+    </div>
+
+    <!-- PUSH -->
+    <div class="panel" id="panPush">
+      <!-- Manual Push -->
+      <div class="push-form">
+        <h3>📤 Enviar Notificação Manual</h3>
+        <div class="form-group">
+          <label class="form-label">Título</label>
+          <input class="form-input" id="pushTitle" placeholder="Escola Liberal 🎓" value="Escola Liberal 🎓">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mensagem</label>
+          <textarea class="form-textarea" id="pushBody" placeholder="Hora de estudar! Novas aulas disponíveis."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Público-alvo</label>
+            <select class="form-select" id="pushTarget">
+              <option value="all">Todos os usuários</option>
+              <option value="inactive7">Inativos há 7+ dias</option>
+              <option value="inactive30">Inativos há 30+ dias</option>
+              <option value="active">Ativos (últimos 7 dias)</option>
+              <option value="premium">Premium</option>
+              <option value="free">Free</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Agendar para</label>
+            <input class="form-input" id="pushSchedule" type="datetime-local">
+            <div class="form-hint">Deixe vazio para enviar agora</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL de ação (opcional)</label>
+          <input class="form-input" id="pushUrl" placeholder="https://escolaliberal.com.br/app.html" value="https://escolaliberal.com.br/app.html">
+        </div>
+        <button class="btn btn-sage" onclick="sendManualPush()" style="margin-top:.5rem">🚀 Enviar Notificação</button>
+      </div>
+
+      <!-- Auto Rules -->
+      <div class="push-form">
+        <h3>⚡ Regras Automáticas de Push</h3>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1rem">Configure lembretes automáticos que são disparados baseados no comportamento do usuário.</p>
+
+        <div class="rule-card">
+          <div class="rule-info">
+            <div class="rule-name">🔔 Lembrete de Inatividade (3 dias)</div>
+            <div class="rule-desc">Envia push se o usuário não acessar por 3 dias: "Sentimos sua falta! Sua sequência está em risco."</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="ruleInactive3" checked onchange="saveAutoRules()"><span class="toggle-slider"></span></label>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-info">
+            <div class="rule-name">📚 Lembrete de Inatividade (7 dias)</div>
+            <div class="rule-desc">Envia push se o usuário não acessar por 7 dias: "Suas aulas estão esperando! Volte e continue aprendendo."</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="ruleInactive7" checked onchange="saveAutoRules()"><span class="toggle-slider"></span></label>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-info">
+            <div class="rule-name">🏆 Parabéns por Módulo Completo</div>
+            <div class="rule-desc">Envia push quando o usuário completa um módulo: "Parabéns! Você concluiu [módulo]. Continue para o próximo!"</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="ruleModComplete" checked onchange="saveAutoRules()"><span class="toggle-slider"></span></label>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-info">
+            <div class="rule-name">🔥 Manter Streak</div>
+            <div class="rule-desc">Lembrete diário às 19h para quem tem streak ativo: "Não quebre sua sequência de X dias!"</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="ruleStreak" checked onchange="saveAutoRules()"><span class="toggle-slider"></span></label>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-info">
+            <div class="rule-name">👋 Boas-vindas (Novo Cadastro)</div>
+            <div class="rule-desc">Envia push 1h após cadastro: "Bem-vindo à Escola Liberal! Comece sua primeira aula agora."</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="ruleWelcome" checked onchange="saveAutoRules()"><span class="toggle-slider"></span></label>
+        </div>
+
+        <button class="btn btn-accent" onclick="saveAutoRules();admToast('✓ Regras salvas!')" style="margin-top:.75rem">💾 Salvar Regras</button>
+      </div>
+
+      <!-- Push History -->
+      <div class="tbl-wrap">
+        <div class="tbl-head"><h3>📋 Histórico de Push Enviados</h3></div>
+        <div class="tbl-scroll" id="pushHistory">
+          <div class="loading">Carregando...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="panel" id="panExport">
+      <div class="push-form">
+        <h3>📦 Exportar Dados para Marketing</h3>
+        <p style="font-size:.78rem;color:var(--muted);margin-bottom:1.5rem">Exporte a lista de usuários em diferentes formatos para importar em ferramentas de email marketing, CRM ou automação.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Formato</label>
+            <select class="form-select" id="exportFormat">
+              <option value="xml">XML (compatível com Mailchimp, RD Station)</option>
+              <option value="csv">CSV (Excel, Google Sheets)</option>
+              <option value="json">JSON (APIs, automações)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Filtro</label>
+            <select class="form-select" id="exportFilter">
+              <option value="all">Todos os usuários</option>
+              <option value="active">Ativos (últimos 7 dias)</option>
+              <option value="inactive">Inativos (30+ dias)</option>
+              <option value="leads">Leads (só email do onboarding)</option>
+              <option value="premium">Premium</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Campos incluídos</label>
+          <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.35rem">
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="name" checked> Nome</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="email" checked> Email</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="plan" checked> Plano</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="xp" checked> XP</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="level" checked> Nível</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="lessons" checked> Aulas</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="streak" checked> Streak</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="last_active"> Último Acesso</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="created_at"> Data Cadastro</label>
+            <label style="font-size:.78rem;display:flex;align-items:center;gap:.3rem"><input type="checkbox" class="exp-field" value="age_group"> Faixa Etária</label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:.75rem;margin-top:1rem">
+          <button class="btn btn-accent" onclick="doExport()">📥 Gerar e Baixar</button>
+          <button class="btn btn-ghost" onclick="previewExport()">👁 Preview</button>
+        </div>
+
+        <div id="exportPreview" style="margin-top:1rem;display:none">
+          <div class="form-label">Preview (primeiros 5 registros):</div>
+          <pre style="background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:1rem;font-size:.72rem;overflow-x:auto;max-height:300px;margin-top:.35rem"><code id="exportCode"></code></pre>
+        </div>
+      </div>
+
+      <!-- Leads -->
+      <div class="tbl-wrap">
+        <div class="tbl-head"><h3>📧 Leads (Emails capturados no Onboarding)</h3></div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr><th>Email</th><th>Nome</th><th>Faixa Etária</th><th>Origem</th><th>Data</th></tr></thead>
+            <tbody id="leadsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS -->
+    <div class="panel" id="panLogs">
+      <div class="tbl-wrap">
+        <div class="tbl-head">
+          <h3>📋 Log de Atividades Admin</h3>
+          <button class="btn btn-ghost" onclick="clearLogs()">🗑 Limpar</button>
+        </div>
+        <div id="logsContainer" style="max-height:600px;overflow-y:auto"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="adm-toast" id="admToast"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const SB_URL='https://hwjplecfqsckfiwxiedo.supabase.co';
+const SB_KEY='sb_publishable_-_ZYfPPllImPNCKOA1ZMXQ_zYYM-P6q';
+// Admin password hash (SHA-256 of password) — set via setAdminHash()
+const ADMIN_HASH_KEY='escola_admin_hash';
+const ADMIN_LOGS_KEY='escola_admin_logs';
+const AUTO_RULES_KEY='escola_auto_push_rules';
+
+let sb=null;
+let allUsers=[];
+let allProgress=[];
+let allLeads=[];
+let filteredUsers=[];
+
+// ============================================================
+// AUTH
+// ============================================================
+function getAdminHash(){return localStorage.getItem(ADMIN_HASH_KEY)}
+async function hashStr(s){const enc=new TextEncoder().encode(s);const buf=await crypto.subtle.digest('SHA-256',enc);return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+
+async function authAdmin(){
+  const pass=document.getElementById('adminPass').value.trim();
+  if(!pass){document.getElementById('authErr').textContent='Digite a senha';return}
+  const hash=await hashStr('escola_admin_'+pass);
+  const stored=getAdminHash();
+  // First time: set the password
+  if(!stored){
+    localStorage.setItem(ADMIN_HASH_KEY,hash);
+    admLog('Senha admin configurada pela primeira vez');
+    enterAdmin();
+    return;
+  }
+  if(hash===stored){enterAdmin();return}
+  document.getElementById('authErr').textContent='Senha incorreta';
+  document.getElementById('adminPass').value='';
+}
+
+function enterAdmin(){
+  document.getElementById('authGate').classList.add('hidden');
+  document.getElementById('mainApp').style.display='block';
+  initSupabase();
+  loadAllData();
+  loadAutoRules();
+  renderLogs();
+  admLog('Login admin realizado');
+}
+
+// ============================================================
+// SUPABASE
+// ============================================================
+function initSupabase(){
+  if(typeof window.supabase==='undefined'){admToast('⚠ Supabase SDK não carregado');return}
+  sb=window.supabase.createClient(SB_URL,SB_KEY);
+}
+
+// ============================================================
+// DATA LOADING
+// ============================================================
+async function loadAllData(){
+  if(!sb){admToast('⚠ Supabase não inicializado');return}
+  admToast('🔄 Carregando dados...');
+
+  try{
+    // Load profiles
+    const{data:profiles,error:pErr}=await sb.from('profiles').select('*').order('created_at',{ascending:false});
+    if(pErr)throw pErr;
+
+    // Load progress
+    const{data:progress,error:prErr}=await sb.from('progress').select('*');
+    if(prErr)throw prErr;
+
+    // Load leads
+    const{data:leads}=await sb.from('leads').select('*').order('created_at',{ascending:false});
+    allLeads=leads||[];
+
+    // Merge profiles + progress
+    const progMap={};
+    (progress||[]).forEach(p=>{progMap[p.profile_id]=p});
+
+    allUsers=(profiles||[]).map(p=>{
+      const prog=progMap[p.id]||{};
+      const doneCount=prog.completed_lessons?Object.keys(prog.completed_lessons).length:0;
+      const quizResults=prog.quiz_results||{};
+      const quizTotal=Object.keys(quizResults).length;
+      const quizCorrect=Object.values(quizResults).filter(v=>v).length;
+      return{
+        id:p.id,
+        name:p.name||'Aluno',
+        email:p.email||'—',
+        plan:p.plan||'free',
+        avatar:p.avatar||'🧑‍🎓',
+        xp:prog.xp||0,
+        level:prog.level||1,
+        streak:prog.streak||0,
+        lessons:doneCount,
+        quizTotal,quizCorrect,
+        lastStudy:prog.last_study_date||null,
+        createdAt:p.created_at||null,
+        onboardingDone:p.onboarding_done||false
+      };
+    });
+
+    // Also get emails from auth metadata if email missing
+    // (profiles may not have email field — check auth.users via admin or metadata)
+    // Fallback: try getting email from supabase auth admin API
+    try{
+      const{data:{users},error:authErr}=await sb.auth.admin.listUsers();
+      if(!authErr&&users){
+        const emailMap={};
+        users.forEach(u=>{emailMap[u.id]=u.email});
+        allUsers.forEach(u=>{
+          if(u.email==='—'&&emailMap[u.id])u.email=emailMap[u.id];
+        });
+      }
+    }catch(e){
+      // Admin API may not be available with anon key — that's ok
+      console.warn('[Admin] Auth admin API not available (expected with anon key)');
+    }
+
+    filteredUsers=[...allUsers];
+    renderDashboard();
+    renderUsersTable();
+    renderLeads();
+    renderPushHistory();
+    admToast('✓ Dados carregados: '+allUsers.length+' usuários');
+    admLog('Dados carregados: '+allUsers.length+' usuários, '+allLeads.length+' leads');
+  }catch(e){
+    admToast('❌ Erro: '+e.message);
+    console.error('[Admin]',e);
+  }
+}
+
+// ============================================================
+// DASHBOARD RENDER
+// ============================================================
+function renderDashboard(){
+  const now=new Date();
+  const d7=new Date(now-7*864e5);
+  const d30=new Date(now-30*864e5);
+
+  const total=allUsers.length;
+  const active=allUsers.filter(u=>u.lastStudy&&new Date(u.lastStudy)>=d7).length;
+  const newUsers=allUsers.filter(u=>u.createdAt&&new Date(u.createdAt)>=d30).length;
+  const avgXP=total?Math.round(allUsers.reduce((s,u)=>s+u.xp,0)/total):0;
+  const totalLessons=allUsers.reduce((s,u)=>s+u.lessons,0);
+  const totalQuiz=allUsers.reduce((s,u)=>s+u.quizTotal,0);
+  const correctQuiz=allUsers.reduce((s,u)=>s+u.quizCorrect,0);
+  const quizRate=totalQuiz?Math.round(correctQuiz/totalQuiz*100)+'%':'—';
+
+  document.getElementById('stTotal').textContent=total;
+  document.getElementById('stTotalSub').textContent=allLeads.length+' leads capturados';
+  document.getElementById('stActive').textContent=active;
+  document.getElementById('stActiveSub').textContent=total?Math.round(active/total*100)+'% do total':'—';
+  document.getElementById('stNew').textContent=newUsers;
+  document.getElementById('stNewSub').textContent='últimos 30 dias';
+  document.getElementById('stXP').textContent=avgXP.toLocaleString();
+  document.getElementById('stLessons').textContent=totalLessons.toLocaleString();
+  document.getElementById('stQuiz').textContent=quizRate;
+
+  // Signup chart (30 days)
+  renderSignupChart();
+  renderTopUsers();
+}
+
+function renderSignupChart(){
+  const days=[];
+  for(let i=29;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const ds=d.toISOString().split('T')[0];
+    const count=allUsers.filter(u=>u.createdAt&&u.createdAt.startsWith(ds)).length;
+    days.push({label:(d.getDate())+'/'+(d.getMonth()+1),count,ds});
+  }
+  const max=Math.max(...days.map(d=>d.count),1);
+  document.getElementById('signupChart').innerHTML=days.map(d=>`<div class="bar-col"><div class="bar-val">${d.count||''}</div><div class="bar" style="height:${Math.max(2,d.count/max*140)}px"></div><div class="bar-label">${d.label}</div></div>`).join('');
+}
+
+function renderTopUsers(){
+  const top=allUsers.slice().sort((a,b)=>b.xp-a.xp).slice(0,10);
+  if(!top.length){document.getElementById('topUsers').innerHTML='<div style="color:var(--muted);font-size:.82rem;padding:.5rem">Nenhum usuário encontrado</div>';return}
+  const maxXP=top[0].xp||1;
+  document.getElementById('topUsers').innerHTML='<table style="width:100%"><thead><tr><th>#</th><th>Usuário</th><th>XP</th><th>Nível</th><th>Aulas</th><th></th></tr></thead><tbody>'+
+    top.map((u,i)=>`<tr><td style="font-weight:700;color:var(--accent)">${i+1}</td><td>${u.avatar} ${esc(u.name)}</td><td style="font-weight:600">${u.xp.toLocaleString()}</td><td>${u.level}</td><td>${u.lessons}</td><td><div style="width:80px;height:6px;background:var(--border);border-radius:3px"><div style="width:${Math.round(u.xp/maxXP*100)}%;height:100%;background:var(--sage);border-radius:3px"></div></div></td></tr>`).join('')+
+    '</tbody></table>';
+}
+
+// ============================================================
+// USERS TABLE
+// ============================================================
+function renderUsersTable(){
+  const body=document.getElementById('usersBody');
+  if(!filteredUsers.length){body.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">Nenhum usuário encontrado</td></tr>';return}
+  body.innerHTML=filteredUsers.map(u=>{
+    const planBadge=u.plan==='premium'?'badge-accent':u.plan==='familia'?'badge-blue':'badge-green';
+    const planLabel=u.plan==='premium'?'Premium':u.plan==='familia'?'Família':'Free';
+    const lastStr=u.lastStudy?timeAgo(u.lastStudy):'Nunca';
+    const createdStr=u.createdAt?new Date(u.createdAt).toLocaleDateString('pt-BR'):'—';
+    const inactiveDays=u.lastStudy?Math.floor((Date.now()-new Date(u.lastStudy))/(864e5)):999;
+    const statusBadge=inactiveDays<=7?'badge-green':inactiveDays<=30?'badge-yellow':'badge-red';
+    const statusLabel=inactiveDays<=7?'Ativo':inactiveDays<=30?'Inativo':'Ausente';
+    return`<tr>
+      <td>${u.avatar} ${esc(u.name)}</td>
+      <td style="font-size:.72rem">${esc(u.email)}</td>
+      <td><span class="badge ${planBadge}">${planLabel}</span></td>
+      <td style="font-weight:600">${u.xp.toLocaleString()}</td>
+      <td>${u.level}</td>
+      <td>${u.lessons}</td>
+      <td>${u.streak>0?'🔥 '+u.streak:'—'}</td>
+      <td><span class="badge ${statusBadge}">${statusLabel}</span> <span style="font-size:.68rem;color:var(--muted)">${lastStr}</span></td>
+      <td style="font-size:.72rem">${createdStr}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('userCount').textContent=`Mostrando ${filteredUsers.length} de ${allUsers.length} usuários`;
+}
+
+function filterUsers(){
+  const q=(document.getElementById('userSearch').value||'').toLowerCase();
+  const f=document.getElementById('userFilter').value;
+  const now=Date.now();
+  filteredUsers=allUsers.filter(u=>{
+    if(q&&!u.name.toLowerCase().includes(q)&&!u.email.toLowerCase().includes(q))return false;
+    if(f==='active'){const d=u.lastStudy?Math.floor((now-new Date(u.lastStudy))/864e5):999;return d<=7}
+    if(f==='inactive'){const d=u.lastStudy?Math.floor((now-new Date(u.lastStudy))/864e5):999;return d>30}
+    if(f==='premium')return u.plan==='premium'||u.plan==='familia';
+    if(f==='free')return u.plan==='free';
+    return true;
+  });
+  renderUsersTable();
+}
+
+// ============================================================
+// EXPORT (XML, CSV, JSON)
+// ============================================================
+function getSelectedFields(){
+  return Array.from(document.querySelectorAll('.exp-field:checked')).map(c=>c.value);
+}
+
+function getFilteredForExport(){
+  const f=document.getElementById('exportFilter').value;
+  const now=Date.now();
+  let list=allUsers;
+  if(f==='active')list=list.filter(u=>u.lastStudy&&(now-new Date(u.lastStudy))/864e5<=7);
+  if(f==='inactive')list=list.filter(u=>!u.lastStudy||(now-new Date(u.lastStudy))/864e5>30);
+  if(f==='premium')list=list.filter(u=>u.plan==='premium'||u.plan==='familia');
+  if(f==='leads')return allLeads.map(l=>({name:l.name||'',email:l.email||'',plan:'lead',xp:0,level:0,lessons:0,streak:0,last_active:'',created_at:l.created_at||'',age_group:l.age_group||''}));
+  return list;
+}
+
+function userToRow(u,fields){
+  const row={};
+  if(fields.includes('name'))row.name=u.name||'';
+  if(fields.includes('email'))row.email=u.email||'';
+  if(fields.includes('plan'))row.plan=u.plan||'free';
+  if(fields.includes('xp'))row.xp=u.xp||0;
+  if(fields.includes('level'))row.level=u.level||1;
+  if(fields.includes('lessons'))row.lessons=u.lessons||0;
+  if(fields.includes('streak'))row.streak=u.streak||0;
+  if(fields.includes('last_active'))row.last_active=u.lastStudy||u.last_active||'';
+  if(fields.includes('created_at'))row.created_at=u.createdAt||u.created_at||'';
+  if(fields.includes('age_group'))row.age_group=u.age_group||'';
+  return row;
+}
+
+function toXML(rows,fields){
+  let xml='<?xml version="1.0" encoding="UTF-8"?>\n<users>\n';
+  rows.forEach(u=>{
+    const r=userToRow(u,fields);
+    xml+='  <user>\n';
+    Object.entries(r).forEach(([k,v])=>{xml+=`    <${k}>${escXml(String(v))}</${k}>\n`});
+    xml+='  </user>\n';
+  });
+  xml+='</users>';
+  return xml;
+}
+
+function toCSV(rows,fields){
+  const headers=fields.join(',');
+  const lines=rows.map(u=>{
+    const r=userToRow(u,fields);
+    return fields.map(f=>`"${String(r[f]||'').replace(/"/g,'""')}"`).join(',');
+  });
+  return headers+'\n'+lines.join('\n');
+}
+
+function toJSON(rows,fields){
+  return JSON.stringify(rows.map(u=>userToRow(u,fields)),null,2);
+}
+
+function doExport(){
+  const fmt=document.getElementById('exportFormat').value;
+  const fields=getSelectedFields();
+  if(!fields.length){admToast('⚠ Selecione pelo menos um campo');return}
+  const rows=getFilteredForExport();
+  if(!rows.length){admToast('⚠ Nenhum registro encontrado');return}
+
+  let content,filename,mime;
+  if(fmt==='xml'){content=toXML(rows,fields);filename='escola_liberal_users.xml';mime='application/xml'}
+  else if(fmt==='csv'){content=toCSV(rows,fields);filename='escola_liberal_users.csv';mime='text/csv'}
+  else{content=toJSON(rows,fields);filename='escola_liberal_users.json';mime='application/json'}
+
+  downloadFile(content,filename,mime);
+  admToast('✓ Exportado: '+rows.length+' registros ('+fmt.toUpperCase()+')');
+  admLog('Exportação '+fmt.toUpperCase()+': '+rows.length+' registros');
+}
+
+function exportXML(){
+  const fields=['name','email','plan','xp','level','lessons','streak'];
+  const content=toXML(allUsers,fields);
+  downloadFile(content,'escola_liberal_users.xml','application/xml');
+  admToast('✓ XML exportado: '+allUsers.length+' usuários');
+  admLog('Exportação rápida XML: '+allUsers.length+' usuários');
+}
+
+function exportCSV(){
+  const fields=['name','email','plan','xp','level','lessons','streak'];
+  const content=toCSV(allUsers,fields);
+  downloadFile(content,'escola_liberal_users.csv','text/csv');
+  admToast('✓ CSV exportado: '+allUsers.length+' usuários');
+}
+
+function previewExport(){
+  const fmt=document.getElementById('exportFormat').value;
+  const fields=getSelectedFields();
+  if(!fields.length){admToast('⚠ Selecione pelo menos um campo');return}
+  const rows=getFilteredForExport().slice(0,5);
+  let content;
+  if(fmt==='xml')content=toXML(rows,fields);
+  else if(fmt==='csv')content=toCSV(rows,fields);
+  else content=toJSON(rows,fields);
+  document.getElementById('exportCode').textContent=content;
+  document.getElementById('exportPreview').style.display='block';
+}
+
+function downloadFile(content,filename,mime){
+  const blob=new Blob([content],{type:mime+';charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// PUSH NOTIFICATIONS
+// ============================================================
+async function sendManualPush(){
+  const title=document.getElementById('pushTitle').value.trim();
+  const body=document.getElementById('pushBody').value.trim();
+  const target=document.getElementById('pushTarget').value;
+  const scheduleAt=document.getElementById('pushSchedule').value;
+  const url=document.getElementById('pushUrl').value.trim();
+
+  if(!title||!body){admToast('⚠ Preencha título e mensagem');return}
+
+  // Count target audience
+  const now=Date.now();
+  let audience=allUsers;
+  if(target==='inactive7')audience=audience.filter(u=>!u.lastStudy||(now-new Date(u.lastStudy))/864e5>7);
+  if(target==='inactive30')audience=audience.filter(u=>!u.lastStudy||(now-new Date(u.lastStudy))/864e5>30);
+  if(target==='active')audience=audience.filter(u=>u.lastStudy&&(now-new Date(u.lastStudy))/864e5<=7);
+  if(target==='premium')audience=audience.filter(u=>u.plan==='premium'||u.plan==='familia');
+  if(target==='free')audience=audience.filter(u=>u.plan==='free');
+
+  // Save push record to Supabase
+  try{
+    await sb.from('push_notifications').insert({
+      title,body,
+      target_filter:target,
+      target_count:audience.length,
+      action_url:url||null,
+      scheduled_at:scheduleAt?new Date(scheduleAt).toISOString():new Date().toISOString(),
+      status:scheduleAt?'scheduled':'sent',
+      sent_by:'admin',
+      created_at:new Date().toISOString()
+    });
+    admToast(`✓ Push ${scheduleAt?'agendado':'enviado'} para ${audience.length} usuários`);
+    admLog(`Push ${scheduleAt?'agendado':'enviado'}: "${title}" → ${audience.length} usuários (${target})`);
+    renderPushHistory();
+
+    // Clear form
+    document.getElementById('pushBody').value='';
+    document.getElementById('pushSchedule').value='';
+  }catch(e){
+    // Table may not exist yet — save locally
+    const pushes=JSON.parse(localStorage.getItem('escola_push_history')||'[]');
+    pushes.unshift({title,body,target,count:audience.length,url,scheduledAt:scheduleAt||null,sentAt:new Date().toISOString(),status:scheduleAt?'scheduled':'sent'});
+    localStorage.setItem('escola_push_history',JSON.stringify(pushes));
+    admToast(`✓ Push registrado localmente (${audience.length} usuários). Tabela push_notifications não existe no Supabase.`);
+    admLog(`Push local: "${title}" → ${audience.length} usuários`);
+    renderPushHistory();
+  }
+}
+
+async function renderPushHistory(){
+  const container=document.getElementById('pushHistory');
+  let pushes=[];
+
+  // Try Supabase first
+  try{
+    const{data}=await sb.from('push_notifications').select('*').order('created_at',{ascending:false}).limit(50);
+    if(data&&data.length)pushes=data;
+  }catch(e){}
+
+  // Fallback to local
+  if(!pushes.length){
+    pushes=JSON.parse(localStorage.getItem('escola_push_history')||'[]');
+  }
+
+  if(!pushes.length){
+    container.innerHTML='<div style="padding:2rem;text-align:center;color:var(--muted);font-size:.82rem">Nenhuma notificação enviada ainda</div>';
+    return;
+  }
+
+  container.innerHTML='<table style="width:100%"><thead><tr><th>Data</th><th>Título</th><th>Mensagem</th><th>Público</th><th>Alcance</th><th>Status</th></tr></thead><tbody>'+
+    pushes.map(p=>{
+      const date=p.created_at||p.sentAt?new Date(p.created_at||p.sentAt).toLocaleString('pt-BR'):'—';
+      const statusBadge=p.status==='sent'?'badge-green':p.status==='scheduled'?'badge-yellow':'badge-blue';
+      return`<tr><td style="font-size:.72rem">${date}</td><td style="font-weight:600">${esc(p.title)}</td><td style="font-size:.72rem">${esc((p.body||'').substring(0,60))}${(p.body||'').length>60?'...':''}</td><td style="font-size:.72rem">${p.target_filter||p.target||'all'}</td><td>${p.target_count||p.count||'—'}</td><td><span class="badge ${statusBadge}">${p.status}</span></td></tr>`;
+    }).join('')+'</tbody></table>';
+}
+
+// ============================================================
+// AUTO PUSH RULES
+// ============================================================
+function loadAutoRules(){
+  const rules=JSON.parse(localStorage.getItem(AUTO_RULES_KEY)||'{}');
+  document.getElementById('ruleInactive3').checked=rules.inactive3!==false;
+  document.getElementById('ruleInactive7').checked=rules.inactive7!==false;
+  document.getElementById('ruleModComplete').checked=rules.modComplete!==false;
+  document.getElementById('ruleStreak').checked=rules.streak!==false;
+  document.getElementById('ruleWelcome').checked=rules.welcome!==false;
+}
+
+function saveAutoRules(){
+  const rules={
+    inactive3:document.getElementById('ruleInactive3').checked,
+    inactive7:document.getElementById('ruleInactive7').checked,
+    modComplete:document.getElementById('ruleModComplete').checked,
+    streak:document.getElementById('ruleStreak').checked,
+    welcome:document.getElementById('ruleWelcome').checked
+  };
+  localStorage.setItem(AUTO_RULES_KEY,JSON.stringify(rules));
+
+  // Also try to save to Supabase for persistence
+  try{
+    sb.from('admin_settings').upsert({key:'auto_push_rules',value:rules,updated_at:new Date().toISOString()},{onConflict:'key'});
+  }catch(e){}
+}
+
+// ============================================================
+// LEADS
+// ============================================================
+function renderLeads(){
+  const body=document.getElementById('leadsBody');
+  if(!allLeads.length){body.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:2rem">Nenhum lead capturado ainda</td></tr>';return}
+  body.innerHTML=allLeads.map(l=>`<tr>
+    <td style="font-size:.78rem">${esc(l.email||'—')}</td>
+    <td>${esc(l.name||'—')}</td>
+    <td>${l.age_group||'—'}</td>
+    <td><span class="badge badge-blue">${l.source||'onboarding'}</span></td>
+    <td style="font-size:.72rem">${l.created_at?new Date(l.created_at).toLocaleString('pt-BR'):'—'}</td>
+  </tr>`).join('');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(id){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  event.target.classList.add('active');
+  const pan=document.getElementById('pan'+id.charAt(0).toUpperCase()+id.slice(1));
+  if(pan)pan.classList.add('active');
+}
+
+// ============================================================
+// LOGS
+// ============================================================
+function admLog(msg){
+  const logs=JSON.parse(localStorage.getItem(ADMIN_LOGS_KEY)||'[]');
+  logs.unshift({ts:new Date().toISOString(),msg});
+  if(logs.length>200)logs.length=200;
+  localStorage.setItem(ADMIN_LOGS_KEY,JSON.stringify(logs));
+}
+
+function renderLogs(){
+  const logs=JSON.parse(localStorage.getItem(ADMIN_LOGS_KEY)||'[]');
+  const el=document.getElementById('logsContainer');
+  if(!logs.length){el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--muted)">Sem atividades registradas</div>';return}
+  el.innerHTML=logs.map(l=>`<div class="log-entry"><div class="log-time">${new Date(l.ts).toLocaleString('pt-BR')}</div><div class="log-msg">${esc(l.msg)}</div></div>`).join('');
+}
+
+function clearLogs(){
+  if(!confirm('Limpar todos os logs?'))return;
+  localStorage.removeItem(ADMIN_LOGS_KEY);
+  renderLogs();
+  admToast('✓ Logs limpos');
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escXml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
+
+function timeAgo(date){
+  const d=Math.floor((Date.now()-new Date(date))/1000);
+  if(d<60)return'agora';
+  if(d<3600)return Math.floor(d/60)+'min';
+  if(d<86400)return Math.floor(d/3600)+'h';
+  if(d<2592000)return Math.floor(d/86400)+'d';
+  return Math.floor(d/2592000)+'m';
+}
+
+function admToast(msg){
+  const t=document.getElementById('admToast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// Focus password field on load
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('adminPass').focus();
+});
+</script>
+</body>
+</html>
