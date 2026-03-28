@@ -1,12 +1,14 @@
 ============================================================
 ESCOLA LIBERAL — RESUMO DO PROJETO
-Última atualização: 26/03/2026
+Última atualização: 28/03/2026
 ============================================================
 
 DOMÍNIO: escolaliberal.com.br
 REPO: https://github.com/natozar/escola-liberal
-HOSTING: GitHub Pages (deploy via push na branch main)
+HOSTING: GitHub Pages (deploy via GitHub Actions — Vite build)
 STACK: HTML/CSS/JS puro (PWA) + Supabase (auth/sync) + Stripe (billing)
+BUILD: Vite 8 + Terser (minificação JS -22% a -45%, CSS hashed)
+CI/CD: GitHub Actions (validate → build → deploy)
 
 ============================================================
 O QUE É
@@ -20,99 +22,60 @@ Objetivo: parceria com ANED (Associação Nacional de Educação Domiciliar).
 ============================================================
 
 1. ECONOMIA — Escola Austríaca (6 módulos, 60 aulas)
-   - Módulo 0: O que é Dinheiro? (💰, cor: sage)
-   - Módulo 1: Oferta e Demanda (📊, cor: sky)
-   - Módulo 2: Empreendedorismo (🚀, cor: honey)
-   - Módulo 3: Finanças Pessoais (💼, cor: coral)
-   - Módulo 4: História Econômica (🏛️, cor: lavender)
-   - Módulo 5: Pensamento Crítico (🧩, cor: mint)
-   Método: Escola Austríaca (Mises, Hayek, Friedman, Sowell)
+   - Módulo 0: O que é Dinheiro? (sage)
+   - Módulo 1: Oferta e Demanda (sky)
+   - Módulo 2: Empreendedorismo (honey)
+   - Módulo 3: Finanças Pessoais (coral)
+   - Módulo 4: História Econômica (lavender)
+   - Módulo 5: Pensamento Crítico (mint)
 
 2. MATEMÁTICA — Método Singapura (1 módulo, 10 aulas)
-   - Módulo 6: Números e Operações (🔢, cor: sky)
-   Método: CPA (Concreto → Pictorial → Abstrato), modelo de barras
+   - Módulo 6: Números e Operações (sky)
 
 3. FILOSOFIA — P4C + Socrático (1 módulo, 10 aulas)
-   - Módulo 7: Aprender a Pensar (🏛️, cor: lavender)
-   Método: Philosophy for Children (Lipman) + Método Socrático
-   Abordagem: dilema primeiro, teoria depois
+   - Módulo 7: Aprender a Pensar (lavender)
 
 4. INTELIGÊNCIA EMOCIONAL (1 módulo, 10 aulas)
-   - Módulo 8: Inteligência Emocional (💡, cor: honey)
-   Método: Case-Based Learning (cenários reais de adolescentes)
-   Inclui: anti-bullying, CNV, resiliência, autoestima
+   - Módulo 8: Inteligência Emocional (honey)
 
 5. PSICOLOGIA DO CRESCIMENTO (1 módulo, 10 aulas)
-   - Módulo 9: Mentalidade de Crescimento (🧠, cor: coral)
-   Método: Growth Mindset (Dweck, Duckworth, Bandura)
-   Inclui: neuroplasticidade, grit, hábitos, metas SMART
+   - Módulo 9: Mentalidade de Crescimento (coral)
 
 6. PORTUGUÊS E REDAÇÃO (1 módulo, 10 aulas)
-   - Módulo 10: Português e Redação (📝, cor: sage)
-   Método: Gramática aplicada + produção textual progressiva
-   Inclui: classes de palavras, interpretação, redação dissertativa, figuras de linguagem
+   - Módulo 10: Português e Redação (sage)
 
 7. CIÊNCIAS DA NATUREZA (1 módulo, 10 aulas)
-   - Módulo 11: Ciências da Natureza (🔬, cor: mint)
-   Método: Investigação científica + experimentos mentais
-   Inclui: método científico, átomos, energia, célula, astronomia
+   - Módulo 11: Ciências da Natureza (mint)
 
 8. HISTÓRIA DO BRASIL (1 módulo, 10 aulas)
-   - Módulo 12: História do Brasil (🇧🇷, cor: coral)
-   Método: Perspectiva liberal/crítica com dados econômicos
-   Inclui: Colônia, Império, República, Era Vargas, Plano Real, Brasil contemporâneo
+   - Módulo 12: História do Brasil (coral)
 
-9. AMERICAN HISTORY — English (1 módulo, 10 aulas) 🇺🇸
-   - Módulo 13: American History (🇺🇸, cor: sky, lang: en)
-   Método: Classical liberal perspective (individual liberty, Constitution, free markets)
-   Inclui: Founding Fathers, Constitution, Civil War, Industrial Revolution, Cold War
-   Público-alvo: brasileiros nos EUA + homeschool families americanas
+9. AMERICAN HISTORY — English (1 módulo, 10 aulas)
+   - Módulo 13: American History (sky, lang: en)
 
 ============================================================
 ESTRUTURA DE ARQUIVOS
 ============================================================
 
-index.html ............ Landing page (SEO, meta tags, apresentação)
-app.html .............. App principal (HTML structure only, ~27KB)
-app.css ............... Estilos do app (Design System v2, ~75KB)
-app.js ................ Lógica do app (navegação, gamificação, ~131KB)
-lessons.json .......... Conteúdo das 100 aulas (10 módulos, ~194KB)
-sw.js ................. Service Worker (cache v6, offline support)
-supabase-client.js .... Auth (email+Google), sync na nuvem, RLS
-stripe-billing.js ..... Billing (free/mensal/anual/vitalício)
-cookie-consent.js ..... LGPD cookie consent
-offline.html .......... Página offline fallback
-auth.html ............. Login/registro
-perfil.html ........... Perfil do usuário
-contato.html .......... Página de contato
-termos.html ........... Termos de uso
-privacidade.html ...... Política de privacidade
-manifest.json ......... PWA manifest
-robots.txt ............ Crawl rules
-sitemap.xml ........... SEO sitemap
-supabase-schema.sql ... Schema do banco (referência)
+index.html ............ Landing page (SEO)
+app.html .............. App principal (~39KB)
+app.css ............... Estilos (~91KB, minificado: 84KB)
+app.js ................ Lógica do app (~157KB, minificado: 122KB)
+lessons/index.json .... Metadata + quizzes de todas as aulas (68KB)
+lessons/mod-N.json .... Conteúdo completo de cada módulo (lazy-load)
+lessons.json .......... Fallback legado (338KB, todas as aulas)
+sw.js ................. Service Worker v19
+supabase-client.js .... Auth + sync (18KB → 10KB min)
+stripe-billing.js ..... Billing (16KB → 11KB min)
+i18n.js ............... Tradução PT/EN (15KB → 9KB min)
+cookie-consent.js ..... LGPD consent
+vite.config.js ........ Build config (minificação + assets)
+.github/workflows/ .... CI/CD (build → deploy GitHub Pages)
 
-============================================================
-ARQUITETURA DO APP
-============================================================
-
-- M[] = array flat de módulos (carregado de lessons.json via fetch)
-- Cada módulo tem: id, title, icon, color, discipline, desc, lessons[]
-- Cada lesson tem: title, sub, xp, content (HTML), quiz
-- Navegação dinâmica: buildSidebar() gera menu a partir de M[]
-- Módulos agrupados por discipline no sidebar e dashboard
-- Desbloqueio por disciplina: primeiro módulo de cada disciplina é livre
-- Economia: 2 primeiros módulos grátis (free plan)
-- State (S): localStorage com done{}, quiz{}, xp, lvl, streak, etc.
-- Gamificação: XP → level up, badges dinâmicos, conquistas por disciplina
-
-CONSTANTES IMPORTANTES NO app.js:
-- DISCIPLINES{} = mapa de disciplinas (label, icon, order)
-- COLOR_MAP{} / COLOR_MUTED_MAP{} = cores por nome
-- buildSidebar() = gera navegação lateral dinamicamente
-- getAllBadges() = gera conquistas dinamicamente (substitui array fixo)
-- getDiscModules(disc) = retorna módulos de uma disciplina
-- isModUnlocked(i) = lógica de desbloqueio por disciplina
+Supabase Edge Functions:
+  supabase/functions/create-checkout/ .. Stripe checkout session
+  supabase/functions/stripe-webhook/ ... Webhook handler
+  supabase/functions/ai-tutor/ ........ Tutor IA com Claude API
 
 ============================================================
 SUPABASE
@@ -120,79 +83,29 @@ SUPABASE
 URL: https://hwjplecfqsckfiwxiedo.supabase.co
 Tabelas: profiles, plans, subscriptions, progress, notes, favorites, timeline
 Auth: email + Google OAuth
-Free plan: 2 módulos de economia + 1º módulo de cada disciplina
-Planos pagos: mensal (R$29,90), anual (R$249,90), vitalício (R$497)
+Edge Functions: create-checkout, stripe-webhook, ai-tutor (deployed)
 
 ============================================================
-DESIGN SYSTEM v2
+TUTOR IA (Claude API) — DEPLOYED, PRECISA DE CRÉDITOS
 ============================================================
-
-PALETA DE CORES:
-- Slate (base dark): #0f1729 / #141d32 / #1a2540 / #1e2d4a
-- Cream (base light): #f5f3ef / #eae7e1 / #ffffff / #f0ede8
-- Sage (primária): #4a9e7e / #5fbf96
-- Sky (info): #5b9bd5
-- Honey (destaque/XP): #dba550 / #f0c06a
-- Coral (erro/alerta): #e07460
-- Lavender (extra): #9b7ed8
-- Mint (extra): #5bd59b
-
-TIPOGRAFIA:
-- Headings: DM Serif Display (Google Fonts)
-- Body: DM Sans (Google Fonts)
-- Code/números: JetBrains Mono (Google Fonts)
-
-TEMAS:
-- Dark [data-theme="dark"] — padrão
-- Light [data-theme="light"]
-- Sincronização via localStorage key 'escola_theme'
+Edge Function: ai-tutor (deployed com --no-verify-jwt)
+Modelo: claude-haiku-4-5-20251001
+Secret setado: ANTHROPIC_API_KEY ✅
+Status: FUNCIONAL mas conta Anthropic sem créditos
+Ação necessária: adicionar créditos em console.anthropic.com/settings/billing
+Custo estimado: ~$0.001 por mensagem (~$10 = 10.000 perguntas)
+Rate limit: 10 msg/dia free, 50 msg/dia premium
+Fallback: chatKB local com 30+ respostas quando API offline
 
 ============================================================
-57 FUNCIONALIDADES IMPLEMENTADAS
+ARQUITETURA LAZY-LOADING (v19)
 ============================================================
-
-NÚCLEO: 10 módulos (100 aulas + 100 quizzes), quiz por aula,
-chat tutor (keyword matching), glossário, flashcards, revisão.
-
-GAMIFICAÇÃO: XP/níveis (7 tiers: Aprendiz→Sábio), streak,
-desafio diário, missões semanais, badges dinâmicos, maratona,
-simulado formal, confetti, certificados exportáveis (PNG).
-
-FERRAMENTAS: anotações por aula, favoritos, busca global,
-tempo de leitura, modo foco, TTS, exportar PDF, timeline,
-revisão espaçada (Leitner 5 caixas), resumo semanal, meta diária.
-
-PERFIS: multi-perfil, painel do responsável (PIN 4 dígitos),
-backup/importação JSON.
-
-UX: onboarding 3 steps, splash screen, atalhos de teclado,
-acessibilidade ARIA completa, PWA offline, banner de instalação,
-versionamento com changelog, skeleton loading, haptic feedback.
-
-MOBILE: bottom nav (5 abas), header app-like, swipe gestures,
-safe areas (notch), touch targets 44px+, sidebar com overlay.
-
-============================================================
-CHAVES DE LOCALSTORAGE
-============================================================
-
-- escola_v2 ............. Estado principal (name, avatar, xp, lvl, etc.)
-- escola_v2_p_<id> ...... Perfis adicionais
-- escola_notes .......... Anotações {chave: texto}
-- escola_favs ........... Favoritos ["0-1", "2-3", ...]
-- escola_theme .......... "dark" ou "light"
-- escola_daily .......... {date, answered, correct}
-- escola_missions ....... {week, claimed: [...]}
-- escola_marathon_best .. {score, time}
-- escola_profiles ....... {default: {name}, p_123: {name}}
-- escola_pin ............ PIN 4 dígitos (string)
-- escola_timeline ....... [{type, text, ts}] (máx 200)
-- escola_spaced ......... {termo: {box, next, reviews}}
-- escola_sfx ............ "on"/"off"
-- escola_last_version ... Ex: "2.5.0"
-- escola_daily_goal ..... {target: N}
-- escola_theme_manual ... "1" se manual
-- escola_swipe_shown .... "1" se já exibido
+1. Boot: carrega lessons/index.json (68KB) — metadata + quizzes
+2. Dashboard renderiza imediato (cards, daily, marathon funcionam)
+3. Ao abrir módulo: goMod() dispara loadFullModule(i) em background
+4. Ao abrir aula: openL() aguarda loadFullModule() se necessário
+5. Após dashboard: preloadModules() carrega restante em background
+6. Fallback: lessons.json legado se index.json falhar
 
 ============================================================
 HISTÓRICO COMPLETO
@@ -204,52 +117,64 @@ FASE 1 — MVP Front-End (22/03/2026):
   ✅ 57 funcionalidades, PWA offline, acessibilidade ARIA
 
 FASE 2 — Correções e Backend (24-25/03/2026):
-  ✅ Removido supabase-auth.js (duplicata com creds placeholder)
-  ✅ Removido netlify.toml (inútil no GitHub Pages)
-  ✅ Unificado CSP em index/app/auth.html
-  ✅ Adicionado noindex em app.html e auth.html
-  ✅ Reescrito sitemap.xml e robots.txt
-  ✅ Corrigido free plan: 1 → 2 módulos
-  ✅ Refatoração: app.html (312KB) → app.html + app.css + app.js + lessons.json
+  ✅ Removido supabase-auth.js, netlify.toml
+  ✅ Unificado CSP, adicionado noindex em app/auth
+  ✅ Refatoração: app.html monolito → app.html + app.css + app.js + lessons.json
   ✅ Async lesson loading com cache fallback
-  ✅ Service Worker v3 → v5
 
 FASE 3 — Expansão Curricular (26/03/2026):
-  ✅ +4 novas disciplinas: Matemática, Filosofia, IE, Psicologia
-  ✅ lessons.json: 6→10 módulos, 60→100 aulas (194KB)
-  ✅ Sidebar dinâmica (buildSidebar) por disciplina
-  ✅ renderCards() com headers de disciplina
-  ✅ renderAch() e getAllBadges() dinâmicos
-  ✅ isModUnlocked() independente por disciplina
-  ✅ Removidos todos hardcoded /60 e refs a 6 módulos
-  ✅ Landing page rebranded: "Plataforma Curricular Homeschool"
-  ✅ SEO/OG/Twitter meta tags atualizados
-  ✅ Service Worker v5 → v6
-  ✅ Deploy GitHub Pages OK
+  ✅ +8 disciplinas: Mat, Filosofia, IE, Psicologia, Português, Ciências, História BR, US History
+  ✅ 10→14 módulos, 100→140 aulas
+  ✅ Sidebar dinâmica, badges dinâmicos, landing page rebrand
+
+FASE 4 — Redesign UX/UI (27/03/2026):
+  ✅ Reestruturação completa: navegação, layout, mobile, dashboard
+
+FASE 5 — QA + Segurança + Performance + IA (28/03/2026):
+  ✅ Auditoria QA completa: 23 bugs corrigidos (save() try/catch,
+    addXP level-up fix, toast type, showPaywall rename, history pushState,
+    JSON.parse safety, backup whitelist, marathon XP limit)
+  ✅ Segurança: RLS admin_settings/profiles/push_subscriptions restrito,
+    open redirect fix no create-checkout, senha padrão removida dos comentários
+  ✅ Performance: lazy-load lessons (338KB→68KB, -80%), scripts defer,
+    fonts preload non-blocking
+  ✅ Vite build pipeline: JS minificação -22% a -45%, CSS hashed,
+    GitHub Actions CI/CD (build → deploy)
+  ✅ Tutor IA com Claude API (Haiku 4.5): Edge Function deployed,
+    context-aware, rate limited, fallback offline
 
 ============================================================
-PRÓXIMOS PASSOS
+PRÓXIMOS PASSOS (FASE 6)
 ============================================================
 
 PRIORIDADE ALTA:
-  ⬜ Testar no navegador (Ctrl+Shift+R para cache v6)
-  ⬜ Testar PWA install e offline mode
-  ⬜ Expandir cada disciplina nova para mais módulos (1→3+ cada)
+  ⬜ Adicionar créditos na conta Anthropic (ativar tutor IA)
+  ⬜ Ativar paywall real (desabilitar MODO TESTE em isModUnlocked)
+  ⬜ Dashboard de pais (relatórios, compliance homeschool)
+  ⬜ Leaderboards/ligas semanais (estilo Duolingo)
 
 PRIORIDADE MÉDIA:
-  ⬜ Glossário expandido para novas disciplinas
-  ⬜ Flashcards para novas disciplinas
-  ⬜ Certificados por disciplina
-  ⬜ Ativar Supabase sync para novos módulos
-  ⬜ Implementar paywall real (Stripe checkout)
-  ⬜ Contato com ANED para parceria
+  ⬜ Geração de quizzes por IA (prática infinita via Claude)
+  ⬜ Plano de estudos personalizado (IA analisa progresso)
+  ⬜ Certificados PDF reais (compliance legal)
+  ⬜ Eventos de XP duplo (boost de engagement)
+  ⬜ Stripe webhook idempotency fix
 
 PRIORIDADE BAIXA:
-  ✅ Renomear repo de "escola-conservadora" para "escola-liberal"
-  ⬜ Criar OG image atualizada (5 disciplinas)
-  ⬜ Tutor IA (chatbot com Claude/GPT)
+  ⬜ Fórum/comunidade in-app
+  ⬜ Video-aulas curtas (3-5 min)
+  ⬜ App nativo via Capacitor (push notifications iOS)
+  ⬜ Split app.js em ES modules
+  ⬜ Contato com ANED para parceria
   ⬜ Simulador de mercado interativo
-  ⬜ Relatório para pais em PDF
-  ⬜ Modo professor (múltiplos alunos)
 
+============================================================
+MÉTRICAS DE MERCADO (pesquisa 28/03/2026)
+============================================================
+- EdTech Brasil: USD 6B (2025) → USD 15.6B (2034)
+- Homeschool BR: 150K+ alunos, crescimento 50%/ano
+- Nenhum concorrente BR combina educação clássica + gamificação + IA
+- Duolingo provou: streaks +60% commitment, leaderboards +40% aulas
+- AI tutoring: +54% pontuação nos testes (Hunt Institute)
+- Custo Claude Haiku: ~$10 = 10.000 perguntas de alunos
 ============================================================
