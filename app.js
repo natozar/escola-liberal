@@ -130,6 +130,7 @@ function ui(){
 }
 
 function isModUnlocked(i){
+  if(!M[i])return false;
   // First module of each discipline is always open
   const disc=M[i].discipline||'economia';
   const discMods=M.map((m,idx)=>({m,idx})).filter(x=>(x.m.discipline||'economia')===disc);
@@ -203,6 +204,7 @@ function goDash(){
   updateGlobalProgress();renderWeeklySummary();renderDailyGoal()
 }
 function goMod(i){
+  if(!M[i])return;
   S.cMod=i;const m=M[i];
   document.getElementById('mvT').textContent=m.icon+' '+m.title;
   document.getElementById('mvS').textContent=m.desc;
@@ -258,7 +260,9 @@ function ans(mi,li,a){
   save()
 }
 function nextL(){
-  const mi=S.cMod,li=S.cLes,lk=`${mi}-${li}`;
+  const mi=S.cMod,li=S.cLes;
+  if(mi===null||mi===undefined||!M[mi]||!M[mi].lessons[li])return;
+  const lk=`${mi}-${li}`;
   if(!S.done[lk]){S.done[lk]=true;addXP(M[mi].lessons[li].xp);toast(`+${M[mi].lessons[li].xp} XP`);save()}
   if(li<M[mi].lessons.length-1)openL(mi,li+1);else{
     const justCompleted=M[mi].lessons.every((_,i)=>S.done[`${mi}-${i}`]);
@@ -267,8 +271,8 @@ function nextL(){
     else toast('🏆 Módulo Concluído!')
   }
 }
-function prevL(){if(S.cLes>0)openL(S.cMod,S.cLes-1)}
-function goBackMod(){goMod(S.cMod)}
+function prevL(){if(S.cMod!==null&&M[S.cMod]&&S.cLes>0)openL(S.cMod,S.cLes-1)}
+function goBackMod(){if(S.cMod!==null&&M[S.cMod])goMod(S.cMod)}
 function setNav(id){document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));const e=document.getElementById(id);if(e)e.classList.add('active')}
 function resetAll(){if(confirm('Resetar todo progresso?')){localStorage.removeItem(SK);S=def();save();goDash()}}
 
@@ -560,7 +564,7 @@ function findAnswer(q){
   }
   if(best&&bestScore>=2)return best.r;
   // Fallback: search lesson content for keywords
-  const contextHint=S.cMod!==null?` Você está no módulo <strong>"${M[S.cMod].title}"</strong> — sugiro explorar as aulas para encontrar a resposta!`:'';
+  const contextHint=(S.cMod!==null&&M[S.cMod])?` Você está no módulo <strong>"${M[S.cMod].title}"</strong> — sugiro explorar as aulas para encontrar a resposta!`:'';
   return 'Boa pergunta! Ainda não tenho uma resposta específica para isso no meu banco de conhecimento.'+contextHint+' Tente reformular ou pergunte sobre: inflação, oferta e demanda, empreendedorismo, juros compostos, escola austríaca, ou qualquer tema das aulas. 📚';
 }
 
@@ -572,7 +576,7 @@ function goGlossary(){
   renderGlossary(GLOSSARY)
 }
 function renderGlossary(items){
-  document.getElementById('glossList').innerHTML=items.map(g=>
+  document.getElementById('glossList').innerHTML=items.filter(g=>M[g.mod]).map(g=>
     `<div class="gl-item" onclick="openL(${g.mod},${g.les})"><div><div class="gl-term">${g.term}</div><div class="gl-def">${g.def}</div><div class="gl-mod">${M[g.mod].icon} ${M[g.mod].title} · Aula ${g.les+1}</div></div></div>`
   ).join('')
 }
@@ -601,9 +605,9 @@ function setFlashMod(i){
   showFlash()
 }
 function showFlash(){
-  const f=flashItems[flashIdx];
+  const f=flashItems[flashIdx];if(!f)return;
   document.getElementById('flashTerm').textContent=f.term;
-  document.getElementById('flashMod').textContent=M[f.mod].icon+' '+M[f.mod].title;
+  document.getElementById('flashMod').textContent=(M[f.mod]?M[f.mod].icon+' '+M[f.mod].title:'');
   document.getElementById('flashDef').textContent=f.def;
   document.getElementById('flashCounter').textContent=`${flashIdx+1}/${flashItems.length}`;
   document.getElementById('flashCard').classList.remove('flipped')
@@ -665,6 +669,7 @@ function renderDaily(){
   // Pick a deterministic quiz for today
   const seed=today.split('').reduce((s,c)=>s+c.charCodeAt(0),0);
   const allQ=[];M.forEach((m,mi)=>m.lessons.forEach((l,li)=>{if(l.quiz)allQ.push({mi,li,q:l.quiz.q,o:l.quiz.o,c:l.quiz.c,exp:l.quiz.exp,mod:m.title,icon:m.icon})}));
+  if(!allQ.length){document.getElementById('dailyChallenge').innerHTML='<div class="daily-card"><div class="daily-head">⚡ <span>Desafio Diário</span></div><div style="font-size:.85rem;color:var(--text-muted)">Nenhum quiz disponível ainda.</div></div>';return}
   const dq=allQ[seed%allQ.length];
   document.getElementById('dailyChallenge').innerHTML=`<div class="daily-card"><div class="daily-head">⚡ <span>Desafio Diário</span><span class="daily-tag">+50 XP</span></div><div class="daily-q">${dq.q}</div><div class="daily-opts">${dq.o.map((o,i)=>`<button class="daily-o" onclick="answerDaily(${i},${dq.c},'${dq.exp.replace(/'/g,"\\'")}')">${o}</button>`).join('')}</div><div class="daily-fb" id="dailyFb"></div><div style="font-size:.7rem;color:var(--text-muted);margin-top:.4rem">${dq.icon} ${dq.mod}</div></div>`
 }
@@ -1378,8 +1383,10 @@ function renderGameDay(){
   updateGamePreview(wMult)
 }
 function updateGamePreview(wMult){
-  const price=parseFloat(document.getElementById('gPrice').value);
-  const qty=parseInt(document.getElementById('gQty').value);
+  const priceEl=document.getElementById('gPrice'),qtyEl=document.getElementById('gQty');
+  if(!priceEl||!qtyEl)return;
+  const price=parseFloat(priceEl.value);
+  const qty=parseInt(qtyEl.value);
   document.getElementById('gPriceVal').textContent=`R$ ${price.toFixed(2).replace('.',',')}`;
   document.getElementById('gQtyVal').textContent=qty;
   const cost=qty*1.5;
@@ -1464,7 +1471,7 @@ function renderProgressChart(){
 function renderContinue(){
   const el=document.getElementById('continueSection');
   // Find last incomplete lesson
-  if(S.cMod!==null&&S.cLes!==null&&!S.done[`${S.cMod}-${S.cLes}`]){
+  if(S.cMod!==null&&S.cLes!==null&&M[S.cMod]&&M[S.cMod].lessons[S.cLes]&&!S.done[`${S.cMod}-${S.cLes}`]){
     const m=M[S.cMod],l=m.lessons[S.cLes];
     el.innerHTML=`<div class="continue-card" onclick="openL(${S.cMod},${S.cLes})"><div class="cc-icon">${m.icon}</div><div class="cc-info"><div class="cc-title">${l.title}</div><div class="cc-sub">${m.title} · Aula ${S.cLes+1}/${m.lessons.length}</div></div><div class="cc-btn">Continuar →</div></div>`;return
   }
@@ -1992,6 +1999,7 @@ function goErrorReview(){
   Object.entries(S.quiz).forEach(([k,v])=>{
     if(v===false){
       const [mi,li]=k.split('-').map(Number);
+      if(!M[mi]||!M[mi].lessons[li])return;
       const m=M[mi],l=m.lessons[li];
       if(l&&l.quiz)wrongs.push({mi,li,mod:m.title,icon:m.icon,q:l.quiz,title:l.title,key:k})
     }
