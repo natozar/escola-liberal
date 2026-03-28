@@ -95,7 +95,7 @@ async function signInGoogle() {
     const { data, error } = await sbClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/auth.html'
+        redirectTo: window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'auth.html'
       }
     });
     if (error) throw error;
@@ -122,7 +122,7 @@ async function signOut() {
 async function resetPassword(email) {
   try {
     const { error } = await sbClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/auth.html'
+      redirectTo: window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'auth.html'
     });
     if (error) throw error;
     return { success: true };
@@ -213,17 +213,17 @@ async function loadUserPlan() {
 
 // Verifica se o módulo está liberado no plano atual
 function isModuleUnlocked(moduleIndex) {
-  // Sem auth = tudo liberado (modo offline/local)
-  if (!syncEnabled || !currentUser) return true;
+  // ====== MODO TESTE: todos os módulos abertos ======
+  // TODO: restaurar lógica de plano quando ativar cobrança
+  return true;
 
-  // Plan details carregados
-  if (window._planDetails?.modules_access) {
-    return window._planDetails.modules_access.includes(moduleIndex);
-  }
-
-  // Fallback: free = módulos 0 e 1
-  if (userPlan === 'free') return moduleIndex <= 1;
-  return true; // premium/familia = tudo
+  // Lógica original (preservada para reativar depois):
+  // if (!syncEnabled || !currentUser) return true;
+  // if (window._planDetails?.modules_access) {
+  //   return window._planDetails.modules_access.includes(moduleIndex);
+  // }
+  // if (userPlan === 'free') return moduleIndex <= 1;
+  // return true;
 }
 
 // Verifica se uma feature está liberada
