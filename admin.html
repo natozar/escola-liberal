@@ -458,7 +458,7 @@ async function authAdminGoogle(){
     initSupabase();
     const{data,error}=await sb.auth.signInWithOAuth({
       provider:'google',
-      options:{redirectTo:window.location.origin+'/admin.html'}
+      options:{redirectTo:window.location.href.substring(0,window.location.href.lastIndexOf('/')+1)+'admin.html'}
     });
     if(error)throw error;
   }catch(e){

@@ -106,12 +106,12 @@ const SK='escola_v2';
 let S=load();
 function def(){return{name:'Aluno',avatar:null,xp:0,lvl:1,streak:0,streakDays:[],last:null,done:{},quiz:{},cMod:null,cLes:null}}
 function load(){try{const d=localStorage.getItem(SK);return d?{...def(),...JSON.parse(d)}:def()}catch(e){return def()}}
-function save(){localStorage.setItem(SK,JSON.stringify(S));if(typeof queueSync==='function')queueSync('progress',S)}
+function save(){try{localStorage.setItem(SK,JSON.stringify(S))}catch(e){console.warn('[save] storage error:',e.message)}if(typeof queueSync==='function')queueSync('progress',S)}
 
 // XP
-function addXP(n){S.xp+=n;const need=S.lvl*100;const oldLvl=S.lvl;while(S.xp>=need){S.xp-=need;S.lvl++;toast(`Nível ${S.lvl}!  🎉`);launchConfetti();playSfx('levelup');logActivity('level',`Subiu para nível ${S.lvl}!`)}save();ui()}
+function addXP(n){if(S.lvl<1)S.lvl=1;S.xp+=n;const oldLvl=S.lvl;while(S.xp>=S.lvl*100){S.xp-=S.lvl*100;S.lvl++;toast(`Nível ${S.lvl}!  🎉`);launchConfetti();playSfx('levelup');logActivity('level',`Subiu para nível ${S.lvl}!`)}save();ui()}
 function totalXP(){let t=S.xp;for(let i=1;i<S.lvl;i++)t+=i*100;return t}
-function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function toast(m,type){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(type?' toast-'+type:'');setTimeout(()=>{t.classList.remove('show')},2500)}
 
 // Streak
 function streak(){
@@ -221,7 +221,7 @@ function renderCards(){
     const clr=getModColor(m.color||'sage');
     const clrMuted=getModColorMuted(m.color||'sage');
     const premium=typeof isModuleUnlocked==='function'&&currentUser&&!isModuleUnlocked(i);
-    const clickAction=unlocked?(premium?`showPaywall(${i})`:`goMod(${i})`):'';
+    const clickAction=unlocked?(premium?`showModulePaywall(${i})`:`goMod(${i})`):'';
     const lockLabel=premium?'🔒 Premium':(!unlocked?'🔒 Bloqueado':'');
     const statusCls=p===100?'completed':p>0?'in-progress':'not-started';
     const statusTxt=p===100?'✓ Completo':p>0?`${done}/${m.lessons.length} aulas`:'Começar';
@@ -294,6 +294,7 @@ function goDash(){
 }
 function goMod(i){
   if(!M[i])return;
+  try{history.pushState({view:'mod',mod:i},'')}catch(e){}
   S.cMod=i;const m=M[i];
   document.getElementById('mvT').textContent=m.icon+' '+m.title;
   document.getElementById('mvS').textContent=m.desc;
@@ -310,6 +311,7 @@ function goMod(i){
 }
 function openL(mi,li){
   if(!M[mi]||!M[mi].lessons[li])return;
+  try{history.pushState({view:'lesson',mod:mi,les:li},'')}catch(e){}
   S.cMod=mi;S.cLes=li;const m=M[mi],l=m.lessons[li];
   if(typeof gtag==='function')gtag('event','lesson_open',{module:m.title,lesson:l.title,module_index:mi,lesson_index:li});
   document.getElementById('lvProg').textContent=`Aula ${li+1}/${m.lessons.length}`;
@@ -491,7 +493,7 @@ function doSearch(q){
 // ============================================================
 const NOTES_KEY='escola_notes';
 function loadNotes(){try{return JSON.parse(localStorage.getItem(NOTES_KEY))||{}}catch(e){return{}}}
-function saveNotes(all){localStorage.setItem(NOTES_KEY,JSON.stringify(all));if(typeof queueSync==='function')queueSync('notes',all)}
+function saveNotes(all){try{localStorage.setItem(NOTES_KEY,JSON.stringify(all))}catch(e){console.warn('[saveNotes] storage error:',e.message)}if(typeof queueSync==='function')queueSync('notes',all)}
 let noteTimer;
 function saveNote(){
   clearTimeout(noteTimer);
@@ -754,7 +756,7 @@ function closeCert(){document.getElementById('certOverlay').classList.remove('sh
 const DAILY_KEY='escola_daily';
 function renderDaily(){
   const today=new Date().toDateString();
-  let daily=JSON.parse(localStorage.getItem(DAILY_KEY)||'{}');
+  let daily;try{daily=JSON.parse(localStorage.getItem(DAILY_KEY)||'{}')}catch(e){daily={}}
   if(daily.date===today&&daily.answered){
     document.getElementById('dailyChallenge').innerHTML=`<div class="daily-card"><div class="daily-head">⚡ <span>Desafio Diário</span><span class="daily-tag">✓ Concluído</span></div><div style="font-size:.85rem;color:var(--text-muted)">Volte amanhã para um novo desafio! ${daily.correct?'+50 XP conquistados 🎉':'Tente de novo amanhã!'}</div></div>`;return
   }
@@ -951,7 +953,7 @@ function obFinish(){
 // ============================================================
 // PAYWALL — shows upgrade prompt for premium modules
 // ============================================================
-function showPaywall(modIdx){
+function showModulePaywall(modIdx){
   const m=M[modIdx];if(!m)return;
   const overlay=document.createElement('div');
   overlay.className='save-modal-overlay';overlay.id='paywallModal';
@@ -1063,7 +1065,7 @@ function ansMarathon(a){
 }
 function endMarathonResult(){
   clearInterval(mInterval);
-  const best=JSON.parse(localStorage.getItem(MARATHON_KEY)||'{}');
+  let best;try{best=JSON.parse(localStorage.getItem(MARATHON_KEY)||'{}')}catch(e){best={}}
   const newBest=!best.score||mScore>best.score||(mScore===best.score&&mTimer<best.time);
   if(newBest){localStorage.setItem(MARATHON_KEY,JSON.stringify({score:mScore,time:mTimer}))}
   const emoji=mScore>=8?'🏆':mScore>=5?'💪':'📚';
@@ -1074,7 +1076,7 @@ function endMarathonResult(){
     ${newBest?'<div style="color:var(--honey);font-weight:700;font-size:.85rem;margin-bottom:1rem">🎉 Novo recorde pessoal!</div>':''}
     <div class="marathon-best">Melhor: ${best.score||mScore}/${10} em ${formatTime(best.time||mTimer)}</div>
     <div style="display:flex;gap:.75rem;justify-content:center"><button class="btn btn-sage" onclick="startMarathon()">Jogar Novamente</button><button class="btn btn-ghost" onclick="goDash()">Dashboard</button></div></div>`;
-  if(mScore>=5){addXP(mScore*10);toast(`+${mScore*10} XP — Maratona!`)}
+  if(mScore>=5){const mKey='escola_marathon_today';let mt;try{mt=JSON.parse(localStorage.getItem(mKey)||'{}')}catch(e){mt={}}const td=new Date().toDateString();if(mt.date!==td){mt={date:td,count:0}}if(mt.count<3){addXP(mScore*10);toast(`+${mScore*10} XP — Maratona!`);mt.count++;try{localStorage.setItem(mKey,JSON.stringify(mt))}catch(e){}}else{toast('XP da maratona: limite diário atingido (3x)')}}
 }
 function endMarathon(){clearInterval(mInterval);goDash()}
 
@@ -1084,7 +1086,7 @@ function endMarathon(){clearInterval(mInterval);goDash()}
 const MISSIONS_KEY='escola_missions';
 function getWeekId(){const d=new Date();const jan1=new Date(d.getFullYear(),0,1);return d.getFullYear()+'-W'+Math.ceil(((d-jan1)/864e5+jan1.getDay()+1)/7)}
 function getMissions(){
-  const stored=JSON.parse(localStorage.getItem(MISSIONS_KEY)||'{}');
+  let stored;try{stored=JSON.parse(localStorage.getItem(MISSIONS_KEY)||'{}')}catch(e){stored={}}
   const wk=getWeekId();
   if(stored.week===wk)return stored;
   const missions={week:wk,claimed:[],list:[
@@ -1138,7 +1140,7 @@ function claimMission(id,xp){
 const PROFILES_KEY='escola_profiles';
 let activeProfile='default';
 function loadProfiles(){try{return JSON.parse(localStorage.getItem(PROFILES_KEY))||{default:{name:S.name}}}catch(e){return{default:{name:S.name}}}}
-function saveProfiles(p){localStorage.setItem(PROFILES_KEY,JSON.stringify(p))}
+function saveProfiles(p){try{localStorage.setItem(PROFILES_KEY,JSON.stringify(p))}catch(e){console.warn('[saveProfiles] storage error:',e.message)}}
 function renderProfileSwitch(){
   const profiles=loadProfiles();const keys=Object.keys(profiles);
   if(keys.length<=1){
@@ -1713,6 +1715,7 @@ function printLesson(){
   if(S.cMod===null||S.cLes===null||!M[S.cMod]||!M[S.cMod].lessons[S.cLes])return;
   const m=M[S.cMod],l=m.lessons[S.cLes];
   const w=window.open('','_blank');
+  if(!w){toast('Permita popups para imprimir','error');return;}
   w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${l.title} — escola liberal</title>
   <style>*{margin:0;padding:0;box-sizing:border-box;font-family:Georgia,serif}body{padding:2.5rem;max-width:700px;margin:0 auto;color:#1a1a2e;font-size:14px;line-height:1.7}
   h2{font-size:1.5rem;margin-bottom:.5rem}h3{font-size:1.1rem;margin:1.5rem 0 .5rem;color:#3d8b6e}
@@ -1954,7 +1957,8 @@ function importBackup(){
         const data=JSON.parse(ev.target.result);
         if(!data.escola_v2){toast('Arquivo inválido','error');return}
         if(!confirm('Importar backup substituirá seu progresso atual. Continuar?'))return;
-        Object.entries(data).forEach(([k,v])=>localStorage.setItem(k,v));
+        const ALLOWED_KEYS=['escola_v2','escola_notes','escola_favs','escola_theme','escola_daily','escola_missions','escola_marathon_best','escola_profiles','escola_pin','escola_timeline','escola_spaced','escola_sfx','escola_last_version','escola_daily_goal','escola_notif'];
+        Object.entries(data).forEach(([k,v])=>{if(ALLOWED_KEYS.includes(k)||k.startsWith('escola_v2_p_'))try{localStorage.setItem(k,v)}catch(e){}});
         toast('Backup importado! Recarregando...','success');
         setTimeout(()=>location.reload(),1000)
       }catch(err){toast('Erro ao ler arquivo de backup','error')}
@@ -1973,8 +1977,8 @@ function showBackupMenu(){
 // STUDY NOTIFICATIONS
 // ============================================================
 const NOTIF_KEY='escola_notif';
-function getNotifSettings(){return JSON.parse(localStorage.getItem(NOTIF_KEY)||'{"enabled":false,"hour":19,"minute":0}')}
-function saveNotifSettings(s){localStorage.setItem(NOTIF_KEY,JSON.stringify(s))}
+function getNotifSettings(){try{return JSON.parse(localStorage.getItem(NOTIF_KEY)||'{"enabled":false,"hour":19,"minute":0}')}catch(e){return{enabled:false,hour:19,minute:0}}}
+function saveNotifSettings(s){try{localStorage.setItem(NOTIF_KEY,JSON.stringify(s))}catch(e){}}
 
 function requestNotifPermission(){
   if(!('Notification' in window)){toast('Seu navegador não suporta notificações','error');return Promise.resolve(false)}
@@ -2247,7 +2251,7 @@ if(_origStartMarathon){
 // WEEKLY SUMMARY
 // ============================================================
 function renderWeeklySummary(){
-  const timeline=JSON.parse(localStorage.getItem('escola_timeline')||'[]');
+  let timeline;try{timeline=JSON.parse(localStorage.getItem('escola_timeline')||'[]')}catch(e){timeline=[]}
   const now=new Date();
   const weekStart=new Date(now);weekStart.setDate(now.getDate()-now.getDay());weekStart.setHours(0,0,0,0);
   const prevWeekStart=new Date(weekStart);prevWeekStart.setDate(prevWeekStart.getDate()-7);
@@ -2290,10 +2294,10 @@ function renderWeeklySummary(){
 // DAILY GOAL
 // ============================================================
 const GOAL_KEY='escola_daily_goal';
-function getDailyGoal(){return JSON.parse(localStorage.getItem(GOAL_KEY)||'{"target":3}')}
-function saveDailyGoal(g){localStorage.setItem(GOAL_KEY,JSON.stringify(g))}
+function getDailyGoal(){try{return JSON.parse(localStorage.getItem(GOAL_KEY)||'{"target":3}')}catch(e){return{target:3}}}
+function saveDailyGoal(g){try{localStorage.setItem(GOAL_KEY,JSON.stringify(g))}catch(e){}}
 function getTodayLessons(){
-  const timeline=JSON.parse(localStorage.getItem('escola_timeline')||'[]');
+  let timeline;try{timeline=JSON.parse(localStorage.getItem('escola_timeline')||'[]')}catch(e){timeline=[]}
   const today=new Date().toDateString();
   return timeline.filter(e=>e.type==='lesson'&&new Date(e.ts).toDateString()===today).length
 }
@@ -2569,6 +2573,15 @@ function updateLangToggle(){
     flag.textContent='🇧🇷';label.textContent='Português';sub.textContent='Trocar idioma'
   }
 }
+
+// BROWSER BACK/FORWARD — restore view from history state
+window.addEventListener('popstate',function(e){
+  const s=e.state;
+  if(!s||!s.view){goDash();return}
+  if(s.view==='mod'&&M[s.mod])goMod(s.mod);
+  else if(s.view==='lesson'&&M[s.mod]&&M[s.mod].lessons[s.les])openL(s.mod,s.les);
+  else goDash();
+});
 
 // INIT — load lessons then bootstrap
 (async function _boot(){

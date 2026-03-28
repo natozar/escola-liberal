@@ -69,7 +69,8 @@ async function signUpEmail(email, password, name) {
       email,
       password,
       options: {
-        data: { full_name: name || 'Aluno' }
+        data: { full_name: name || 'Aluno' },
+        emailRedirectTo: window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'auth.html'
       }
     });
     if (error) throw error;
@@ -505,6 +506,14 @@ async function flushSyncQueue() {
       }
     } catch (e) {
       console.warn('[Sync] Erro ao flush:', e.message);
+      // Detect expired session and attempt refresh
+      if (e.message && (e.message.includes('JWT') || e.message.includes('401') || e.message.includes('token'))) {
+        try { await sbClient.auth.refreshSession(); } catch (re) {
+          console.warn('[Sync] Session refresh failed:', re.message);
+          syncEnabled = false;
+          return;
+        }
+      }
       // Re-enqueue em caso de erro
       syncQueue.push(item);
     }

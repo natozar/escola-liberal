@@ -67,8 +67,17 @@ CREATE TABLE IF NOT EXISTS public.admin_settings (
 
 ALTER TABLE public.admin_settings ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Allow anon admin_settings" ON public.admin_settings
-  FOR ALL TO anon USING (true) WITH CHECK (true);
+-- SECURITY FIX: admin_settings only accessible to authenticated admin users
+CREATE POLICY "Admin read admin_settings" ON public.admin_settings
+  FOR SELECT TO authenticated USING (
+    auth.uid() IN (SELECT id FROM profiles WHERE email = ANY(ARRAY['chatsagrado@gmail.com']))
+  );
+CREATE POLICY "Admin write admin_settings" ON public.admin_settings
+  FOR ALL TO authenticated USING (
+    auth.uid() IN (SELECT id FROM profiles WHERE email = ANY(ARRAY['chatsagrado@gmail.com']))
+  ) WITH CHECK (
+    auth.uid() IN (SELECT id FROM profiles WHERE email = ANY(ARRAY['chatsagrado@gmail.com']))
+  );
 
 -- 4. Tabela de push subscriptions (Web Push API)
 -- Para push real via VAPID/FCM no futuro
@@ -91,8 +100,13 @@ CREATE POLICY "Users manage own subscriptions" ON public.push_subscriptions
   FOR ALL USING (auth.uid() = profile_id)
   WITH CHECK (auth.uid() = profile_id);
 
-CREATE POLICY "Anon can read subscriptions" ON public.push_subscriptions
-  FOR SELECT TO anon USING (true);
+-- SECURITY FIX: removed anon read access to push_subscriptions
+-- Only authenticated admins can read all subscriptions
+CREATE POLICY "Admin can read all subscriptions" ON public.push_subscriptions
+  FOR SELECT TO authenticated USING (
+    auth.uid() = profile_id OR
+    auth.uid() IN (SELECT id FROM profiles WHERE email = ANY(ARRAY['chatsagrado@gmail.com']))
+  );
 
 -- 5. Índices para performance
 CREATE INDEX IF NOT EXISTS idx_profiles_created_at ON profiles(created_at);
@@ -132,8 +146,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
--- Grant access to the view
-GRANT SELECT ON public.admin_users_view TO anon;
+-- SECURITY FIX: admin_users_view only for authenticated admin users (removed anon)
 GRANT SELECT ON public.admin_users_view TO authenticated;
 
 -- ============================================================

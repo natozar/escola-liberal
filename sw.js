@@ -1,4 +1,4 @@
-// Escola Liberal PWA — Service Worker v17
+// Escola Liberal PWA — Service Worker v18
 // Estratégia: Network-first (navegação) + Stale-While-Revalidate (assets) + Cache-first (fonts)
 const CACHE_NAME = 'escola-liberal-v18';
 const STATIC_CACHE = 'escola-static-v18';

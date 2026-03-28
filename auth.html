@@ -445,8 +445,8 @@ function checkRecoveryFlow() {
     document.getElementById('signupForm').classList.remove('active');
     document.getElementById('newPassForm').style.display = 'block';
     showSuccess('Link válido! Agora escolha sua nova senha.');
-    // Clean URL
-    window.history.replaceState({}, '', window.location.pathname);
+    // Clean URL AFTER Supabase SDK has processed the hash (delay to avoid race condition)
+    setTimeout(function(){ window.history.replaceState({}, '', window.location.pathname); }, 1000);
     return true;
   }
   return false;

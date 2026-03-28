@@ -54,6 +54,17 @@ serve(async (req) => {
 
     const { priceId, successUrl, cancelUrl } = await req.json()
 
+    // Validate redirect URLs to prevent open redirect attacks
+    const ALLOWED_ORIGINS = ['https://natozar.github.io', 'https://escolaliberal.com.br', 'http://localhost:3000', 'http://127.0.0.1:5500']
+    const DEFAULT_SUCCESS = 'https://natozar.github.io/escola-liberal/app.html?checkout=success'
+    const DEFAULT_CANCEL = 'https://natozar.github.io/escola-liberal/app.html?checkout=cancel'
+    function isAllowedUrl(url: string | undefined): boolean {
+      if (!url) return false
+      try { return ALLOWED_ORIGINS.some(o => new URL(url).origin === o) } catch { return false }
+    }
+    const safeSuccessUrl = isAllowedUrl(successUrl) ? successUrl : DEFAULT_SUCCESS
+    const safeCancelUrl = isAllowedUrl(cancelUrl) ? cancelUrl : DEFAULT_CANCEL
+
     // Get or create Stripe customer
     let stripeCustomerId: string
     const { data: existingSub } = await supabase
@@ -85,8 +96,8 @@ serve(async (req) => {
       customer: stripeCustomerId,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: isRecurring ? 'subscription' : 'payment',
-      success_url: successUrl || 'https://natozar.github.io/escola-liberal/app.html?checkout=success',
-      cancel_url: cancelUrl || 'https://natozar.github.io/escola-liberal/app.html?checkout=cancel',
+      success_url: safeSuccessUrl,
+      cancel_url: safeCancelUrl,
       metadata: { user_id: user.id },
       allow_promotion_codes: true,
       billing_address_collection: 'auto',

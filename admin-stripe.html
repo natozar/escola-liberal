@@ -1503,9 +1503,8 @@ supabase functions deploy stripe-webhook</div>
 // ── Configurações de segurança ──
 // ATENÇÃO: troque PASSWORD_HASH por um hash SHA-256 da sua senha.
 // Para gerar: https://emn178.github.io/online-tools/sha256.html
-// Senha padrão inicial: Admin@2024  (troque ANTES de usar em produção)
+// IMPORTANTE: troque a senha padrão antes de usar em produção!
 const AUTH_CONFIG = {
-  // SHA-256 de "Admin@2024"  ← troque por sua senha após o primeiro acesso
   PASSWORD_HASH: 'd3fc50c8f714cebd16d6c827826df01205bf519529f9d34775293cf9b70a420e',
   SESSION_KEY: 'ec_admin_auth',
   SESSION_TTL: 4 * 60 * 60 * 1000,  // 4 horas
