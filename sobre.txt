@@ -16,7 +16,7 @@ PWA instalável, funciona offline, com gamificação (XP, níveis, badges, strea
 Objetivo: parceria com ANED (Associação Nacional de Educação Domiciliar).
 
 ============================================================
-8 DISCIPLINAS · 13 MÓDULOS · 130 AULAS
+9 DISCIPLINAS · 14 MÓDULOS · 140 AULAS (PT + EN)
 ============================================================
 
 1. ECONOMIA — Escola Austríaca (6 módulos, 60 aulas)
@@ -61,6 +61,12 @@ Objetivo: parceria com ANED (Associação Nacional de Educação Domiciliar).
    - Módulo 12: História do Brasil (🇧🇷, cor: coral)
    Método: Perspectiva liberal/crítica com dados econômicos
    Inclui: Colônia, Império, República, Era Vargas, Plano Real, Brasil contemporâneo
+
+9. AMERICAN HISTORY — English (1 módulo, 10 aulas) 🇺🇸
+   - Módulo 13: American History (🇺🇸, cor: sky, lang: en)
+   Método: Classical liberal perspective (individual liberty, Constitution, free markets)
+   Inclui: Founding Fathers, Constitution, Civil War, Industrial Revolution, Cold War
+   Público-alvo: brasileiros nos EUA + homeschool families americanas
 
 ============================================================
 ESTRUTURA DE ARQUIVOS

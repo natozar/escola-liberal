@@ -461,7 +461,7 @@ const chatKB=[
   {k:['hayek','friedrich hayek','conhecimento disperso','caminho da servidão'],r:'<strong>Friedrich Hayek</strong> mostrou que nenhum planejador central pode ter todo o conhecimento necessário para coordenar a economia. O preço livre faz isso naturalmente. Sua obra "O Caminho da Servidão" é um alerta contra o totalitarismo.'},
   // Perguntas gerais
   {k:['escola austríaca','austríaca','austríacos'],r:'A <strong>Escola Austríaca de Economia</strong> defende mercado livre, propriedade privada, padrão-ouro e mínima intervenção estatal. Principais pensadores: Carl Menger, Ludwig von Mises, Friedrich Hayek, Murray Rothbard. É a base teórica deste curso.'},
-  {k:['como funciona','sobre o curso','módulos','aulas'],r:'O curso tem <strong>13 módulos com 10 aulas cada</strong> (130 aulas total) em 8 disciplinas: Economia (6 módulos), Matemática, Filosofia, Inteligência Emocional, Psicologia do Crescimento, Português e Redação, Ciências da Natureza e História do Brasil. Cada aula tem conteúdo + quiz. Complete para ganhar XP e subir de nível!'},
+  {k:['como funciona','sobre o curso','módulos','aulas','how it works','about'],r:'O curso tem <strong>14 módulos com 10 aulas cada</strong> (140 aulas total) em 9 disciplinas: Economia (6 módulos), Matemática, Filosofia, Inteligência Emocional, Psicologia do Crescimento, Português e Redação, Ciências da Natureza, História do Brasil e American History (EN). Cada aula tem conteúdo + quiz. Complete para ganhar XP e subir de nível! | The course has <strong>14 modules with 10 lessons each</strong> (140 lessons total) across 9 subjects, including American History in English.'},
   {k:['xp','nível','pontos','gamificação'],r:'Você ganha <strong>XP</strong> ao completar aulas (25-30 XP) e acertar quizzes (+15 XP). A cada nível, precisa de mais XP (nível × 100). Mantenha uma sequência diária para desbloquear conquistas especiais!'},
 ];
 
@@ -511,7 +511,8 @@ function getContextSugs(){
       ['O que é neuroplasticidade?','Mindset fixo vs crescimento?','O que são metas SMART?'],
       ['O que são classes de palavras?','Como fazer uma redação nota 1000?','O que são figuras de linguagem?'],
       ['O que é o método científico?','Como funcionam os átomos?','O que é uma cadeia alimentar?'],
-      ['Como o Brasil foi descoberto?','O que foi o Plano Real?','Quem foi Visconde de Mauá?']
+      ['Como o Brasil foi descoberto?','O que foi o Plano Real?','Quem foi Visconde de Mauá?'],
+      ['What was the American Revolution?','Who wrote the Constitution?','What caused the Great Depression?']
     ];
     return modSugs[S.cMod]||modSugs[0];
   }
@@ -2277,11 +2278,28 @@ document.addEventListener('click',e=>{
   if(e.target.closest('.btn,.qz-o,.ni,.bnav-item,.er-opt'))vibrate()
 },{passive:true});
 
+// ============================================================
+// LANGUAGE TOGGLE HELPER
+// ============================================================
+function updateLangToggle(){
+  const flag=document.getElementById('langFlag');
+  const label=document.getElementById('langLabel');
+  const sub=document.getElementById('langSub');
+  if(!flag||!label||!sub)return;
+  if(CURRENT_LANG==='pt'){
+    flag.textContent='🇺🇸';label.textContent='English';sub.textContent='Switch language'
+  }else{
+    flag.textContent='🇧🇷';label.textContent='Português';sub.textContent='Trocar idioma'
+  }
+}
+
 // INIT — load lessons then bootstrap
 (async function _boot(){
+  if(typeof initI18n==='function')initI18n();
   const ok=await loadLessons();
   if(!ok)return; // errorScreen already shown
   buildSidebar();
+  updateLangToggle();
   streak();
   initOnboard();
 updateSfxLabel();

@@ -265,6 +265,10 @@
         <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">🔊</div>
         <div><div class="ni-txt" id="sfxLabel">Sons Ligados</div><div class="ni-sub">Efeitos sonoros</div></div>
       </div>
+      <div class="ni" onclick="setLang(CURRENT_LANG==='pt'?'en':'pt');buildSidebar();updateLangToggle()" role="button" tabindex="0" id="langToggle">
+        <div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)" id="langFlag">🇺🇸</div>
+        <div><div class="ni-txt" id="langLabel">English</div><div class="ni-sub" id="langSub">Switch language</div></div>
+      </div>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema claro e escuro">
         <div class="theme-switch"></div>
         <div><div class="theme-label" id="themeLabel">Modo Claro</div><div class="theme-sub" id="themeSub">Trocar aparência</div></div>
@@ -531,6 +535,7 @@
   </div>
 </div>
 
+<script src="i18n.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
