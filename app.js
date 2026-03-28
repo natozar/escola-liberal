@@ -1,4 +1,11 @@
 // ============================================================
+// SAFE DOM HELPER — prevents "Cannot read properties of null"
+// ============================================================
+const _origById=document.getElementById.bind(document);
+const _nullProxy=new Proxy(document.createElement('div'),{get(t,p){if(p==='__isNull')return true;const v=t[p];return typeof v==='function'?v.bind(t):v},set(t,p,v){return true}});
+document.getElementById=function(id){return _origById(id)||_nullProxy};
+
+// ============================================================
 // COURSE DATA — loaded from external JSON for performance
 // ============================================================
 let M=[];
@@ -90,25 +97,16 @@ function streak(){
 // UI
 function ui(){
   const need=S.lvl*100;const li=getLevelInfo(S.lvl);
-  document.getElementById('uLvl').textContent=S.lvl;
+  const _s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  _s('uLvl',S.lvl);
   const xpPct=Math.round(S.xp/need*100);
   const xpBar=document.getElementById('xpBar');
-  xpBar.style.width=xpPct+'%';
-  xpBar.setAttribute('role','progressbar');
-  xpBar.setAttribute('aria-valuenow',S.xp);
-  xpBar.setAttribute('aria-valuemin','0');
-  xpBar.setAttribute('aria-valuemax',need);
-  xpBar.setAttribute('aria-label',`Experiência: ${S.xp}/${need} XP (${xpPct}%)`);
-  document.getElementById('xpNow').textContent=S.xp;
-  document.getElementById('xpMax').textContent=need;
-  document.getElementById('sXP').textContent=totalXP();
-  document.getElementById('sStreak').textContent=S.streak+'🔥';
-  document.getElementById('wName').textContent=S.name;
-  document.getElementById('pName').textContent=S.name;
-  document.getElementById('avatarI').textContent=S.avatar||S.name[0];
+  if(xpBar){xpBar.style.width=xpPct+'%';xpBar.setAttribute('role','progressbar');xpBar.setAttribute('aria-valuenow',S.xp);xpBar.setAttribute('aria-valuemin','0');xpBar.setAttribute('aria-valuemax',need);xpBar.setAttribute('aria-label',`Experiência: ${S.xp}/${need} XP (${xpPct}%)`);}
+  _s('xpNow',S.xp);_s('xpMax',need);_s('sXP',totalXP());_s('sStreak',S.streak+'🔥');
+  _s('wName',S.name);_s('pName',S.name);_s('avatarI',S.avatar||S.name[0]);
   // Level name badge
   const lvlEl=document.querySelector('.profile-lvl');
-  lvlEl.innerHTML=`Nível ${S.lvl} · <span class="level-badge ${li.cls}">${li.emoji} ${li.name}</span>`;
+  if(lvlEl)lvlEl.innerHTML=`Nível ${S.lvl} · <span class="level-badge ${li.cls}">${li.emoji} ${li.name}</span>`;
   const done=Object.keys(S.done).length,total=M.reduce((s,m)=>s+m.lessons.length,0);
   document.getElementById('sLessons').textContent=done;
   const qt=Object.keys(S.quiz).length,qc=Object.values(S.quiz).filter(v=>v).length;
@@ -196,9 +194,10 @@ function renderAch(){
 function goDash(){
   hideAllViews();
   const vd=document.getElementById('vDash');
+  if(!vd)return;
   vd.style.display='block';vd.classList.add('view-enter');
   setTimeout(()=>vd.classList.remove('view-enter'),350);
-  document.getElementById('focusBtn').style.display='none';
+  const fb=document.getElementById('focusBtn');if(fb)fb.style.display='none';
   if(document.body.classList.contains('focus-mode'))toggleFocus();
   setNav('nDash');ui();renderContinue();renderQuote();renderProgressChart();renderDaily();renderMissions();renderFavs();renderProfileSwitch();
   updateGlobalProgress();renderWeeklySummary();renderDailyGoal()
@@ -1966,6 +1965,7 @@ function updateGlobalProgress(){
   const total=M.reduce((s,m)=>s+m.lessons.length,0);
   const pct=total?Math.round(done/total*100):0;
   const fillEl=document.getElementById('globalProgressFill');
+  if(!fillEl)return;
   fillEl.style.width=pct+'%';
   fillEl.setAttribute('role','progressbar');
   fillEl.setAttribute('aria-valuenow',pct);
