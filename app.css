@@ -997,6 +997,18 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;-webkit-touc
   .mc .mc-info h3{font-size:.85rem}
   .mc .mc-info>p{display:none}
   .mc .mc-status{position:static;margin-top:.4rem;font-size:.68rem}
+  /* Module view — lesson list cards */
+  .modv-head{padding:0 .25rem}
+  .modv-head h2{font-size:1.2rem}
+  .modv-head .btn{min-height:44px}
+  .lsn{padding:1rem;gap:.75rem;border-radius:var(--r-lg);min-height:56px}
+  .lsn-n{width:40px;height:40px;font-size:.9rem}
+  .lsn-info h4{font-size:.88rem}
+  .lsn-meta{flex-direction:column;gap:.2rem;align-items:flex-end}
+  .reading-time{font-size:.65rem;color:var(--text-muted)}
+  /* Breadcrumb clickable items */
+  .mh-breadcrumb span{padding:.15rem .35rem;border-radius:var(--r-sm);cursor:pointer;-webkit-tap-highlight-color:transparent}
+  .mh-breadcrumb span:active{background:var(--sage-muted)}
 }
 @media(max-width:600px){
   .main{padding:calc(60px + env(safe-area-inset-top)) 1rem calc(70px + env(safe-area-inset-bottom))!important}

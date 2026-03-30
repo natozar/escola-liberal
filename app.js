@@ -2568,6 +2568,12 @@ function renderDiscGrid(){
   const grid=document.getElementById('discGrid');
   const tools=document.getElementById('toolsGrid');
   if(!grid)return;
+  // Reset title and show tools
+  const titleEl=document.querySelector('.aulas-title');
+  if(titleEl)titleEl.textContent='Escolha uma Disciplina';
+  if(tools)tools.style.display='';
+  const toolsTitle=document.querySelector('.tools-title');
+  if(toolsTitle)toolsTitle.style.display='';
 
   // Group modules by discipline
   const grouped={};const order=[];
@@ -2622,8 +2628,11 @@ function toggleDiscMobile(disc){
 
   const grid=document.getElementById('discGrid');
   const tools=document.getElementById('toolsGrid');
-  document.querySelector('.aulas-title').textContent=d.label;
+  const titleEl=document.querySelector('.aulas-title');
+  if(titleEl)titleEl.textContent=d.label;
   if(tools)tools.style.display='none';
+  const toolsTitle=document.querySelector('.tools-title');
+  if(toolsTitle)toolsTitle.style.display='none';
 
   let html='';
   mods.forEach(x=>{
@@ -2660,8 +2669,13 @@ goMod=function(i){
   updateBottomNav('aulas');
   const done=M[i].lessons.filter((_,li)=>S.done[`${i}-${li}`]).length;
   const pct=Math.round(done/M[i].lessons.length*100);
-  updateMobileHeader(M[i].icon+' '+M[i].title,true,`<span>Disciplinas</span> › ${M[i].title}`,pct);
-  _mobileBackFn=()=>goDash()
+  const disc=M[i].discipline||'economia';
+  const d=DISCIPLINES[disc]||{label:disc,icon:'📚'};
+  updateMobileHeader(M[i].icon+' '+M[i].title,true,`<span onclick="goAulasTab()" style="cursor:pointer;text-decoration:underline">Aulas</span> › <span onclick="toggleDiscMobile('${disc}')" style="cursor:pointer;text-decoration:underline">${d.label}</span> › ${M[i].title}`,pct);
+  // Back goes to discipline view (or Aulas tab if single-module discipline)
+  const discMods=M.filter(m=>m.discipline===disc);
+  _mobileBackFn=discMods.length>1?()=>toggleDiscMobile(disc):()=>goAulasTab();
+  closeSideMobile();
 };
 const _origOpenL=openL;
 openL=function(mi,li){
