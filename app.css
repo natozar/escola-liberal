@@ -1142,3 +1142,13 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;-webkit-touc
 .tools-grid-item .tg-label{font-size:.68rem;font-weight:600;color:var(--text-secondary);text-align:center;line-height:1.2}
 
 @media(min-width:901px){#vAulas{display:none!important}}
+
+/* ====== UPDATE BANNER ====== */
+.update-banner{position:fixed;top:-60px;left:50%;transform:translateX(-50%);z-index:1100;display:flex;align-items:center;gap:.75rem;padding:.6rem 1rem;background:var(--sage);color:#fff;border-radius:0 0 var(--r-lg) var(--r-lg);box-shadow:0 4px 20px rgba(0,0,0,.25);font-size:.85rem;font-family:'DM Sans',sans-serif;transition:top .4s var(--ease);max-width:95vw}
+.update-banner.show{top:0}
+@media(max-width:900px){.update-banner.show{top:calc(env(safe-area-inset-top))}}
+.update-text{flex:1;font-weight:500;white-space:nowrap}
+.update-btn{background:#fff;color:var(--sage);border:none;border-radius:var(--r-full);padding:.35rem 1rem;font-size:.8rem;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;transition:transform .15s}
+.update-btn:active{transform:scale(.95)}
+.update-btn:disabled{opacity:.7;cursor:wait}
+.update-dismiss{background:none;border:none;color:rgba(255,255,255,.7);font-size:1.1rem;cursor:pointer;padding:.25rem;line-height:1}
