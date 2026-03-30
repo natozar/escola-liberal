@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync, cpSync } from 'fs';
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync, cpSync, copyFileSync } from 'fs';
+import { execSync } from 'child_process';
 import { minify } from 'terser';
 
 // Collect all HTML entry points
@@ -12,40 +13,54 @@ htmlFiles.forEach(f => { input[f.replace('.html', '')] = resolve(__dirname, f); 
 function minifyLegacyJS() {
   return {
     name: 'minify-legacy-js',
-    closeBundle: async () => {
+    writeBundle: async () => {
+      const root = __dirname;
+      console.log('  [plugin] writeBundle running, root:', root);
+      const dist = resolve(root, 'dist');
       const jsFiles = ['app.js', 'i18n.js', 'cookie-consent.js', 'supabase-client.js', 'stripe-billing.js'];
       for (const file of jsFiles) {
-        if (!existsSync(file)) continue;
-        const code = readFileSync(file, 'utf8');
+        const src = resolve(root, file);
+        if (!existsSync(src)) continue;
+        const code = readFileSync(src, 'utf8');
         const result = await minify(code, {
           compress: { passes: 2, drop_console: false },
           format: { comments: false },
           mangle: true
         });
-        writeFileSync(resolve('dist', file), result.code);
+        writeFileSync(resolve(dist, file), result.code);
         const saved = Math.round((1 - result.code.length / code.length) * 100);
         console.log(`  ✓ ${file}: ${Math.round(code.length/1024)}KB → ${Math.round(result.code.length/1024)}KB (-${saved}%)`);
       }
 
-      // Copy static assets that Vite doesn't handle
-      const staticDirs = ['lessons', 'assets', 'supabase'];
-      for (const dir of staticDirs) {
-        if (existsSync(dir)) {
-          cpSync(dir, resolve('dist', dir), { recursive: true });
-          console.log(`  ✓ Copied ${dir}/`);
-        }
-      }
+      console.log('  [plugin] Copying static assets...');
+      // Use shell commands to copy (avoids Node cpSync issues with accented paths on Windows)
+      try {
+        execSync(`xcopy /E /I /Y /Q "${resolve(root, 'lessons')}" "${resolve(dist, 'lessons')}"`, { stdio: 'pipe' });
+        console.log('  ✓ Copied lessons/');
+      } catch(e) { console.error('  ✗ lessons:', e.message); }
+      try {
+        execSync(`xcopy /E /I /Y /Q "${resolve(root, 'assets')}" "${resolve(dist, 'assets')}"`, { stdio: 'pipe' });
+        console.log('  ✓ Copied assets/');
+      } catch(e) { console.error('  ✗ assets:', e.message); }
+      try {
+        execSync(`xcopy /E /I /Y /Q "${resolve(root, 'supabase')}" "${resolve(dist, 'supabase')}"`, { stdio: 'pipe' });
+        console.log('  ✓ Copied supabase/');
+      } catch(e) { console.error('  ✗ supabase:', e.message); }
 
-      // Copy lessons.json (fallback) and sw.js (can't minify due to template literals)
-      for (const f of ['lessons.json', 'sw.js']) {
-        if (existsSync(f)) cpSync(f, resolve('dist', f));
+      // Copy individual files
+      for (const f of ['lessons.json', 'sw.js', 'CNAME', 'robots.txt', 'sitemap.xml']) {
+        const src = resolve(root, f);
+        if (existsSync(src)) {
+          try { execSync(`copy /Y "${src}" "${resolve(dist, f)}"`, { stdio: 'pipe' }); console.log(`  ✓ Copied ${f}`); }
+          catch(e) { console.error(`  ✗ ${f}:`, e.message); }
+        }
       }
     }
   };
 }
 
 export default defineConfig({
-  base: '/escola-liberal/',
+  base: '/',
   build: {
     outDir: 'dist',
     emptyOutDir: true,
