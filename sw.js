@@ -1,7 +1,7 @@
-// Escola Liberal PWA — Service Worker v20
+// Escola Liberal PWA — Service Worker v21
 // Estratégia: Network-first (navegação) + Stale-While-Revalidate (assets) + Cache-first (fonts)
-const CACHE_NAME = 'escola-liberal-v20';
-const STATIC_CACHE = 'escola-static-v20';
+const CACHE_NAME = 'escola-liberal-v21';
+const STATIC_CACHE = 'escola-static-v21';
 const FONT_CACHE = 'escola-fonts-v1';
 
 // Core assets — cached on install
@@ -26,7 +26,8 @@ const CORE_ASSETS = [
   './assets/icons/favicon.svg',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
-  './lessons/index.json'
+  './lessons/index.json',
+  './blog.html'
 ];
 
 // Lazy-loaded: lesson data — cached on first use

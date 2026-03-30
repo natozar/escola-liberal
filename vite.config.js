@@ -46,6 +46,10 @@ function minifyLegacyJS() {
         execSync(`xcopy /E /I /Y /Q "${resolve(root, 'supabase')}" "${resolve(dist, 'supabase')}"`, { stdio: 'pipe' });
         console.log('  ✓ Copied supabase/');
       } catch(e) { console.error('  ✗ supabase:', e.message); }
+      try {
+        execSync(`xcopy /E /I /Y /Q "${resolve(root, 'blog')}" "${resolve(dist, 'blog')}"`, { stdio: 'pipe' });
+        console.log('  ✓ Copied blog/');
+      } catch(e) { console.error('  ✗ blog:', e.message); }
 
       // Copy individual files
       for (const f of ['lessons.json', 'sw.js', 'CNAME', 'robots.txt', 'sitemap.xml']) {
