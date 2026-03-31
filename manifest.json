@@ -1,7 +1,7 @@
 {
   "name": "Escola Liberal — Plataforma Homeschool",
   "short_name": "Escola Liberal",
-  "description": "Plataforma curricular homeschool com 18 disciplinas e 380 aulas interativas. Economia Austríaca, Matemática Singapura, Filosofia P4C e mais. Bilíngue PT/EN.",
+  "description": "Plataforma curricular homeschool com 21 disciplinas e 610 aulas interativas. Economia Austríaca, Matemática Singapura, Filosofia P4C e mais. Bilíngue PT/EN.",
   "start_url": "./app.html",
   "scope": "./",
   "id": "escola-liberal-pwa",

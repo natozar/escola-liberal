@@ -1,6 +1,6 @@
 ============================================================
 ESCOLA LIBERAL — RESUMO DO PROJETO
-Última atualização: 28/03/2026
+Última atualização: 01/04/2026
 ============================================================
 
 DOMÍNIO: escolaliberal.com.br
@@ -18,7 +18,7 @@ PWA instalável, funciona offline, com gamificação (XP, níveis, badges, strea
 Objetivo: parceria com ANED (Associação Nacional de Educação Domiciliar).
 
 ============================================================
-9 DISCIPLINAS · 14 MÓDULOS · 140 AULAS (PT + EN)
+21 DISCIPLINAS · 61 MÓDULOS · 610 AULAS (PT + EN)
 ============================================================
 
 1. ECONOMIA — Escola Austríaca (6 módulos, 60 aulas)
@@ -143,30 +143,60 @@ FASE 5 — QA + Segurança + Performance + IA (28/03/2026):
   ✅ Tutor IA com Claude API (Haiku 4.5): Edge Function deployed,
     context-aware, rate limited, fallback offline
 
+FASE 6 — Leaderboards + Dashboard Pais + Paywall (31/03/2026):
+  ✅ Leaderboards semanais: 5 ligas (Bronze→Rubi), 15 competidores,
+    promoção/rebaixamento, widget dashboard, badges de liga
+  ✅ Dashboard de pais completo: stats grid, alertas automáticos,
+    calendário semanal, detalhamento por disciplina, exportação TXT
+  ✅ Paywall real ativado: progressão sequencial por disciplina,
+    1° módulo free, aulas trancadas, plano premium via Stripe
+
+FASE 7 — Certificados + Quiz IA + XP Events (31/03/2026):
+  ✅ Certificados PDF reais: canvas HD, disciplina, carga horária,
+    ID único, exportação PNG + PDF (A4 landscape, client-side)
+  ✅ Prática infinita com IA: gera 3 questões via Claude Haiku,
+    modal interativo, score, XP por acerto, replay
+  ✅ Eventos de XP duplo: multiplicador automático fim de semana,
+    eventos customizáveis, banner animado no dashboard
+
+FASE 8 — Plano de Estudos + Notificações + Certificados + Fix (31/03/2026):
+  ✅ Plano de estudos personalizado: análise de progresso, recomendações,
+    áreas fracas, mapa de disciplinas, dicas, nav na sidebar
+  ✅ Notificações inteligentes: 5 mensagens variadas, streak danger às 20h,
+    notificação de XP duplo quando evento ativo
+  ✅ Certificado de disciplina completa: design premium dourado,
+    detecta auto, PNG+PDF, agrega módulos/aulas/carga horária
+  ✅ Stripe webhook idempotency: dedup por event.id via admin_settings
+
+FASE 9 — Admin + Social + Leaderboard Real + Offline (31/03/2026):
+  ✅ Admin dashboard: métricas receita/MRR, funil retenção,
+    engajamento, tab eventos XP com create/cancel
+  ✅ Desafios sociais: criar/aceitar via WhatsApp link,
+    ranking XP entre amigos, seção no dashboard
+  ✅ Leaderboard real Supabase: tabela weekly_xp, RLS,
+    sync automático, fallback local, migration SQL
+  ✅ Sync visual: indicador online/offline/syncing,
+    auto-hide, hook em queueSync
+
 ============================================================
-PRÓXIMOS PASSOS (FASE 6)
+PRÓXIMOS PASSOS (FASE 10)
 ============================================================
 
 PRIORIDADE ALTA:
-  ⬜ Adicionar créditos na conta Anthropic (ativar tutor IA)
-  ⬜ Ativar paywall real (desabilitar MODO TESTE em isModUnlocked)
-  ⬜ Dashboard de pais (relatórios, compliance homeschool)
-  ⬜ Leaderboards/ligas semanais (estilo Duolingo)
+  ⬜ Adicionar créditos na conta Anthropic (ativar tutor IA + quiz IA)
+  ⬜ Aplicar migration SQL no Supabase (weekly_xp table)
+  ⬜ Testes end-to-end (fluxo completo de pagamento)
 
 PRIORIDADE MÉDIA:
-  ⬜ Geração de quizzes por IA (prática infinita via Claude)
-  ⬜ Plano de estudos personalizado (IA analisa progresso)
-  ⬜ Certificados PDF reais (compliance legal)
-  ⬜ Eventos de XP duplo (boost de engagement)
-  ⬜ Stripe webhook idempotency fix
+  ⬜ App nativo via Capacitor (push notifications iOS/Android)
+  ⬜ Split app.js em ES modules (manutenibilidade)
+  ⬜ Video-aulas curtas (3-5 min) com player integrado
+  ⬜ Simulador de mercado interativo expandido
 
 PRIORIDADE BAIXA:
   ⬜ Fórum/comunidade in-app
-  ⬜ Video-aulas curtas (3-5 min)
-  ⬜ App nativo via Capacitor (push notifications iOS)
-  ⬜ Split app.js em ES modules
   ⬜ Contato com ANED para parceria
-  ⬜ Simulador de mercado interativo
+  ⬜ Dashboard admin: analytics avançados (cohorts, LTV)
 
 ============================================================
 MÉTRICAS DE MERCADO (pesquisa 28/03/2026)
