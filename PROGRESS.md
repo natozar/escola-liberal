@@ -1,10 +1,10 @@
 # Escola Liberal — Progresso do Desenvolvimento
 
-> Última atualização: 2026-04-01 00:30
+> Última atualização: 2026-04-01 01:00
 > Sessão: #3
 
 ## STATUS GERAL
-Expansão curricular massiva: 61 módulos, 610 aulas, 21 disciplinas. 3 disciplinas novas (Programação, Oratória, Ed. Cívica). Performance otimizada. Login Google pronto. Produto feature-complete para lançamento.
+61 módulos, 610 aulas, 21 disciplinas. 3 disciplinas novas (Programação, Oratória, Ed. Cívica). SEO atualizado em toda a plataforma. 9 módulos com conteúdo completo, 14 com estrutura+quizzes a enriquecer. Produto feature-complete.
 
 ## O QUE FOI FEITO NESTA SESSÃO
 - 23 novos módulos (230 aulas) adicionados ao currículo
@@ -85,4 +85,4 @@ Expansão curricular massiva: 61 módulos, 610 aulas, 21 disciplinas. 3 discipli
 |---|------|--------|
 | 1 | 2026-03-31 | Fases 6-9: leaderboards, dashboard pais, paywall, certificados PDF, quiz IA, XP duplo, plano de estudos, notificações, cert disciplina, webhook fix, admin dashboard, desafios sociais, leaderboard Supabase, sync visual, tema disciplina, exam prep, simulador expandido, mobile splash, WhatsApp viral, skeleton loading (26 commits) |
 | 2 | 2026-03-31 | Performance: splash screen, preconnects, SW v22 (skip Google Auth), metrics. Login Google redesenhado: botão principal, prompt select_account, estilo proeminente (3 commits) |
-| 3 | 2026-04-01 | Expansão curricular: +23 módulos, 3 disciplinas novas (Programação, Oratória, Ed. Cívica). Total: 61 módulos, 610 aulas, 21 disciplinas (1 commit) |
+| 3 | 2026-04-01 | Expansão curricular: +23 módulos, 3 disciplinas novas. SEO atualizado. 2 módulos enriquecidos (Fake News, Programação). Total: 61 módulos, 610 aulas, 21 disciplinas (4 commits) |
