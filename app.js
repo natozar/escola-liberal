@@ -120,6 +120,25 @@ const COLOR_MUTED_MAP={
 function getModColor(c){return COLOR_MAP[c]||'var(--sage)'}
 function getModColorMuted(c){return COLOR_MUTED_MAP[c]||'var(--sage-muted)'}
 
+// Dynamic accent theming per discipline
+const DISC_ACCENT={
+  economia:'sage',matematica:'sky',filosofia:'lavender',emocional:'honey',
+  psicologia:'coral',portugues:'sage',ciencias:'mint',historia:'coral',
+  history:'sky',financas:'honey',ingles:'sky',geografia:'mint',
+  ia:'lavender',midia:'coral',direito:'sage',saude:'mint',artes:'honey',logica:'lavender'
+};
+function setDiscAccent(disc){
+  const color=DISC_ACCENT[disc]||'sage';
+  document.documentElement.style.setProperty('--accent-active',getModColor(color));
+  document.documentElement.style.setProperty('--accent-active-muted',getModColorMuted(color));
+  document.documentElement.classList.add('disc-themed');
+}
+function clearDiscAccent(){
+  document.documentElement.classList.remove('disc-themed');
+  document.documentElement.style.removeProperty('--accent-active');
+  document.documentElement.style.removeProperty('--accent-active-muted');
+}
+
 // Get first module index of a discipline within M
 function getDiscModules(disc){return M.map((m,i)=>({mod:m,idx:i})).filter(x=>x.mod.discipline===disc)}
 
@@ -364,7 +383,7 @@ function renderAch(){
 
 // NAV
 function goDash(){
-  hideAllViews();
+  hideAllViews();clearDiscAccent();
   const vd=_origById('vDash');
   if(!vd)return;
   vd.style.display='block';vd.classList.add('view-enter');
@@ -394,6 +413,7 @@ function goMod(i){
   if(!M[i])return;
   try{history.pushState({view:'mod',mod:i},'')}catch(e){}
   S.cMod=i;const m=M[i];
+  setDiscAccent(m.discipline||'economia');
   document.getElementById('mvT').textContent=m.icon+' '+m.title;
   document.getElementById('mvS').textContent=m.desc;
   const allDone=m.lessons.every((_,li)=>S.done[`${i}-${li}`]);

@@ -1342,6 +1342,14 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;-webkit-touc
 .ch-rank-avatar{flex-shrink:0}
 .ch-rank-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ch-rank-xp{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--honey);font-weight:600}
+/* ====== DISCIPLINE ACCENT THEMING ====== */
+.disc-themed .modv-head{border-bottom-color:var(--accent-active,var(--sage))}
+.disc-themed .modv-head h2{color:var(--accent-active,var(--sage-light))}
+.disc-themed .lsn.cur{border-left-color:var(--accent-active,var(--honey));background:var(--accent-active-muted,var(--honey-muted))}
+.disc-themed .lsn.cur .lsn-n{background:var(--accent-active,var(--honey))}
+.disc-themed .btn-sage{background:var(--accent-active,var(--sage))}
+.disc-themed .xp-bar{background:var(--accent-active-muted,var(--sage-muted))}
+.disc-themed .global-progress-fill{background:var(--accent-active,var(--sage))!important}
 
 @media(min-width:901px){#vAulas{display:none!important}}
 
