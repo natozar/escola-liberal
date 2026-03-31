@@ -1143,6 +1143,25 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;-webkit-touc
 .tools-grid-item .tg-icon{font-size:1.4rem}
 .tools-grid-item .tg-label{font-size:.68rem;font-weight:600;color:var(--text-secondary);text-align:center;line-height:1.2}
 
+/* ====== AUDIO PLAYER ====== */
+.tts-active{background:var(--sage-muted)!important;border-left:3px solid var(--sage)!important;padding-left:1rem;border-radius:var(--r-sm);transition:background .3s,border .3s}
+.audio-player{position:fixed;bottom:-80px;left:0;right:0;z-index:400;background:var(--bg-secondary);border-top:1px solid var(--border);padding:.5rem 1rem calc(.5rem + env(safe-area-inset-bottom));transition:bottom .3s var(--ease);box-shadow:0 -4px 20px rgba(0,0,0,.2)}
+.audio-player.show{bottom:0}
+@media(max-width:900px){.audio-player.show{bottom:calc(52px + env(safe-area-inset-bottom))}}
+.audio-progress{height:3px;background:var(--bg-elevated);border-radius:2px;margin-bottom:.5rem;overflow:hidden}
+.audio-progress-fill{height:100%;background:linear-gradient(90deg,var(--sage),var(--sage-light));width:0%;transition:width .3s var(--ease);border-radius:2px}
+.audio-controls{display:flex;align-items:center;justify-content:center;gap:.5rem}
+.audio-btn{background:none;border:1px solid var(--border);border-radius:var(--r-full);width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;color:var(--text-secondary);transition:all .15s;-webkit-tap-highlight-color:transparent}
+.audio-btn:hover{border-color:var(--sage);color:var(--sage-light)}
+.audio-btn:active{transform:scale(.9)}
+.audio-btn-main{width:48px;height:48px;font-size:1.2rem;background:var(--sage);border-color:var(--sage);color:#fff}
+.audio-btn-main:hover{background:var(--sage-light);border-color:var(--sage-light);color:#fff}
+.audio-speed{display:flex;align-items:center;gap:.25rem;margin-left:.5rem}
+.audio-speed-btn{background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-sm);width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;font-weight:700;color:var(--text-secondary)}
+.audio-speed-btn:hover{border-color:var(--sage)}
+.audio-speed-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;color:var(--sage-light);min-width:32px;text-align:center}
+.audio-progress-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--text-muted);margin-left:.5rem;min-width:36px;text-align:center}
+
 @media(min-width:901px){#vAulas{display:none!important}}
 
 /* ====== UPDATE BANNER ====== */
