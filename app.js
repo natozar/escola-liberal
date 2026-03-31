@@ -195,6 +195,7 @@ function addXP(n){
   while(S.xp>=S.lvl*100){S.xp-=S.lvl*100;S.lvl++;toast(`Nível ${S.lvl}!  🎉`);launchConfetti();playSfx('levelup');logActivity('level',`Subiu para nível ${S.lvl}!`)}
   save();ui();
   if(typeof updateLeaderboardXP==='function')updateLeaderboardXP(earned);
+  if(typeof updateChallengeXP==='function')updateChallengeXP(earned);
   if(mult>1&&n>0)toast(`${label} +${earned} XP (${mult}x)`)
 }
 function totalXP(){let t=S.xp;for(let i=1;i<S.lvl;i++)t+=i*100;return t}
@@ -275,7 +276,8 @@ function ui(){
     const bar=progEl.querySelector('.ni-prog-bar');
     if(bar)bar.style.cssText=`width:${pct}%;background:${clr}`
   });
-  renderCards();renderAch();renderLeaderboardWidget();renderXPEvent()
+  renderCards();renderAch();renderLeaderboardWidget();renderXPEvent();
+  if(typeof renderChallenges==='function')renderChallenges()
 }
 function renderXPEvent(){
   const{mult,label}=getXPMultiplier();
@@ -2519,6 +2521,96 @@ function getLeagueDesc(league,rank,total){
 }
 
 // ============================================================
+// SOCIAL CHALLENGES — Desafios entre Amigos
+// ============================================================
+const CHALLENGE_KEY='escola_challenges';
+function loadChallenges(){try{return JSON.parse(localStorage.getItem(CHALLENGE_KEY)||'[]')}catch(e){return[]}}
+function saveChallenges(c){localStorage.setItem(CHALLENGE_KEY,JSON.stringify(c))}
+
+function createChallenge(){
+  const weekId=getCurrentWeekId();
+  const challenge={
+    id:Date.now().toString(36),
+    creator:S.name||'Aluno',
+    creatorAvatar:S.avatar||'🧑‍🎓',
+    creatorXP:0,
+    weekId,
+    created:new Date().toISOString(),
+    participants:[]
+  };
+  const challenges=loadChallenges();
+  challenges.push(challenge);
+  saveChallenges(challenges);
+
+  // Share via WhatsApp
+  const shareUrl=`https://escolaliberal.com.br/app.html?challenge=${challenge.id}`;
+  const text=`🏆 ${S.name} te desafia!\n\nQuem consegue mais XP esta semana na Escola Liberal?\n\nAceite o desafio: ${shareUrl}`;
+  const waUrl='https://wa.me/?text='+encodeURIComponent(text);
+  window.open(waUrl,'_blank');
+  toast('Desafio criado! Compartilhe com amigos.');
+  renderChallenges()
+}
+
+function acceptChallenge(id){
+  const challenges=loadChallenges();
+  const ch=challenges.find(c=>c.id===id);
+  if(!ch)return;
+  if(!ch.participants.find(p=>p.name===S.name)){
+    ch.participants.push({name:S.name,avatar:S.avatar||'🧑‍🎓',xp:0});
+    saveChallenges(challenges)
+  }
+  toast('Desafio aceito! Ganhe XP para subir no ranking.');
+  renderChallenges()
+}
+
+function updateChallengeXP(earned){
+  const challenges=loadChallenges();
+  const weekId=getCurrentWeekId();
+  let changed=false;
+  challenges.forEach(ch=>{
+    if(ch.weekId!==weekId)return;
+    // Update creator
+    if(ch.creator===S.name){ch.creatorXP+=earned;changed=true}
+    // Update participant
+    const p=ch.participants.find(p=>p.name===S.name);
+    if(p){p.xp+=earned;changed=true}
+  });
+  if(changed)saveChallenges(challenges)
+}
+
+function renderChallenges(){
+  const el=document.getElementById('challengeSection');
+  if(!el)return;
+  const challenges=loadChallenges().filter(c=>c.weekId===getCurrentWeekId());
+  if(!challenges.length){
+    el.innerHTML=`<div class="ch-empty">
+      <div class="ch-empty-icon">🤝</div>
+      <p>Desafie amigos a estudar mais que você esta semana!</p>
+      <button class="btn btn-sage" onclick="createChallenge()">Criar Desafio</button>
+    </div>`;
+    return
+  }
+  let html=`<div class="ch-header"><span>🏆 Desafios da Semana</span><button class="btn btn-ghost btn-sm" onclick="createChallenge()">+ Novo</button></div>`;
+  challenges.forEach(ch=>{
+    const all=[{name:ch.creator,avatar:ch.creatorAvatar,xp:ch.creatorXP},...ch.participants].sort((a,b)=>b.xp-a.xp);
+    html+=`<div class="ch-card">
+      <div class="ch-card-head">Criado por ${ch.creatorAvatar} ${ch.creator}</div>
+      <div class="ch-ranking">${all.map((p,i)=>`<div class="ch-rank-row${p.name===S.name?' ch-rank-you':''}">
+        <span class="ch-rank-pos">${['🥇','🥈','🥉'][i]||i+1+'°'}</span>
+        <span class="ch-rank-avatar">${p.avatar}</span>
+        <span class="ch-rank-name">${p.name===S.name?'Você':p.name}</span>
+        <span class="ch-rank-xp">${p.xp} XP</span>
+      </div>`).join('')}</div>
+    </div>`;
+  });
+  el.innerHTML=html
+}
+
+// Hook challenge XP into addXP
+const _origAddXP=addXP;
+// We'll hook via updateChallengeXP called from addXP — already integrated via updateLeaderboardXP pattern
+
+// ============================================================
 // AI QUIZ PRACTICE — Prática Infinita com IA
 // ============================================================
 let aiQuizState={mi:null,li:null,questions:[],current:0,score:0,loading:false};
@@ -3891,6 +3983,18 @@ if(S.name!=='Aluno'){
   // Preload full module content in background for fast lesson opens
   setTimeout(preloadModules,2000);
 }
+// Accept challenge from URL parameter
+(function(){
+  const sp=new URLSearchParams(location.search);
+  const chId=sp.get('challenge');
+  if(chId){
+    // Remove param from URL
+    const url=new URL(location);url.searchParams.delete('challenge');
+    history.replaceState(null,'',url.pathname+url.search+url.hash);
+    // Accept after boot
+    setTimeout(()=>{acceptChallenge(chId);toast('Desafio aceito! Ganhe XP para subir.')},2000);
+  }
+})();
 // Redirect recovery token to auth page
 if(location.hash && location.hash.includes('type=recovery')){
   window.location.replace('auth.html' + location.hash);

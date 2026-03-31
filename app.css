@@ -1328,6 +1328,20 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;-webkit-touc
 .error .sync-dot{background:var(--coral)}
 @keyframes syncPulse{0%,100%{opacity:1}50%{opacity:.3}}
 @media(max-width:900px){.sync-indicator{bottom:calc(70px + env(safe-area-inset-bottom) + .5rem);left:.75rem}}
+/* ====== SOCIAL CHALLENGES ====== */
+.ch-empty{text-align:center;padding:1.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg)}
+.ch-empty-icon{font-size:2rem;margin-bottom:.5rem}
+.ch-empty p{font-size:.85rem;color:var(--text-secondary);margin-bottom:1rem}
+.ch-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;font-size:.9rem;font-weight:700}
+.ch-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem;margin-bottom:.75rem}
+.ch-card-head{font-size:.78rem;color:var(--text-muted);margin-bottom:.65rem}
+.ch-ranking{display:flex;flex-direction:column;gap:.35rem}
+.ch-rank-row{display:flex;align-items:center;gap:.5rem;padding:.35rem .5rem;border-radius:var(--r-sm);font-size:.82rem}
+.ch-rank-you{background:var(--sage-subtle);font-weight:600}
+.ch-rank-pos{width:24px;text-align:center;flex-shrink:0}
+.ch-rank-avatar{flex-shrink:0}
+.ch-rank-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-rank-xp{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--honey);font-weight:600}
 
 @media(min-width:901px){#vAulas{display:none!important}}
 
