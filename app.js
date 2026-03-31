@@ -2425,14 +2425,79 @@ function updateLeaderboardXP(earned){
   st.userWeekXP+=earned;
   const userComp=st.competitors.find(c=>c.isUser);
   if(userComp){userComp.xp=st.userWeekXP;userComp.name=S.name||'Você';userComp.avatar=S.avatar||'🧑‍🎓'}
-  saveLBState(st)
+  saveLBState(st);
+  // Sync to Supabase if authenticated
+  _syncLeaderboardXP(st.userWeekXP,st.league)
+}
+
+async function _syncLeaderboardXP(xp,league){
+  if(typeof sbClient==='undefined'||!sbClient||typeof currentUser==='undefined'||!currentUser)return;
+  try{
+    await sbClient.from('weekly_xp').upsert({
+      user_id:currentUser.id,
+      week_id:getCurrentWeekId(),
+      xp,league,
+      name:S.name||'Aluno',
+      avatar:S.avatar||'🧑‍🎓',
+      updated_at:new Date().toISOString()
+    },{onConflict:'user_id,week_id'})
+  }catch(e){/* silent — local data is primary */}
+}
+
+async function _fetchRealLeaderboard(){
+  if(typeof sbClient==='undefined'||!sbClient||typeof currentUser==='undefined'||!currentUser)return null;
+  try{
+    const{data}=await sbClient.from('weekly_xp')
+      .select('user_id,name,avatar,xp,league')
+      .eq('week_id',getCurrentWeekId())
+      .order('xp',{ascending:false})
+      .limit(20);
+    return data&&data.length>1?data:null // Need at least 2 real users
+  }catch(e){return null}
 }
 
 function goLeaderboard(){
   hideAllViews();setNav('nLeaderboard');
   document.getElementById('vLeaderboard').classList.add('on');
   try{history.pushState({view:'leaderboard'},'')}catch(e){}
-  renderLeaderboard()
+  // Try real data first, fallback to local
+  _fetchRealLeaderboard().then(realData=>{
+    if(realData)renderLeaderboardReal(realData);
+    else renderLeaderboard()
+  }).catch(()=>renderLeaderboard())
+}
+
+function renderLeaderboardReal(data){
+  const st=getLBState();
+  const L=LEAGUES[st.league];
+  const hasUser=data.some(d=>d.user_id===currentUser?.id);
+  const sorted=data.map(d=>({
+    name:d.name||'Aluno',avatar:d.avatar||'🧑‍🎓',xp:d.xp||0,
+    isUser:d.user_id===currentUser?.id
+  }));
+  if(!hasUser)sorted.push({name:S.name||'Você',avatar:S.avatar||'🧑‍🎓',xp:st.userWeekXP,isUser:true});
+  sorted.sort((a,b)=>b.xp-a.xp);
+  // Reuse render logic with real data
+  const userRank=sorted.findIndex(c=>c.isUser)+1;
+  document.getElementById('lbBanner').innerHTML=
+    `<div class="lb-league-icon" style="color:${L.color}">${L.icon}</div>`+
+    `<div class="lb-league-info"><div class="lb-league-name" style="color:${L.color}">Liga ${L.name}</div>`+
+    `<div class="lb-league-desc">${getLeagueDesc(st.league,userRank,sorted.length)} <span style="font-size:.7rem;color:var(--sage)">· Ranking real</span></div></div>`;
+  const end=getWeekEndDate();const diff=end-new Date();const days=Math.floor(diff/864e5);const hrs=Math.floor((diff%864e5)/36e5);
+  document.getElementById('lbTimer').innerHTML=`<span class="lb-timer-icon">⏳</span> Semana encerra em <strong>${days}d ${hrs}h</strong>`;
+  document.getElementById('lbTitle').textContent=`${L.icon} Liga ${L.name}`;
+  let html='';
+  sorted.forEach((c,i)=>{
+    const rank=i+1;const medal=rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':'';
+    html+=`<div class="lb-row ${c.isUser?'lb-row-user':''}"><div class="lb-rank">${medal||rank}</div><div class="lb-avatar">${c.avatar}</div><div class="lb-name">${c.isUser?'<strong>Você</strong>':c.name}</div><div class="lb-xp">${c.xp.toLocaleString('pt-BR')} XP</div></div>`
+  });
+  document.getElementById('lbTable').innerHTML=html;
+  document.getElementById('lbRules').innerHTML=
+    `<div class="lb-rules-title">Como funciona</div>`+
+    `<div class="lb-rule">🌐 Ranking real com outros alunos da plataforma</div>`+
+    `<div class="lb-rule">📅 Rankings resetam toda segunda-feira</div>`+
+    `<div class="lb-rule">⭐ Ganhe XP completando aulas, quizzes e maratonas</div>`+
+    `<div class="lb-leagues-row">${LEAGUES.map((l,i)=>`<span class="lb-league-chip${i===st.league?' active':''}" style="${i===st.league?'background:'+l.color:''}"><span>${l.icon}</span><span>${l.name}</span></span>`).join('')}</div>`
 }
 
 function renderLeaderboard(){
