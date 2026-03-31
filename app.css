@@ -583,10 +583,49 @@ body.focus-mode .mobile-bar{display:none !important}
 .profile-manage:hover{color:var(--text-primary)}
 
 .parent-dash{display:none;max-width:880px}.parent-dash.on{display:block;animation:viewFadeIn .35s var(--ease)}
-.parent-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-bottom:1.5rem}
-.parent-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.5rem}
-.parent-card h4{font-size:.9rem;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
-.parent-card .pc-stat{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text-secondary);margin-bottom:.2rem}
+.parent-header{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.25rem;flex-wrap:wrap}
+.parent-header h3{font-size:1.2rem;margin-bottom:.25rem}
+.parent-header p{font-size:.82rem;color:var(--text-secondary)}
+.parent-actions{display:flex;gap:.5rem;flex-shrink:0}
+.btn-sm{font-size:.78rem;padding:.35rem .75rem}
+/* Alerts */
+.pd-alert{padding:.6rem 1rem;border-radius:var(--r-md);font-size:.82rem;margin-bottom:.5rem}
+.pd-alert-warn{background:rgba(219,165,80,.1);border:1px solid rgba(219,165,80,.25);color:var(--honey-light)}
+.pd-alert-info{background:var(--sky-muted);border:1px solid rgba(91,155,213,.2);color:var(--sky)}
+.pd-alert-success{background:var(--sage-muted);border:1px solid rgba(74,158,126,.2);color:var(--sage-light)}
+/* Cards */
+.parent-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem;margin-bottom:1.5rem}
+.parent-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+.parent-card:hover{border-color:var(--sage);box-shadow:var(--shadow-card)}
+.pc-head{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.pc-avatar{font-size:2rem}
+.pc-name-wrap{flex:1}
+.pc-name-wrap h4{font-size:.95rem;font-weight:700;margin:0}
+.pc-level{font-size:.72rem;color:var(--text-muted)}
+.pc-arrow{font-size:1.5rem;color:var(--text-muted);font-weight:300}
+.pc-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:.75rem}
+.pc-stat-box{text-align:center;padding:.4rem;background:var(--bg-elevated);border-radius:var(--r-sm)}
+.pc-stat-val{font-family:'JetBrains Mono',monospace;font-size:.82rem;font-weight:700}
+.pc-stat-lbl{font-size:.65rem;color:var(--text-muted);margin-top:.1rem}
+.pc-prog-bar{height:6px;background:var(--bg-elevated);border-radius:var(--r-full);overflow:hidden;margin-bottom:.35rem}
+.pc-prog-fill{height:100%;background:var(--sage);border-radius:var(--r-full);transition:width .3s}
+.pc-prog-label{font-size:.7rem;color:var(--text-muted);text-align:center}
+.pc-week{display:flex;justify-content:space-around;margin-top:.75rem;gap:.25rem}
+.pc-week-day{display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.pc-week-dot{width:10px;height:10px;border-radius:50%;background:var(--bg-elevated);border:1px solid var(--border)}
+.pc-week-day.active .pc-week-dot{background:var(--sage);border-color:var(--sage)}
+.pc-week-lbl{font-size:.6rem;color:var(--text-muted)}
+/* Detail view */
+.pd-detail{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-top:.5rem}
+.pd-detail h4{font-size:.95rem;font-weight:700;margin-bottom:1rem}
+.pd-disc-list{display:flex;flex-direction:column;gap:.65rem}
+.pd-disc-row{display:flex;align-items:center;gap:.75rem}
+.pd-disc-icon{font-size:1.3rem;flex-shrink:0}
+.pd-disc-info{flex:1;min-width:0}
+.pd-disc-name{font-size:.85rem;font-weight:600}
+.pd-disc-meta{font-size:.72rem;color:var(--text-muted);margin:.15rem 0}
+.pd-disc-bar{height:5px;background:var(--bg-elevated);border-radius:var(--r-full);overflow:hidden}
+.pd-disc-fill{height:100%;background:var(--sage);border-radius:var(--r-full);transition:width .3s}
 .parent-overview{background:linear-gradient(145deg,var(--sage-subtle),transparent);border:1px solid rgba(74,158,126,.1);border-radius:var(--r-lg);padding:1.5rem;margin-bottom:1.5rem}
 .parent-overview h3{font-family:'DM Serif Display',serif;font-size:1.3rem;margin-bottom:.4rem}
 .parent-overview p{font-size:.85rem;color:var(--text-secondary)}

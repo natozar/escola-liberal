@@ -1506,26 +1506,140 @@ async function goParentDash(){
     showPinOverlay('verify',async p=>{const h=await _hashPin(p);if(h===pin){closePin();openParentDash()}else pinError()})
   }
 }
+function _loadProfileState(k){
+  if(k===activeProfile)return{...S};
+  const key=k==='default'?SK:SK+'_'+k;
+  try{return{...def(),...JSON.parse(localStorage.getItem(key))}}catch(e){return def()}
+}
+function _profileStats(ps){
+  const done=Object.keys(ps.done||{}).length;
+  const totalL=M.reduce((s,m)=>s+m.lessons.length,0);
+  const qt=Object.keys(ps.quiz||{}).length;
+  const qc=Object.values(ps.quiz||{}).filter(v=>v).length;
+  const pct=qt?Math.round(qc/qt*100):0;
+  const estMinutes=done*5;
+  // Per-discipline breakdown
+  const byDisc={};
+  M.forEach((m,mi)=>{
+    const disc=m.discipline||'economia';
+    if(!byDisc[disc])byDisc[disc]={done:0,total:0,quizOk:0,quizTotal:0};
+    m.lessons.forEach((_,li)=>{
+      byDisc[disc].total++;
+      if(ps.done[`${mi}-${li}`])byDisc[disc].done++;
+      if(ps.quiz[`${mi}-${li}`]!==undefined){byDisc[disc].quizTotal++;if(ps.quiz[`${mi}-${li}`])byDisc[disc].quizOk++}
+    });
+  });
+  // Weekly activity (last 7 days)
+  const weekActivity=[];
+  const today=new Date();
+  for(let d=6;d>=0;d--){
+    const dt=new Date(today);dt.setDate(today.getDate()-d);
+    const iso=dt.toISOString().slice(0,10);
+    weekActivity.push({date:iso,day:['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][dt.getDay()],active:ps.streakDays&&ps.streakDays.includes(iso)});
+  }
+  const daysActive=weekActivity.filter(d=>d.active).length;
+  return{done,totalL,qt,qc,pct,estMinutes,byDisc,weekActivity,daysActive}
+}
+
 function openParentDash(){
   hideAllViews();
   document.getElementById('vParent').classList.add('on');
   const profiles=loadProfiles();const keys=Object.keys(profiles);
-  let html='';
+
+  // Alerts
+  let alerts='';
   keys.forEach(k=>{
-    let ps;
-    if(k===activeProfile)ps=S;
-    else if(k==='default'){try{ps={...def(),...JSON.parse(localStorage.getItem(SK))}}catch(e){ps=def()}}
-    else{try{ps={...def(),...JSON.parse(localStorage.getItem(SK+'_'+k))}}catch(e){ps=def()}}
-    const done=Object.keys(ps.done||{}).length;
-    const qt=Object.keys(ps.quiz||{}).length;
-    const qc=Object.values(ps.quiz||{}).filter(v=>v).length;
-    const pct=qt?Math.round(qc/qt*100):0;
-    const li=getLevelInfo(ps.lvl||1);
-    const totalL=M.reduce((s,m)=>s+m.lessons.length,0);
-    html+=`<div class="parent-card"><h4>${ps.avatar||'🧑‍🎓'} ${ps.name||'Aluno'}</h4><div class="pc-stat">Nível ${ps.lvl||1} · ${li.emoji} ${li.name}</div><div class="pc-stat">${done}/${totalL} aulas · ${pct}% quizzes · ${ps.streak||0}🔥</div></div>`
+    const ps=_loadProfileState(k);
+    const st=_profileStats(ps);
+    if(st.daysActive===0)alerts+=`<div class="pd-alert pd-alert-warn">⚠️ <strong>${ps.name||'Aluno'}</strong> não estudou nenhum dia esta semana.</div>`;
+    else if(st.daysActive<=2)alerts+=`<div class="pd-alert pd-alert-info">💡 <strong>${ps.name||'Aluno'}</strong> estudou apenas ${st.daysActive} dia${st.daysActive>1?'s':''} esta semana. Incentive a consistência!</div>`;
+    if(ps.streak>=7)alerts+=`<div class="pd-alert pd-alert-success">🔥 <strong>${ps.name||'Aluno'}</strong> está com ${ps.streak} dias de sequência! Excelente!</div>`;
   });
-  html+=`<div style="margin-top:1rem"><button class="btn btn-ghost" onclick="if(confirm('Redefinir PIN?')){localStorage.removeItem('${PIN_KEY}');toast('PIN removido')}">🔐 Redefinir PIN</button></div>`;
-  document.getElementById('parentCards').innerHTML=html
+  document.getElementById('parentAlerts').innerHTML=alerts;
+
+  // Profile cards
+  let cardsHtml='';
+  keys.forEach(k=>{
+    const ps=_loadProfileState(k);
+    const st=_profileStats(ps);
+    const li=getLevelInfo(ps.lvl||1);
+    const progPct=st.totalL?Math.round(st.done/st.totalL*100):0;
+    cardsHtml+=`<div class="parent-card" onclick="showParentDetail('${k}')">
+      <div class="pc-head">
+        <span class="pc-avatar">${ps.avatar||'🧑‍🎓'}</span>
+        <div class="pc-name-wrap">
+          <h4>${ps.name||'Aluno'}</h4>
+          <span class="pc-level">${li.emoji} Nível ${ps.lvl||1} · ${li.name}</span>
+        </div>
+        <span class="pc-arrow">›</span>
+      </div>
+      <div class="pc-stats-grid">
+        <div class="pc-stat-box"><div class="pc-stat-val">${st.done}/${st.totalL}</div><div class="pc-stat-lbl">Aulas</div></div>
+        <div class="pc-stat-box"><div class="pc-stat-val">${st.pct}%</div><div class="pc-stat-lbl">Quizzes</div></div>
+        <div class="pc-stat-box"><div class="pc-stat-val">${ps.streak||0}🔥</div><div class="pc-stat-lbl">Sequência</div></div>
+        <div class="pc-stat-box"><div class="pc-stat-val">${st.daysActive}/7</div><div class="pc-stat-lbl">Semana</div></div>
+      </div>
+      <div class="pc-prog-bar"><div class="pc-prog-fill" style="width:${progPct}%"></div></div>
+      <div class="pc-prog-label">${progPct}% do currículo completo · ~${Math.floor(st.estMinutes/60)}h${st.estMinutes%60}min estudados</div>
+      <div class="pc-week">${st.weekActivity.map(d=>`<div class="pc-week-day${d.active?' active':''}"><div class="pc-week-dot"></div><div class="pc-week-lbl">${d.day}</div></div>`).join('')}</div>
+    </div>`;
+  });
+  document.getElementById('parentCards').innerHTML=cardsHtml;
+  document.getElementById('parentDetail').innerHTML='';
+}
+
+function showParentDetail(profileKey){
+  const ps=_loadProfileState(profileKey);
+  const st=_profileStats(ps);
+  let html=`<div class="pd-detail">
+    <h4>${ps.avatar||'🧑‍🎓'} ${ps.name||'Aluno'} — Detalhamento por Disciplina</h4>
+    <div class="pd-disc-list">`;
+  Object.entries(st.byDisc).forEach(([disc,d])=>{
+    const info=DISCIPLINES[disc]||{label:disc,icon:'📚'};
+    const pct=d.total?Math.round(d.done/d.total*100):0;
+    const qPct=d.quizTotal?Math.round(d.quizOk/d.quizTotal*100):0;
+    html+=`<div class="pd-disc-row">
+      <span class="pd-disc-icon">${info.icon}</span>
+      <div class="pd-disc-info">
+        <div class="pd-disc-name">${info.label}</div>
+        <div class="pd-disc-meta">${d.done}/${d.total} aulas · ${qPct}% quizzes</div>
+        <div class="pd-disc-bar"><div class="pd-disc-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>`;
+  });
+  html+=`</div></div>`;
+  document.getElementById('parentDetail').innerHTML=html;
+  document.getElementById('parentDetail').scrollIntoView({behavior:'smooth'});
+}
+
+function exportParentReport(){
+  const profiles=loadProfiles();const keys=Object.keys(profiles);
+  let text='ESCOLA LIBERAL — RELATÓRIO DE PROGRESSO\n';
+  text+=`Data: ${new Date().toLocaleDateString('pt-BR')}\n`;
+  text+='='.repeat(50)+'\n\n';
+  keys.forEach(k=>{
+    const ps=_loadProfileState(k);
+    const st=_profileStats(ps);
+    const li=getLevelInfo(ps.lvl||1);
+    text+=`ALUNO: ${ps.name||'Aluno'}\n`;
+    text+=`Nível: ${ps.lvl||1} (${li.name})\n`;
+    text+=`Aulas: ${st.done}/${st.totalL} (${st.totalL?Math.round(st.done/st.totalL*100):0}%)\n`;
+    text+=`Quizzes: ${st.pct}% de acerto (${st.qc}/${st.qt})\n`;
+    text+=`Sequência: ${ps.streak||0} dias\n`;
+    text+=`Tempo estimado: ~${Math.floor(st.estMinutes/60)}h${st.estMinutes%60}min\n\n`;
+    text+='Por disciplina:\n';
+    Object.entries(st.byDisc).forEach(([disc,d])=>{
+      const info=DISCIPLINES[disc]||{label:disc};
+      const pct=d.total?Math.round(d.done/d.total*100):0;
+      text+=`  ${info.label}: ${d.done}/${d.total} (${pct}%)\n`;
+    });
+    text+='\n'+'-'.repeat(40)+'\n\n';
+  });
+  const blob=new Blob([text],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`escola-liberal-relatorio-${new Date().toISOString().slice(0,10)}.txt`;
+  a.click();URL.revokeObjectURL(a.href);
+  toast('Relatório exportado!')
 }
 
 // ============================================================

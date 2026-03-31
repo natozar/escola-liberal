@@ -501,11 +501,19 @@
 
     <!-- PARENT DASHBOARD -->
     <div class="parent-dash" id="vParent">
-      <div class="parent-overview">
-        <h3>👨‍👩‍👧‍👦 Painel do Responsável</h3>
-        <p>Acompanhe o progresso de todos os perfis cadastrados.</p>
+      <div class="parent-header">
+        <div>
+          <h3>👨‍👩‍👧‍👦 Painel do Responsável</h3>
+          <p>Acompanhe o progresso de estudo dos seus filhos.</p>
+        </div>
+        <div class="parent-actions">
+          <button class="btn btn-ghost btn-sm" onclick="exportParentReport()">📄 Exportar PDF</button>
+          <button class="btn btn-ghost btn-sm" onclick="if(confirm('Redefinir PIN?')){localStorage.removeItem(PIN_KEY);toast('PIN removido')}">🔐 PIN</button>
+        </div>
       </div>
+      <div id="parentAlerts"></div>
       <div class="parent-cards" id="parentCards"></div>
+      <div id="parentDetail"></div>
     </div>
 
     <!-- ACHIEVEMENTS/BADGES VIEW -->
