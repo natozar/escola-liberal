@@ -786,6 +786,11 @@ body.focus-mode .mobile-bar{display:none !important}
 .game-day{text-align:center;margin-bottom:1.5rem}
 .game-day h3{font-family:'DM Serif Display',serif;font-size:1.4rem;margin-bottom:.2rem}
 .game-day .game-weather{font-size:.82rem;color:var(--text-secondary)}
+.game-stats-row{display:flex;justify-content:center;gap:1.25rem;margin-top:.65rem}
+.game-stats-row>div{text-align:center}
+.game-stat-val{display:block;font-family:'JetBrains Mono',monospace;font-size:.9rem;font-weight:700}
+.game-stat-lbl{font-size:.62rem;color:var(--text-muted);text-transform:uppercase}
+.game-event{background:rgba(219,165,80,.08);border:1px solid rgba(219,165,80,.2);border-radius:var(--r-md);padding:.6rem .8rem;margin-bottom:1rem;font-size:.82rem;text-align:center}
 .game-controls{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem}
 .game-ctrl{text-align:center}
 .game-ctrl label{display:block;font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.5rem;font-weight:600}

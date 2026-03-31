@@ -2952,42 +2952,73 @@ function closeAIQuiz(){
 // ============================================================
 // MINI-GAME: BARRAQUINHA DE LIMONADA
 // ============================================================
-let gameDay=1,gameCash=20,gameHistory=[];
+let gameDay=1,gameCash=20,gameHistory=[],gameInvestment=0,gameReputation=50;
 const WEATHER=['☀️ Ensolarado','⛅ Nublado','🌧️ Chuvoso','🔥 Calor intenso'];
 const WEATHER_MULT=[1.0,0.6,0.3,1.4];
+const GAME_EVENTS=[
+  null,null,null, // No event on some days
+  {name:'📰 Matéria no jornal local',desc:'Sua barraquinha foi destaque! +20% demanda',mod:d=>d*1.2},
+  {name:'🏗️ Concorrente abriu ao lado',desc:'Um rival apareceu! -15% demanda',mod:d=>d*0.85},
+  {name:'💰 Inflação dos limões',desc:'Custo de produção subiu! R$2.00/copo',costMod:2.0},
+  {name:'🎪 Festival na praça',desc:'Muita gente passando! +40% demanda',mod:d=>d*1.4},
+  {name:'📱 Post viral no TikTok',desc:'Alguém filmou sua barraquinha! +30% demanda',mod:d=>d*1.3},
+  {name:'🥶 Frente fria inesperada',desc:'Ninguém quer limonada gelada! -40% demanda',mod:d=>d*0.6},
+];
 function goGame(){
   hideAllViews();setNav('nGame');
   document.getElementById('vGame').classList.add('on');
-  gameDay=1;gameCash=20;gameHistory=[];
+  gameDay=1;gameCash=20;gameHistory=[];gameInvestment=0;gameReputation=50;
   renderGameDay()
 }
 function renderGameDay(){
   const wIdx=Math.floor(Math.random()*WEATHER.length);
   const weather=WEATHER[wIdx];const wMult=WEATHER_MULT[wIdx];
-  const costPerCup=1.5;
+  // Random event
+  const evt=GAME_EVENTS[Math.floor(Math.random()*GAME_EVENTS.length)];
+  const costPerCup=evt&&evt.costMod?evt.costMod:1.5;
+  const repBonus=1+(gameReputation-50)/200; // -25% to +25%
+  window._gameEvt=evt;window._gameRepBonus=repBonus;
   document.getElementById('gameContent').innerHTML=`
     <div class="game-board">
-      <div class="game-day"><h3>🍋 Dia ${gameDay} de 7</h3><div class="game-weather">${weather}</div><div style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--honey);margin-top:.5rem">Caixa: R$ ${gameCash.toFixed(2)}</div></div>
+      <div class="game-day">
+        <h3>🍋 Dia ${gameDay} de 7</h3>
+        <div class="game-weather">${weather}</div>
+        <div class="game-stats-row">
+          <div><span class="game-stat-val" style="color:var(--honey)">R$ ${gameCash.toFixed(2)}</span><span class="game-stat-lbl">Caixa</span></div>
+          <div><span class="game-stat-val" style="color:var(--sky)">⭐ ${gameReputation}</span><span class="game-stat-lbl">Reputação</span></div>
+          ${gameInvestment>0?`<div><span class="game-stat-val" style="color:var(--sage)">📈 R$ ${gameInvestment.toFixed(2)}</span><span class="game-stat-lbl">Investido</span></div>`:''}
+        </div>
+      </div>
+      ${evt?`<div class="game-event"><strong>${evt.name}</strong><br><span style="font-size:.78rem;color:var(--text-secondary)">${evt.desc}</span></div>`:''}
       <div class="game-controls">
-        <div class="game-ctrl"><label>Preço por copo</label><input type="range" min="1" max="10" value="3" step="0.5" id="gPrice" oninput="updateGamePreview(${wMult})"><div class="game-val" id="gPriceVal">R$ 3,00</div></div>
-        <div class="game-ctrl"><label>Copos a produzir</label><input type="range" min="0" max="${Math.floor(gameCash/costPerCup)}" value="${Math.min(10,Math.floor(gameCash/costPerCup))}" id="gQty" oninput="updateGamePreview(${wMult})"><div class="game-val" id="gQtyVal">${Math.min(10,Math.floor(gameCash/costPerCup))}</div></div>
+        <div class="game-ctrl"><label>Preço por copo</label><input type="range" min="1" max="10" value="3" step="0.5" id="gPrice" oninput="updateGamePreview(${wMult},${costPerCup})"><div class="game-val" id="gPriceVal">R$ 3,00</div></div>
+        <div class="game-ctrl"><label>Copos a produzir</label><input type="range" min="0" max="${Math.floor(gameCash/costPerCup)}" value="${Math.min(10,Math.floor(gameCash/costPerCup))}" id="gQty" oninput="updateGamePreview(${wMult},${costPerCup})"><div class="game-val" id="gQtyVal">${Math.min(10,Math.floor(gameCash/costPerCup))}</div></div>
       </div>
       <div class="game-preview" id="gamePreview"></div>
-      <button class="btn btn-sage" style="width:100%" onclick="playGameDay(${wMult})">Abrir a Barraquinha!</button>
+      <button class="btn btn-sage" style="width:100%" onclick="playGameDay(${wMult},${costPerCup})">Abrir a Barraquinha!</button>
+      ${gameCash>5?`<div class="game-invest"><button class="btn btn-ghost btn-sm" onclick="gameInvest()" style="width:100%;margin-top:.5rem">📈 Investir R$ 5,00 (retorno em 3 dias)</button></div>`:''}
     </div>
-    ${gameHistory.length?`<div class="game-history"><h4 style="font-size:.82rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem">Histórico</h4>${gameHistory.map((h,i)=>`<div class="game-history-row"><span>Dia ${i+1}</span><span>${h.weather}</span><span style="color:${h.profit>=0?'var(--sage)':'var(--coral)'}">R$ ${h.profit>=0?'+':''}${h.profit.toFixed(2)}</span></div>`).join('')}</div>`:''}`;
-  updateGamePreview(wMult)
+    ${gameHistory.length?`<div class="game-history"><h4 style="font-size:.82rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem">Histórico</h4>${gameHistory.map((h,i)=>`<div class="game-history-row"><span>Dia ${i+1}</span><span>${h.weather}</span><span style="color:${h.profit>=0?'var(--sage)':'var(--coral)'}">R$ ${h.profit>=0?'+':''}${h.profit.toFixed(2)}</span>${h.event?'<span style="font-size:.65rem">'+h.event+'</span>':''}</div>`).join('')}</div>`:''}`;
+  updateGamePreview(wMult,costPerCup)
 }
-function updateGamePreview(wMult){
+function gameInvest(){
+  if(gameCash<5)return;
+  gameCash-=5;gameInvestment+=5;
+  toast('📈 Investiu R$ 5,00! Retorno em 3 dias.');
+  renderGameDay()
+}
+function updateGamePreview(wMult,costPerCup){
   const priceEl=document.getElementById('gPrice'),qtyEl=document.getElementById('gQty');
   if(!priceEl||!qtyEl)return;
   const price=parseFloat(priceEl.value);
   const qty=parseInt(qtyEl.value);
+  const cpc=costPerCup||1.5;
   document.getElementById('gPriceVal').textContent=`R$ ${price.toFixed(2).replace('.',',')}`;
   document.getElementById('gQtyVal').textContent=qty;
-  const cost=qty*1.5;
-  // Demand: higher price → less demand, better weather → more demand
-  const baseDemand=Math.round(qty*wMult*(1-price/15)*1.2);
+  const cost=qty*cpc;
+  const evt=window._gameEvt;const repBonus=window._gameRepBonus||1;
+  let baseDemand=Math.round(qty*wMult*(1-price/15)*1.2*repBonus);
+  if(evt&&evt.mod)baseDemand=Math.round(evt.mod(baseDemand));
   const sold=Math.min(qty,Math.max(0,baseDemand));
   const revenue=sold*price;const profit=revenue-cost;
   document.getElementById('gamePreview').innerHTML=`
@@ -2995,20 +3026,27 @@ function updateGamePreview(wMult){
     <div><div class="gp-label">Demanda est.</div><div class="gp-val">~${Math.max(0,baseDemand)} copos</div></div>
     <div><div class="gp-label">Lucro est.</div><div class="gp-val" style="color:${profit>=0?'var(--sage)':'var(--coral)'}">R$ ${profit>=0?'+':''}${profit.toFixed(2)}</div></div>`
 }
-function playGameDay(wMult){
+function playGameDay(wMult,costPerCup){
   const price=parseFloat(document.getElementById('gPrice').value);
   const qty=parseInt(document.getElementById('gQty').value);
-  const cost=qty*1.5;
-  // Add randomness to actual demand
-  const baseDemand=Math.round(qty*wMult*(1-price/15)*1.2);
+  const cpc=costPerCup||1.5;
+  const cost=qty*cpc;
+  const evt=window._gameEvt;const repBonus=window._gameRepBonus||1;
+  let baseDemand=Math.round(qty*wMult*(1-price/15)*1.2*repBonus);
+  if(evt&&evt.mod)baseDemand=Math.round(evt.mod(baseDemand));
   const variance=Math.round((Math.random()-.5)*qty*0.3);
   const actualDemand=Math.max(0,baseDemand+variance);
   const sold=Math.min(qty,actualDemand);
   const revenue=sold*price;const profit=revenue-cost;
   const wasted=qty-sold;
   gameCash+=profit;
+  // Reputation: good service (sold most) → up, waste → down
+  if(sold>=qty*0.8)gameReputation=Math.min(100,gameReputation+5);
+  else if(wasted>qty*0.5)gameReputation=Math.max(0,gameReputation-5);
+  // Investment returns after 3 days
+  if(gameDay>=4&&gameInvestment>0){const ret=gameInvestment*1.3;gameCash+=ret;toast(`📈 Investimento rendeu R$ ${ret.toFixed(2)}!`);gameInvestment=0}
   const wIdx=WEATHER.findIndex(w=>WEATHER_MULT[WEATHER.indexOf(w)]===wMult)||0;
-  gameHistory.push({weather:WEATHER[wIdx]||'☀️',sold,qty,profit,price});
+  gameHistory.push({weather:WEATHER[wIdx]||'☀️',sold,qty,profit,price,event:evt?evt.name:null});
   playSfx(profit>=0?'success':'error');
   if(gameDay>=7){renderGameEnd();return}
   // Show result overlay then next day
