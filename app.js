@@ -1316,18 +1316,23 @@ function showModulePaywall(modIdx){
 // ============================================================
 // SHARE — viral sharing via WhatsApp and clipboard
 // ============================================================
-function shareProgress(){
+function shareWhatsApp(){
   const done=Object.keys(S.done).length;
   const total=M.reduce((s,m)=>s+m.lessons.length,0);
   const pct=total?Math.round(done/total*100):0;
-  const text=`🎓 Já completei ${done} de ${total} aulas (${pct}%) na Escola Liberal!\n\nPlataforma homeschool com 9 disciplinas, gamificação e quizzes. Grátis!\n\n👉 https://escolaliberal.com.br`;
-  if(navigator.share){
-    navigator.share({title:'Escola Liberal',text:text,url:'https://escolaliberal.com.br'}).catch(()=>{});
-  }else{
-    const waUrl='https://wa.me/?text='+encodeURIComponent(text);
-    window.open(waUrl,'_blank');
-  }
-  if(typeof gtag==='function')gtag('event','share',{method:navigator.share?'native':'whatsapp',done_count:done});
+  const xp=totalXP();
+  const msgs=[
+    `🎓🔥 DESAFIO LANÇADO!\n\nEstou aprendendo economia de verdade na Escola Liberal — e já completei ${pct}% do curso!\n\n💡 Você sabia que tudo o que te ensinaram sobre economia na escola pode estar ERRADO?\n\nAceita o desafio? Aprenda em 5 minutos o que nenhum professor te ensinou:\n\n👉 https://escolaliberal.com.br\n\n⚡ É grátis, funciona no celular e você aprende no seu ritmo.\nBora ver quem aprende mais rápido? 🏆`,
+    `🧠💪 TESTE SUA INTELIGÊNCIA ECONÔMICA!\n\nComecei a estudar economia austríaca na Escola Liberal e já mudou minha forma de ver o mundo.\n\n🤔 Você sabe a diferença entre dinheiro e moeda? Entre preço e valor?\n\nSe não sabe, tá na hora de aprender:\n👉 https://escolaliberal.com.br\n\n🎯 Gratuito • No celular • Aulas de 5 minutos\nQuem chegar nos 1.000 XP primeiro? 🔥`,
+    `📚 AULA QUE A ESCOLA NÃO DÁ:\n\n"Por que o real perde valor todo ano?"\n"Por que os preços só sobem?"\n"O que é taxa de juros DE VERDADE?"\n\nEu aprendi tudo isso na Escola Liberal. Em 5 min por dia. Pelo celular.\n\n👉 https://escolaliberal.com.br\n\n⭐ Já tenho ${xp} XP — e você? Aceita o desafio?`
+  ];
+  const text=msgs[Math.floor(Math.random()*msgs.length)];
+  const waUrl='https://wa.me/?text='+encodeURIComponent(text);
+  window.open(waUrl,'_blank');
+  // Track
+  try{const c=parseInt(localStorage.getItem('escola_share_count')||'0');localStorage.setItem('escola_share_count',String(c+1))}catch(e){}
+  if(typeof gtag==='function')gtag('event','share',{method:'whatsapp',done_count:done,xp});
+  logActivity('share','Compartilhou no WhatsApp')
 }
 
 // ============================================================

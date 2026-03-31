@@ -1334,6 +1334,15 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;-webkit-touc
 @keyframes syncPulse{0%,100%{opacity:1}50%{opacity:.3}}
 @media(max-width:900px){.sync-indicator{bottom:calc(70px + env(safe-area-inset-bottom) + .5rem);left:.75rem}}
 /* ====== SOCIAL CHALLENGES ====== */
+/* ====== WHATSAPP SHARE CARD ====== */
+.wa-share-card{display:flex;align-items:center;gap:.75rem;padding:.85rem 1rem;background:linear-gradient(135deg,rgba(37,211,102,.1),rgba(37,211,102,.05));border:1px solid rgba(37,211,102,.2);border-radius:var(--r-lg);cursor:pointer;margin-bottom:.75rem;transition:transform .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent}
+.wa-share-card:active{transform:scale(.97)}
+.wa-share-card:hover{box-shadow:0 4px 16px rgba(37,211,102,.15)}
+.wa-share-icon{width:42px;height:42px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wa-share-text{flex:1}
+.wa-share-title{font-size:.88rem;font-weight:700;color:#25D366}
+.wa-share-sub{font-size:.72rem;color:var(--text-muted)}
+.wa-share-arrow{color:#25D366;font-size:1.2rem;flex-shrink:0}
 .ch-empty{text-align:center;padding:1.5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg)}
 .ch-empty-icon{font-size:2rem;margin-bottom:.5rem}
 .ch-empty p{font-size:.85rem;color:var(--text-secondary);margin-bottom:1rem}
