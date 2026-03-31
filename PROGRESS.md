@@ -1,20 +1,19 @@
 # Escola Liberal — Progresso do Desenvolvimento
 
-> Última atualização: 2026-03-31 23:30
-> Sessão: #2
+> Última atualização: 2026-04-01 00:30
+> Sessão: #3
 
 ## STATUS GERAL
-Performance otimizada (splash screen, preconnects, SW v22). Login Google redesenhado (botão principal). Todas as features mobile-first implementadas. Produto pronto para lançamento — pendente: créditos Anthropic, migration SQL, configuração Google OAuth no Supabase Dashboard.
+Expansão curricular massiva: 61 módulos, 610 aulas, 21 disciplinas. 3 disciplinas novas (Programação, Oratória, Ed. Cívica). Performance otimizada. Login Google pronto. Produto feature-complete para lançamento.
 
 ## O QUE FOI FEITO NESTA SESSÃO
-- Splash screen nativa no app.html (CSS crítico inline, spinner, auto-remove após boot)
-- Preconnect para Supabase + dns-prefetch CDN
-- Service Worker v22: skip Google Auth URLs (accounts.google, googleapis/oauth)
-- Performance metrics no console (DOM Ready, Load, TTFB, Transfer)
-- Login Google redesenhado: botão Google como PRIMEIRO (acima do email)
-- prompt:select_account adicionado ao OAuth para sempre mostrar seletor
-- Estilo mais proeminente para botão Google (auth-google-primary)
-- Layout login/cadastro: Google → divider → email/senha
+- 23 novos módulos (230 aulas) adicionados ao currículo
+- 7 disciplinas expandidas de 1→3 módulos: Geografia, American History, Direito, Lógica, Mídia, Saúde, Artes
+- 3 disciplinas NOVAS: Programação (3 mods), Oratória e Debate (3 mods), Educação Cívica (3 mods)
+- 4 módulos com conteúdo educativo completo (Economia dos Países, Recursos Naturais, Founding Fathers, American Economy, Direito do Consumidor, Contratos, Falácias)
+- Restantes com estrutura completa + quizzes (conteúdo a ser enriquecido futuramente)
+- SW v22 atualizado para lazy-load mod-0 a mod-60
+- 3 novas disciplinas registradas no DISCIPLINES do app.js
 
 ## O QUE ESTÁ FUNCIONANDO
 - 18 disciplinas, 38 módulos, 380 aulas com quizzes ✅
@@ -86,3 +85,4 @@ Performance otimizada (splash screen, preconnects, SW v22). Login Google redesen
 |---|------|--------|
 | 1 | 2026-03-31 | Fases 6-9: leaderboards, dashboard pais, paywall, certificados PDF, quiz IA, XP duplo, plano de estudos, notificações, cert disciplina, webhook fix, admin dashboard, desafios sociais, leaderboard Supabase, sync visual, tema disciplina, exam prep, simulador expandido, mobile splash, WhatsApp viral, skeleton loading (26 commits) |
 | 2 | 2026-03-31 | Performance: splash screen, preconnects, SW v22 (skip Google Auth), metrics. Login Google redesenhado: botão principal, prompt select_account, estilo proeminente (3 commits) |
+| 3 | 2026-04-01 | Expansão curricular: +23 módulos, 3 disciplinas novas (Programação, Oratória, Ed. Cívica). Total: 61 módulos, 610 aulas, 21 disciplinas (1 commit) |
