@@ -1,42 +1,20 @@
 # Escola Liberal — Progresso do Desenvolvimento
 
-> Última atualização: 2026-03-31 22:00
-> Sessão: #1
+> Última atualização: 2026-03-31 23:30
+> Sessão: #2
 
 ## STATUS GERAL
-Produto feature-complete: 18 disciplinas, 380 aulas, gamificação completa (leaderboards, desafios, XP duplo), IA (tutor + quiz), paywall real, certificados PDF, dashboard admin, mobile-first PWA. Fases 6-9 entregues nesta sessão (26 commits).
+Performance otimizada (splash screen, preconnects, SW v22). Login Google redesenhado (botão principal). Todas as features mobile-first implementadas. Produto pronto para lançamento — pendente: créditos Anthropic, migration SQL, configuração Google OAuth no Supabase Dashboard.
 
 ## O QUE FOI FEITO NESTA SESSÃO
-
-### Fase 6 — Gamificação + Monetização
-- Leaderboards semanais: 5 ligas (Bronze→Rubi), 15 competidores, promoção/rebaixamento, widget dashboard, 4 badges de liga
-- Dashboard de pais completo: cards com stats grid, alertas automáticos, calendário semanal, detalhamento por disciplina, exportação TXT
-- Paywall real ativado: progressão sequencial por disciplina, 1° módulo free, aulas trancadas, plano premium via Stripe
-
-### Fase 7 — IA + Certificados
-- Certificados PDF reais: canvas HD, A4 landscape, disciplina/carga horária/ID único, exportação PNG + PDF client-side
-- Prática infinita com IA: gera 3 questões via Claude Haiku, modal interativo, score, +10 XP/acerto, replay
-- Eventos de XP duplo: multiplicador automático fim de semana, eventos customizáveis, banner animado
-
-### Fase 8 — Inteligência + Retenção
-- Plano de estudos personalizado: análise de progresso, recomendações, áreas fracas, mapa de disciplinas, dicas
-- Notificações inteligentes: 5 mensagens variadas, streak danger às 20h, notificação de XP duplo
-- Certificado de disciplina completa: design premium dourado, detecção automática, PNG+PDF
-- Stripe webhook idempotency fix: dedup por event.id via admin_settings
-
-### Fase 9 — Social + Admin + Infra
-- Admin dashboard expandido: métricas de receita/MRR, funil de retenção, engajamento, tab de eventos XP
-- Desafios sociais: criar/aceitar via WhatsApp link, ranking XP entre amigos
-- Leaderboard real com Supabase: tabela weekly_xp, RLS, sync automático, fallback local
-- Indicador visual de sync: online/offline/syncing, auto-hide, hook em queueSync
-
-### Extras
-- Tema de cores dinâmico por disciplina (accent muda ao entrar no módulo)
-- Revisão pré-prova (Exam Prep): caderno por disciplina com erros, conceitos, resumos
-- Simulador de mercado expandido: eventos econômicos, reputação, investimentos
-- Mobile welcome screen: splash para primeiro acesso mobile com instalar/continuar
-- WhatsApp share com 3 variações de copy marketing viral
-- Polish mobile: skeleton loading, pull-to-refresh, touch feedback
+- Splash screen nativa no app.html (CSS crítico inline, spinner, auto-remove após boot)
+- Preconnect para Supabase + dns-prefetch CDN
+- Service Worker v22: skip Google Auth URLs (accounts.google, googleapis/oauth)
+- Performance metrics no console (DOM Ready, Load, TTFB, Transfer)
+- Login Google redesenhado: botão Google como PRIMEIRO (acima do email)
+- prompt:select_account adicionado ao OAuth para sempre mostrar seletor
+- Estilo mais proeminente para botão Google (auth-google-primary)
+- Layout login/cadastro: Google → divider → email/senha
 
 ## O QUE ESTÁ FUNCIONANDO
 - 18 disciplinas, 38 módulos, 380 aulas com quizzes ✅
@@ -53,15 +31,18 @@ Produto feature-complete: 18 disciplinas, 380 aulas, gamificação completa (lea
 - Notificações inteligentes ✅
 - Eventos de XP duplo ✅
 - Leaderboard Supabase ⚠️ precisa executar migration SQL
-- Service worker v21 com cache + update banner ✅
+- Login Google OAuth ⚠️ precisa configurar Google Cloud Console + Supabase Provider
+- Service worker v22 com cache + update banner ✅
 - PWA instalável (Android + iOS) ✅
-- Mobile-first: bottom nav, header, safe areas ✅
+- Mobile-first: bottom nav, header, safe areas, splash ✅
 - Skeleton loading + pull-to-refresh ✅
+- Performance: preconnects, splash screen, metrics ✅
 - Vite build pipeline + GitHub Actions CI/CD ✅
 
 ## O QUE FALTA FAZER
 - [ ] Adicionar créditos na conta Anthropic (ativar tutor IA + quiz IA) — ALTA (ação do Renato)
 - [ ] Executar migration SQL `supabase/migrations/20260331_leaderboard.sql` no Supabase — ALTA (ação do Renato)
+- [ ] Configurar Google OAuth: Google Cloud Console + Supabase Provider — ALTA (ação do Renato, instruções na seção 2.1 do prompt)
 - [ ] Testes end-to-end do fluxo de pagamento Stripe — ALTA
 - [ ] App nativo via Capacitor (push notifications iOS/Android) — MÉDIA
 - [ ] Split app.js em ES modules (manutenibilidade) — MÉDIA
@@ -69,42 +50,39 @@ Produto feature-complete: 18 disciplinas, 380 aulas, gamificação completa (lea
 - [ ] Dashboard admin: analytics avançados (cohorts, LTV) — MÉDIA
 - [ ] Fórum/comunidade in-app — BAIXA
 - [ ] Contato com ANED para parceria — BAIXA
-- [ ] Simulador de mercado interativo v3 (múltiplos produtos) — BAIXA
 
 ## BUGS CONHECIDOS
-- Nenhum bug crítico identificado. Build Vite passando sem erros.
-- A função `shareProgress()` está duplicada no app.js (linhas ~1319 e ~3537). A segunda (canvas) sobrescreve a primeira. `shareWhatsApp()` é a nova função de marketing. As duas podem coexistir.
+- Nenhum bug crítico. Build Vite passando sem erros.
+- `shareProgress()` duplicada no app.js (~linha 1319 e ~3537). A segunda (canvas) sobrescreve. `shareWhatsApp()` é a de marketing. Podem coexistir.
 
 ## DECISÕES TÉCNICAS TOMADAS
-- Leaderboard usa competidores simulados localmente + dados reais do Supabase quando autenticado
-- Certificados PDF gerados client-side com canvas → JPEG → PDF manual (sem jsPDF dependency)
-- Paywall: offline/não logado = acesso total (freemium local), logado free = 1° módulo/disciplina
-- XP duplo automático sáb/dom via `getXPMultiplier()`, extensível para eventos admin
-- Desafios sociais são locais (localStorage), não sincronizados via Supabase
-- Mobile splash screen adicionada ao index.html com detecção inline (sem arquivo separado)
-- Pull-to-refresh implementado com touch events nativos (sem biblioteca)
+- Splash screen com CSS inline no `<head>` para renderizar antes do CSS externo
+- Preconnect para Supabase mas NÃO preconnect para Google (SW já não cacheia)
+- SW v22 skip explícito de `accounts.google` e `googleapis.com/oauth`
+- Login: Google como botão principal ACIMA do email, com estilo mais proeminente
+- `prompt: 'select_account'` garante que o seletor de contas Google sempre aparece
+- Profile auto-creation já existia em `onSignIn()` (pega `user_metadata.full_name`)
 
 ## ARQUIVOS MODIFICADOS NESTA SESSÃO
-- `app.js` — leaderboards, plano de estudos, certificados, quiz IA, XP duplo, notificações, desafios sociais, sync visual, exam prep, simulador expandido, tema disciplina, skeleton, PTR, WhatsApp share
-- `app.css` — estilos para todas as features acima
-- `app.html` — views para leaderboard, study plan, exam prep + nav items + WhatsApp card + sync indicator + challenge section
-- `admin.html` — métricas receita, funil retenção, tab eventos XP
-- `index.html` — mobile welcome screen com detecção standalone
-- `supabase-client.js` — paywall real (isModuleUnlocked restaurado)
-- `supabase/functions/stripe-webhook/index.ts` — idempotency por event.id
-- `supabase/migrations/20260331_leaderboard.sql` — tabela weekly_xp (NOVA)
-- `sobre.txt` — atualizado com fases 6-9
+- `app.html` — splash screen inline com CSS crítico, preconnect Supabase
+- `app.js` — splash removal após boot, performance metrics
+- `sw.js` — v22, skip Google Auth URLs
+- `auth.html` — Google como botão principal (reordenação), estilo proeminente
+- `supabase-client.js` — prompt:select_account no OAuth
 
 ## NOTAS PARA A PRÓXIMA SESSÃO
 - O Supabase URL e anon key estão em `supabase-client.js` (hardcoded)
-- A conta Anthropic precisa de créditos para o tutor IA e quiz IA funcionarem (~$10 = 10K perguntas)
-- A migration `20260331_leaderboard.sql` precisa ser executada manualmente no Supabase Dashboard (SQL Editor)
-- O app.js tem ~4200 linhas — considerar split em ES modules na próxima sessão
-- O build Vite está configurado em `vite.config.js`, deploy via GitHub Actions
-- A `shareProgress()` duplicada não causa erro pois a segunda sobrescreve a primeira, mas pode ser limpa
-- Os eventos XP do admin são salvos em `admin_settings` do Supabase — o app precisa de um fetch para ler eventos criados pelo admin (ainda não implementado no client-side)
+- Para o Login Google funcionar, o Renato precisa:
+  1. Criar credenciais OAuth em console.cloud.google.com
+  2. Authorized Origins: `https://escolaliberal.com.br`, `https://hwjplecfqsckfiwxiedo.supabase.co`
+  3. Authorized Redirect: `https://hwjplecfqsckfiwxiedo.supabase.co/auth/v1/callback`
+  4. Ativar provider Google no Supabase Dashboard (Authentication → Providers)
+- A migration `20260331_leaderboard.sql` precisa ser executada no Supabase SQL Editor
+- O app.js tem ~4300 linhas — split em ES modules é prioridade média
+- Os eventos XP do admin são salvos em `admin_settings` — o client-side ainda não faz fetch deles
 
 ## HISTÓRICO DE SESSÕES
 | # | Data | Resumo |
 |---|------|--------|
 | 1 | 2026-03-31 | Fases 6-9: leaderboards, dashboard pais, paywall, certificados PDF, quiz IA, XP duplo, plano de estudos, notificações, cert disciplina, webhook fix, admin dashboard, desafios sociais, leaderboard Supabase, sync visual, tema disciplina, exam prep, simulador expandido, mobile splash, WhatsApp viral, skeleton loading (26 commits) |
+| 2 | 2026-03-31 | Performance: splash screen, preconnects, SW v22 (skip Google Auth), metrics. Login Google redesenhado: botão principal, prompt select_account, estilo proeminente (3 commits) |
