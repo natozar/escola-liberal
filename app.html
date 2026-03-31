@@ -295,6 +295,10 @@
       <div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)">🧠</div>
       <div><div class="ni-txt">Revisão Espaçada</div><div class="ni-sub">Método Leitner</div></div>
     </div>
+    <div class="ni" onclick="goExamPrep()" id="nExamPrep" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goExamPrep()">
+      <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">📖</div>
+      <div><div class="ni-txt">Revisão Pré-Prova</div><div class="ni-sub">Caderno de revisão</div></div>
+    </div>
     </div><!-- /toolsSection -->
 
     <!-- GRUPO 3: Config (colapsável, fechado por padrão) -->
@@ -583,6 +587,15 @@
         <div><h2>❌ Revisão de Erros</h2></div>
       </div>
       <div class="error-review" id="errorReviewContent"></div>
+    </div>
+
+    <!-- EXAM PREP VIEW -->
+    <div class="xview" id="vExamPrep">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="mobileBack()">← Voltar</button>
+        <div><h2>📖 Revisão Pré-Prova</h2></div>
+      </div>
+      <div id="examPrepContent"></div>
     </div>
 
     <!-- STUDY PLAN VIEW -->

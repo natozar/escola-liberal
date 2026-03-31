@@ -1350,6 +1350,31 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent;-webkit-touc
 .disc-themed .btn-sage{background:var(--accent-active,var(--sage))}
 .disc-themed .xp-bar{background:var(--accent-active-muted,var(--sage-muted))}
 .disc-themed .global-progress-fill{background:var(--accent-active,var(--sage))!important}
+/* ====== EXAM PREP ====== */
+.ep-intro{font-size:.85rem;color:var(--text-secondary);margin-bottom:1rem;line-height:1.5}
+.ep-disc-list{display:flex;flex-direction:column;gap:.5rem}
+.ep-disc-card{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);cursor:pointer;transition:border-color .15s}
+.ep-disc-card:hover{border-color:var(--sage)}
+.ep-disc-icon{font-size:1.4rem;flex-shrink:0}
+.ep-disc-info{flex:1}
+.ep-disc-name{font-size:.88rem;font-weight:600}
+.ep-disc-meta{font-size:.72rem;color:var(--text-muted)}
+.ep-disc-arrow{color:var(--text-muted);font-size:1.1rem}
+.ep-section{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem}
+.ep-section h4{font-size:.9rem;font-weight:700;margin-bottom:.75rem}
+.ep-section-red{border-color:rgba(224,116,96,.2)}
+.ep-section-red h4{color:var(--coral)}
+.ep-wrong-card{padding:.65rem;background:var(--bg-elevated);border-radius:var(--r-md);margin-bottom:.5rem}
+.ep-wrong-q{font-size:.85rem;font-weight:600;margin-bottom:.35rem}
+.ep-wrong-ans{font-size:.8rem;color:var(--sage-light);margin-bottom:.2rem}
+.ep-wrong-exp{font-size:.75rem;color:var(--text-secondary);margin-bottom:.3rem;line-height:1.4}
+.ep-wrong-meta{font-size:.68rem;color:var(--text-muted);margin-bottom:.35rem}
+.ep-term{font-size:.82rem;padding:.4rem 0;border-bottom:1px solid var(--border);line-height:1.5}
+.ep-term:last-child{border-bottom:none}
+.ep-summary{padding:.5rem .6rem;background:var(--bg-elevated);border-radius:var(--r-md);margin-bottom:.5rem;cursor:pointer;transition:background .15s}
+.ep-summary:hover{background:var(--sage-subtle)}
+.ep-summary-title{font-size:.82rem;font-weight:600;margin-bottom:.2rem}
+.ep-summary-text{font-size:.72rem;color:var(--text-muted);line-height:1.4}
 
 @media(min-width:901px){#vAulas{display:none!important}}
 
