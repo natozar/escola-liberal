@@ -20,12 +20,31 @@
 <title>Escola Liberal — Aprendizado</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://hwjplecfqsckfiwxiedo.supabase.co" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="app.css?v=19">
 <script src="cookie-consent.js"></script>
+<!-- Critical inline CSS for instant splash -->
+<style>
+.app-splash{position:fixed;inset:0;background:#0f1729;display:flex;align-items:center;justify-content:center;z-index:99999;transition:opacity .3s}
+.app-splash-inner{text-align:center}
+.app-splash-logo{font-size:3.5rem;margin-bottom:.75rem}
+.app-splash-name{font-family:-apple-system,sans-serif;color:#dba550;font-size:1.1rem;font-weight:600;letter-spacing:.02em}
+.app-splash-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.08);border-top-color:#4a9e7e;border-radius:50%;animation:appSpin .7s linear infinite;margin:1rem auto 0}
+@keyframes appSpin{to{transform:rotate(360deg)}}
+</style>
 </head>
 <body>
+<!-- APP SPLASH — appears instantly, removed after boot -->
+<div class="app-splash" id="appSplash">
+  <div class="app-splash-inner">
+    <div class="app-splash-logo">🎓</div>
+    <div class="app-splash-name">escola liberal</div>
+    <div class="app-splash-spinner"></div>
+  </div>
+</div>
 
 <!-- SYNC STATUS INDICATOR -->
 <div class="sync-indicator" id="syncIndicator" aria-live="polite"></div>

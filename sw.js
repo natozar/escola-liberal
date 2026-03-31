@@ -1,7 +1,7 @@
-// Escola Liberal PWA — Service Worker v21
+// Escola Liberal PWA — Service Worker v22
 // Estratégia: Network-first (navegação) + Stale-While-Revalidate (assets) + Cache-first (fonts)
-const CACHE_NAME = 'escola-liberal-v21';
-const STATIC_CACHE = 'escola-static-v21';
+const CACHE_NAME = 'escola-liberal-v22';
+const STATIC_CACHE = 'escola-static-v22';
 const FONT_CACHE = 'escola-fonts-v1';
 
 // Core assets — cached on install
@@ -69,9 +69,11 @@ self.addEventListener('fetch', e => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Skip Supabase, Stripe, Analytics requests (never cache)
+  // Skip Supabase, Stripe, Google Auth, Analytics requests (never cache)
   if (url.hostname.includes('supabase') ||
       url.hostname.includes('stripe') ||
+      url.hostname.includes('accounts.google') ||
+      url.hostname.includes('googleapis.com/oauth') ||
       url.hostname.includes('google-analytics') ||
       url.hostname.includes('googletagmanager') ||
       url.hostname.includes('analytics.google')) return;

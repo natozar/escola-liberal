@@ -4265,9 +4265,12 @@ if(S.name!=='Aluno'){
   document.getElementById('onboard').style.display='none';
   goDash();
   setTimeout(checkWhatsNew,1500);
-  // Preload full module content in background for fast lesson opens
   setTimeout(preloadModules,2000);
 }
+// Remove splash screen
+setTimeout(()=>{const sp=document.getElementById('appSplash');if(sp){sp.style.opacity='0';setTimeout(()=>sp.remove(),300)}},400);
+// Performance metrics
+window.addEventListener('load',()=>{try{const p=performance.getEntriesByType('navigation')[0];if(p)console.log(`⚡ Escola Liberal Performance:\n  DOM Ready: ${Math.round(p.domContentLoadedEventEnd-p.startTime)}ms\n  Load: ${Math.round(p.loadEventEnd-p.startTime)}ms\n  TTFB: ${Math.round(p.responseStart-p.requestStart)}ms\n  Transfer: ${Math.round(p.transferSize/1024)}KB`)}catch(e){}});
 // Accept challenge from URL parameter
 (function(){
   const sp=new URLSearchParams(location.search);
