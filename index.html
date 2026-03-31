@@ -291,6 +291,72 @@ footer .tagline{font-family:'DM Serif Display',serif;font-style:italic;color:var
 </head>
 <body>
 
+<!-- MOBILE WELCOME SCREEN -->
+<div class="mobile-welcome" id="mobileWelcome" style="display:none">
+  <div class="mw-content">
+    <div class="mw-logo">🎓</div>
+    <h1 class="mw-title">escola liberal</h1>
+    <p class="mw-sub">Aprenda economia de verdade, no seu ritmo.</p>
+    <div class="mw-features">
+      <div class="mw-feat"><span>📚</span><span>380 aulas interativas</span></div>
+      <div class="mw-feat"><span>🏆</span><span>Gamificação e XP</span></div>
+      <div class="mw-feat"><span>📶</span><span>Funciona offline</span></div>
+      <div class="mw-feat"><span>🤖</span><span>Tutor com IA</span></div>
+    </div>
+    <a href="app.html" class="mw-btn mw-btn-primary" id="mwInstallBtn">📲 Instalar o App</a>
+    <a href="app.html" class="mw-btn mw-btn-secondary" onclick="localStorage.setItem('escola_mobile_web','1')">🌐 Continuar pela Web</a>
+    <p class="mw-hint">Melhor experincia no app instalado!</p>
+  </div>
+</div>
+<style>
+.mobile-welcome{position:fixed;inset:0;z-index:99999;background:var(--bg-primary,#0f1729);display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.mw-content{text-align:center;max-width:360px;width:100%}
+.mw-logo{font-size:4rem;margin-bottom:1rem;animation:mwFloat 3s ease-in-out infinite}
+@keyframes mwFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.mw-title{font-family:'DM Serif Display',Georgia,serif;font-size:2rem;color:#e8e6e1;margin-bottom:.5rem}
+.mw-sub{font-size:.95rem;color:#9ba3b5;margin-bottom:2rem;line-height:1.5}
+.mw-features{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:2rem;text-align:left}
+.mw-feat{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:#9ba3b5;padding:.5rem .6rem;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06)}
+.mw-btn{display:block;width:100%;padding:.85rem;border-radius:12px;font-size:1rem;font-weight:700;text-decoration:none;text-align:center;margin-bottom:.65rem;transition:transform .15s,opacity .15s;-webkit-tap-highlight-color:transparent}
+.mw-btn:active{transform:scale(.97);opacity:.85}
+.mw-btn-primary{background:linear-gradient(135deg,#dba550,#c9943a);color:#0f1729;box-shadow:0 4px 20px rgba(219,165,80,.25)}
+.mw-btn-secondary{background:rgba(255,255,255,.06);color:#e8e6e1;border:1px solid rgba(255,255,255,.1)}
+.mw-hint{font-size:.72rem;color:#6b7488;margin-top:.5rem}
+</style>
+<script>
+(function(){
+  var isMobile=/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||window.innerWidth<=768;
+  var isStandalone=window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+  var choseWeb=localStorage.getItem('escola_mobile_web')==='1';
+  var hasProgress=(function(){try{var s=JSON.parse(localStorage.getItem('escola_v2')||'{}');return s.name&&s.name!=='Aluno'}catch(e){return false}})();
+
+  if(isMobile&&!isStandalone&&!choseWeb&&!hasProgress){
+    document.getElementById('mobileWelcome').style.display='flex';
+    // Capture beforeinstallprompt for the install button
+    var _deferredPrompt=null;
+    window.addEventListener('beforeinstallprompt',function(e){
+      e.preventDefault();_deferredPrompt=e;
+      document.getElementById('mwInstallBtn').onclick=function(ev){
+        ev.preventDefault();
+        _deferredPrompt.prompt();
+        _deferredPrompt.userChoice.then(function(r){
+          _deferredPrompt=null;
+          if(r.outcome==='accepted')window.location.href='app.html';
+        });
+      };
+    });
+    // iOS: change install button to go to app directly (PWA install is manual)
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){
+      document.getElementById('mwInstallBtn').textContent='🚀 Abrir o App';
+    }
+  } else if(isMobile&&(isStandalone||hasProgress)){
+    // Already installed or has progress → go straight to app
+    window.location.replace('app.html');
+  }
+  // Desktop: show landing page normally (no redirect)
+})();
+</script>
+
 <!-- NAV -->
 <nav id="nav" role="navigation" aria-label="Navegação principal">
   <a href="/" class="logo" aria-label="Escola Liberal — Página inicial">
