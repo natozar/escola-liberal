@@ -628,8 +628,11 @@
     <div class="cert-sub">Escola Liberal — Plataforma Homeschool</div>
     <div class="cert-name" id="certName"></div>
     <div class="cert-module" id="certModule"></div>
+    <div class="cert-details" id="certDetails"></div>
     <div class="cert-date" id="certDate"></div>
-    <div style="display:flex;gap:.75rem;justify-content:center;margin-top:.5rem">
+    <div class="cert-id" id="certId"></div>
+    <div style="display:flex;gap:.75rem;justify-content:center;margin-top:.5rem;flex-wrap:wrap">
+      <button class="cert-close" onclick="exportCertPDF(certModIdx)" aria-label="Salvar como PDF" style="border-color:var(--sage);color:var(--sage)">📄 Salvar PDF</button>
       <button class="cert-close" onclick="exportCertImage(certModIdx)" aria-label="Salvar como imagem" style="border-color:var(--honey);color:var(--honey)">📥 Salvar Imagem</button>
       <button class="cert-close" onclick="closeCert()" aria-label="Fechar certificado">Fechar</button>
     </div>

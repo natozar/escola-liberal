@@ -439,7 +439,9 @@ a.profile-row:hover{background:var(--bg-hover)}
 .cert-sub{font-size:.85rem;color:#5a5a6e;margin-bottom:1.5rem}
 .cert-name{font-family:'DM Serif Display',serif;font-size:1.8rem;color:#3d8b6e;margin-bottom:.2rem}
 .cert-module{font-size:.95rem;font-weight:600;color:#4a4a5e;margin-bottom:.5rem}
-.cert-date{font-size:.78rem;color:#7a7a8e;margin-bottom:1.5rem}
+.cert-details{font-size:.78rem;color:#9ba3b5;margin-bottom:.35rem}
+.cert-date{font-size:.78rem;color:#7a7a8e;margin-bottom:.35rem}
+.cert-id{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:#6b7488;margin-bottom:1.25rem}
 .cert-close{padding:.6rem 1.5rem;border:1px solid #ccc;border-radius:var(--r-full);background:none;color:#4a4a5e;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;transition:all .15s}
 .cert-close:hover{border-color:#3d8b6e;color:#3d8b6e}
 
