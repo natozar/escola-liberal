@@ -3295,6 +3295,14 @@ const PWA_DISMISS_KEY='escolalib_install_v2';
 function _isIos(){
   return /iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
 }
+function _isAndroid(){
+  return /android/i.test(navigator.userAgent);
+}
+function _getPlatform(){
+  if(_isIos())return 'ios';
+  if(_isAndroid())return 'android';
+  return 'web';
+}
 function _isInStandaloneMode(){
   return ('standalone' in window.navigator&&window.navigator.standalone)||
     window.matchMedia('(display-mode: standalone)').matches;
@@ -3332,17 +3340,21 @@ window.addEventListener('load',()=>{
 });
 function doInstall(){
   if(!deferredPrompt){
-    // Sem prompt nativo: orienta o usuário manualmente
-    const ios=_isIos();
+    // Sem prompt nativo: orienta o usuário manualmente por plataforma
+    const plat=_getPlatform();
     const ua=navigator.userAgent.toLowerCase();
-    if(ios){
+    if(plat==='ios'){
       toast('No Safari: toque em Compartilhar ↑ → "Adicionar à Tela de Início"');
-    } else if(ua.includes('chrome')||ua.includes('crios')){
-      toast('No Chrome: menu ⋮ (3 pontos) → "Adicionar à tela inicial"');
-    } else if(ua.includes('firefox')){
-      toast('No Firefox: menu ☰ → "Instalar"');
+    } else if(plat==='android'){
+      if(ua.includes('chrome')||ua.includes('crios'))toast('No Chrome: menu ⋮ (3 pontos) → "Adicionar à tela inicial"');
+      else if(ua.includes('firefox'))toast('No Firefox: menu ☰ → "Instalar"');
+      else if(ua.includes('samsung'))toast('No Samsung Internet: menu → "Adicionar à tela inicial"');
+      else toast('Menu do navegador → "Adicionar à tela inicial"');
     } else {
-      toast('Procure "Instalar app" ou "Adicionar à tela inicial" no menu do seu navegador');
+      if(ua.includes('chrome'))toast('No Chrome: menu ⋮ → "Instalar Escola Liberal"');
+      else if(ua.includes('firefox'))toast('No Firefox: barra de endereço → ícone de instalar');
+      else if(ua.includes('edg'))toast('No Edge: menu ··· → "Instalar como app"');
+      else toast('Procure "Instalar app" no menu do seu navegador');
     }
     return;
   }
@@ -3635,8 +3647,15 @@ document.getElementById('shareCanvas').addEventListener('click',downloadShare);
 // ============================================================
 if('serviceWorker' in navigator){
   navigator.serviceWorker.addEventListener('message',e=>{
-    if(e.data&&e.data.type==='SW_UPDATED'){
-      toast('Nova versão disponível! Recarregue a página.','success')
+    if(!e.data)return;
+    if(e.data.type==='SW_UPDATED'){
+      toast('Atualizado para '+e.data.version+'!','success');
+      var lbl=document.getElementById('appVersionLabel');
+      if(lbl) lbl.textContent='versão: '+e.data.version;
+    }
+    if(e.data.type==='SW_VERSION'){
+      var lbl=document.getElementById('appVersionLabel');
+      if(lbl) lbl.textContent='versão: '+e.data.version;
     }
   })
 }
@@ -4339,6 +4358,34 @@ function _renderAuth(){
     +'<div class="ni" role="button" tabindex="0" onclick="location.href=\'perfil.html\'"><div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)">⚙️</div><span style="font-size:.85rem">Meu Perfil</span></div>'
     +'<div class="ni" role="button" tabindex="0" onclick="_doSignOut()"><div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">🚪</div><span style="font-size:.85rem">Sair</span></div></div>';
   side.appendChild(el);
+
+  // Version & update check section
+  var vEl=document.createElement('div');
+  vEl.style.cssText='padding:.75rem;border-top:1px solid var(--border);margin-top:.5rem';
+  vEl.innerHTML='<div class="ni" role="button" tabindex="0" onclick="typeof _checkForUpdates===\'function\'&&_checkForUpdates()"><div class="ni-icon" style="background:var(--lavender-muted,rgba(139,92,246,.1));color:var(--lavender,#a78bfa)">🔄</div><span style="font-size:.85rem">Verificar atualizações</span></div>'
+    +'<div style="text-align:center;padding:.25rem 0;margin-top:.25rem"><span id="appVersionLabel" style="font-size:.7rem;color:var(--text-muted);font-family:\'JetBrains Mono\',monospace">versão: carregando...</span></div>';
+  side.appendChild(vEl);
+
+  // Request version from SW after small delay
+  setTimeout(function(){
+    if(typeof _getAppVersion==='function'){
+      var v=_getAppVersion();
+      var lbl=document.getElementById('appVersionLabel');
+      if(lbl&&v&&v!=='desconhecida') lbl.textContent='versão: '+v;
+    }
+    // Also listen for delayed version response
+    if('serviceWorker' in navigator&&navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({type:'GET_VERSION'});
+      navigator.serviceWorker.addEventListener('message',function _vHandler(e){
+        if(e.data&&e.data.type==='SW_VERSION'){
+          var lbl=document.getElementById('appVersionLabel');
+          if(lbl) lbl.textContent='versão: '+e.data.version;
+          navigator.serviceWorker.removeEventListener('message',_vHandler);
+        }
+      });
+    }
+  }, 1500);
+
   // Update auth UI based on current state
   updateAuthUI();
 }
