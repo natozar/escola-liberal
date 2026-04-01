@@ -725,45 +725,141 @@
 <script src="i18n.js?v=19" defer></script>
 <script src="app.js?v=19" defer></script>
 
-<!-- SW UPDATE BANNER -->
+<!-- APP VERSION BAR (top) -->
+<div class="app-version-bar" id="appVersionBar">
+  <span class="avb-version" id="avbVersion">v--</span>
+  <span class="avb-status" id="avbStatus">✓ Atualizado</span>
+  <button class="avb-check" id="avbCheck" onclick="_checkForUpdates()">Verificar</button>
+</div>
+
+<!-- SW UPDATE BANNER (slides down when update available) -->
 <div class="update-banner" id="updateBanner">
-  <span class="update-text">Nova versão disponível!</span>
-  <button class="update-btn" id="updateBtn" onclick="_doUpdate()">Atualizar</button>
+  <span class="update-text">🔄 Nova versão disponível!</span>
+  <button class="update-btn" id="updateBtn" onclick="_doUpdate()">Atualizar agora</button>
   <button class="update-dismiss" onclick="document.getElementById('updateBanner').classList.remove('show')" aria-label="Fechar">✕</button>
 </div>
+
 <script>
-// Service Worker registration + update detection
+// ========== SERVICE WORKER + VERSION BAR ==========
 (function(){
   if(!('serviceWorker' in navigator)) return;
-  var _waitingWorker=null;
-  navigator.serviceWorker.register('sw.js').then(function(reg){
-    // Check for updates every 60s
-    setInterval(function(){ reg.update(); }, 60000);
-    function _onNewWorker(worker){
-      _waitingWorker=worker;
-      document.getElementById('updateBanner').classList.add('show');
+
+  var _waitingWorker = null;
+  var _swVersion = '--';
+  var _registration = null;
+
+  function _updateBar(version, status, statusClass){
+    var ver = document.getElementById('avbVersion');
+    var st = document.getElementById('avbStatus');
+    if(ver && version) ver.textContent = version;
+    if(st && status){
+      st.textContent = status;
+      st.className = 'avb-status' + (statusClass ? ' ' + statusClass : '');
     }
+  }
+
+  function _showUpdateAvailable(){
+    _updateBar(null, '⬆ Atualização disponível', 'avb-update');
+    var banner = document.getElementById('updateBanner');
+    if(banner) banner.classList.add('show');
+  }
+
+  // Register SW
+  navigator.serviceWorker.register('sw.js').then(function(reg){
+    _registration = reg;
+
+    // NO auto-check interval — user controls updates manually
+
+    // Ask SW for current version
+    if(navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({type:'GET_VERSION'});
+    }
+
+    // Handle new worker detected
+    function _onNewWorker(worker){
+      _waitingWorker = worker;
+      _showUpdateAvailable();
+    }
+
     if(reg.waiting) _onNewWorker(reg.waiting);
+
     reg.addEventListener('updatefound', function(){
-      var newWorker=reg.installing;
+      var newWorker = reg.installing;
       if(!newWorker) return;
       newWorker.addEventListener('statechange', function(){
-        if(newWorker.state==='installed' && navigator.serviceWorker.controller){
+        if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
           _onNewWorker(newWorker);
         }
       });
     });
-  }).catch(function(){});
-  // Listen for controller change (new SW took over)
+  }).catch(function(err){ console.warn('[SW] Registration failed:', err); });
+
+  // Listen for messages from SW
+  navigator.serviceWorker.addEventListener('message', function(e){
+    if(!e.data) return;
+    if(e.data.type === 'SW_VERSION'){
+      _swVersion = e.data.version;
+      _updateBar(e.data.version, '✓ Atualizado', 'avb-ok');
+    }
+    if(e.data.type === 'SW_UPDATED'){
+      _swVersion = e.data.version;
+      _updateBar(e.data.version, '✓ Atualizado!', 'avb-ok');
+      if(typeof toast === 'function') toast('Atualizado para ' + e.data.version + '!', 'success');
+    }
+    if(e.data.type === 'UPDATE_CHECKED'){
+      _updateBar(e.data.version, '✓ Atualizado', 'avb-ok');
+    }
+    if(e.data.type === 'UPDATE_CHECK_FAILED'){
+      _updateBar(null, '⚠ Offline', 'avb-offline');
+    }
+  });
+
+  // Controller change: only reload if user explicitly triggered update
+  var _userTriggered = false;
   navigator.serviceWorker.addEventListener('controllerchange', function(){
+    if(!_userTriggered) return;
     window.location.reload();
   });
-  window._doUpdate=function(){
-    var btn=document.getElementById('updateBtn');
-    btn.textContent='Atualizando...';btn.disabled=true;
-    if(_waitingWorker) _waitingWorker.postMessage({type:'SKIP_WAITING'});
-    else window.location.reload();
+
+  // Apply update (user clicks "Atualizar agora")
+  window._doUpdate = function(){
+    _userTriggered = true;
+    var btn = document.getElementById('updateBtn');
+    if(btn){ btn.textContent = 'Atualizando...'; btn.disabled = true; }
+    _updateBar(null, '⏳ Atualizando...', 'avb-checking');
+    if(_waitingWorker){
+      _waitingWorker.postMessage({type:'SKIP_WAITING'});
+    } else {
+      window.location.reload();
+    }
   };
+
+  // Manual check (user clicks "Verificar" in version bar)
+  window._checkForUpdates = function(){
+    var btn = document.getElementById('avbCheck');
+    if(btn){ btn.textContent = '...'; btn.disabled = true; }
+    _updateBar(null, '🔍 Verificando...', 'avb-checking');
+
+    if(!_registration){
+      _updateBar(null, '⚠ SW não registrado', 'avb-offline');
+      if(btn){ btn.textContent = 'Verificar'; btn.disabled = false; }
+      return;
+    }
+
+    _registration.update().then(function(){
+      setTimeout(function(){
+        if(!_waitingWorker){
+          _updateBar(_swVersion, '✓ Atualizado', 'avb-ok');
+        }
+        if(btn){ btn.textContent = 'Verificar'; btn.disabled = false; }
+      }, 2000);
+    }).catch(function(){
+      _updateBar(null, '⚠ Sem conexão', 'avb-offline');
+      if(btn){ btn.textContent = 'Verificar'; btn.disabled = false; }
+    });
+  };
+
+  window._getAppVersion = function(){ return _swVersion; };
 })();
 </script>
 </body>
