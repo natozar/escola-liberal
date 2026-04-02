@@ -6,6 +6,18 @@ const _nullProxy=new Proxy(document.createElement('div'),{get(t,p){if(p==='__isN
 document.getElementById=function(id){return _origById(id)||_nullProxy};
 
 // ============================================================
+// iOS/SAFARI COMPATIBILITY
+// ============================================================
+// Detect private browsing (localStorage throws on iOS private mode)
+(function(){
+  try{var t='__ls_test__';localStorage.setItem(t,t);localStorage.removeItem(t);window._storageAvailable=true}
+  catch(e){window._storageAvailable=false;console.warn('[iOS] Private mode detected — progress will NOT persist offline')}
+})();
+// Safe localStorage wrapper for iOS private mode
+function _safeSetItem(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function _safeGetItem(k){try{return localStorage.getItem(k)}catch(e){return null}}
+
+// ============================================================
 // COURSE DATA — lazy-loaded: index (66KB) on boot, full content per module on demand
 // ============================================================
 let M=[];
