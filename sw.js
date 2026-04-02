@@ -1,8 +1,8 @@
 // Escola Liberal PWA — Service Worker v25
 // Estratégia: Network-first (navegação) + Stale-While-Revalidate (assets) + Cache-first (fonts)
-const SW_VERSION = 'v30';
-const CACHE_NAME = 'escola-liberal-v30';
-const STATIC_CACHE = 'escola-static-v30';
+const SW_VERSION = 'v31';
+const CACHE_NAME = 'escola-liberal-v31';
+const STATIC_CACHE = 'escola-static-v31';
 const FONT_CACHE = 'escola-fonts-v1';
 
 // Core assets — cached on install
@@ -116,7 +116,7 @@ self.addEventListener('fetch', e => {
           caches.open(CACHE_NAME).then(c => c.put(request, clone));
           return res;
         })
-        .catch(() => caches.match(request).then(r => r || caches.match('./offline.html')))
+        .catch(() => caches.match(request).then(r => r || caches.match('./offline.html').then(o => o || new Response('<h1>Offline</h1>', {headers:{'Content-Type':'text/html'}}))))
     );
     return;
   }
@@ -147,16 +147,19 @@ self.addEventListener('fetch', e => {
         }
         return res;
       }).catch(() => {
-        // Offline SVG fallback for images
+        // Offline fallback
         if (request.destination === 'image') {
           return new Response(
             '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150"><rect fill="#1e293b" width="200" height="150"/><text fill="#64748b" x="100" y="80" text-anchor="middle" font-size="14">Offline</text></svg>',
             { headers: { 'Content-Type': 'image/svg+xml' } }
           );
         }
-        return undefined;
+        // Must return Response, not undefined (iOS Safari requirement)
+        return new Response('', { status: 408, statusText: 'Offline' });
       });
-      return cached || fetchPromise;
+      // cached can be undefined on iOS — must always resolve to Response
+      if (cached) return cached;
+      return fetchPromise.then(r => r || new Response('', { status: 408 }));
     })
   );
 });
