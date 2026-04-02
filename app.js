@@ -328,15 +328,8 @@ function renderXPEvent(){
 }
 
 function isModUnlocked(i){
-  if(!M[i])return false;
-  const disc=M[i].discipline||'economia';
-  const discMods=M.map((m,idx)=>({m,idx})).filter(x=>(x.m.discipline||'economia')===disc);
-  const posInDisc=discMods.findIndex(x=>x.idx===i);
-  // First module of each discipline is always unlocked
-  if(posInDisc<=0)return true;
-  // Subsequent modules require completing the previous one in the same discipline
-  const prevIdx=discMods[posInDisc-1].idx;
-  return M[prevIdx].lessons.every((_,li)=>S.done[`${prevIdx}-${li}`])
+  // ALL modules unlocked — no sequential lock
+  return !!M[i];
 }
 function renderCards(){
   let html='';
@@ -350,17 +343,13 @@ function renderCards(){
     }
     const done=m.lessons.filter((_,li)=>S.done[`${i}-${li}`]).length;
     const p=Math.round(done/m.lessons.length*100);
-    const unlocked=isModUnlocked(i);
     const clr=getModColor(m.color||'sage');
     const clrMuted=getModColorMuted(m.color||'sage');
-    const premium=typeof isModuleUnlocked==='function'&&currentUser&&!isModuleUnlocked(i);
-    const clickAction=unlocked?(premium?`showModulePaywall(${i})`:`goMod(${i})`):'';
-    const lockLabel=premium?'🔒 Premium':(!unlocked?'🔒 Bloqueado':'');
     const statusCls=p===100?'completed':p>0?'in-progress':'not-started';
     const statusTxt=p===100?'✓ Completo':p>0?`${done}/${m.lessons.length} aulas`:'Começar';
-    html+=`<div class="mc${unlocked?'':' locked'}${premium?' premium':''}" ${clickAction?`onclick="${clickAction}"`:''}>`+
+    html+=`<div class="mc" onclick="goMod(${i})">`+
       `<div class="mc-circle"><div class="mc-ring" style="--ring-pct:${p};--ring-color:${clr}"></div><div class="mc-ring-inner"></div><span class="mc-circle-icon">${m.icon}</span></div>`+
-      `<div class="mc-info"><h3>${m.title}</h3><p>${m.desc}</p><div class="mc-meta">${m.lessons.length} aulas · ${p}%${lockLabel?' · '+lockLabel:''}</div></div>`+
+      `<div class="mc-info"><h3>${m.title}</h3><p>${m.desc}</p><div class="mc-meta">${m.lessons.length} aulas · ${p}%</div></div>`+
       `<div class="mc-status ${statusCls}">${statusTxt}</div></div>`;
   });
   document.getElementById('mcards').innerHTML=html
@@ -435,10 +424,10 @@ function goMod(i){
   const allDone=m.lessons.every((_,li)=>S.done[`${i}-${li}`]);
   // Reading time needs content — estimate from XP if not loaded yet
   document.getElementById('lsnList').innerHTML=m.lessons.map((l,li)=>{
-    const k=`${i}-${li}`,d=S.done[k],cur=!d&&(li===0||S.done[`${i}-${li-1}`]),lock=!d&&!cur;
+    const k=`${i}-${li}`,d=S.done[k];
     const readMin=l.content?calcReadTime(l.content):Math.max(2,Math.round(l.xp/8));
-    return`<div class="lsn ${d?'done':cur?'cur':lock?'locked':''}" ${lock?'':`onclick="openL(${i},${li})"`}>`+
-      `<div class="lsn-n">${d?'✓':lock?'🔒':li+1}</div><div class="lsn-info"><h4>${l.title}</h4><p>${l.sub}</p></div><div class="lsn-meta"><div class="reading-time">⏱ ~${readMin} min</div><div class="lsn-xp">+${l.xp} XP</div></div></div>`
+    return`<div class="lsn ${d?'done':'cur'}" onclick="openL(${i},${li})">`+
+      `<div class="lsn-n">${d?'✓':li+1}</div><div class="lsn-info"><h4>${l.title}</h4><p>${l.sub}</p></div><div class="lsn-meta"><div class="reading-time">⏱ ~${readMin} min</div><div class="lsn-xp">+${l.xp} XP</div></div></div>`
   }).join('')+(allDone?`<div style="text-align:center;margin-top:1.25rem"><button class="btn btn-sage" onclick="showCert(${i})">🏅 Ver Certificado</button></div>`:'');
   hideAllViews();
   const vm=document.getElementById('vMod');vm.classList.add('on','view-enter');
