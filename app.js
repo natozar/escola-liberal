@@ -4252,30 +4252,7 @@ function showDashSkeleton(){
 // Show skeleton immediately on first load
 showDashSkeleton();
 
-// ============================================================
-// PULL TO REFRESH (mobile)
-// ============================================================
-(function initPTR(){
-  let startY=0,pulling=false;
-  const el=document.createElement('div');el.className='ptr-indicator';el.textContent='↓ Puxe para atualizar';
-  document.body.appendChild(el);
-  document.addEventListener('touchstart',e=>{
-    if(window.scrollY===0&&e.touches.length===1){startY=e.touches[0].clientY;pulling=true}
-  },{passive:true});
-  document.addEventListener('touchmove',e=>{
-    if(!pulling)return;
-    const dy=e.touches[0].clientY-startY;
-    if(dy>60&&dy<150)el.classList.add('show');
-    else el.classList.remove('show')
-  },{passive:true});
-  document.addEventListener('touchend',()=>{
-    if(el.classList.contains('show')){
-      el.textContent='Atualizando...';
-      setTimeout(()=>{location.reload()},300)
-    }
-    pulling=false;el.classList.remove('show');el.textContent='↓ Puxe para atualizar'
-  },{passive:true})
-})();
+// PULL TO REFRESH — REMOVIDO (atualização apenas via botão na barra superior)
 
 // INIT — load lessons then bootstrap
 (async function _boot(){
