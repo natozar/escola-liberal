@@ -103,7 +103,7 @@ async function signInGoogle() {
     const { data, error } = await sbClient.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'auth.html',
+        redirectTo: window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'app.html',
         queryParams: { prompt: 'select_account' }
       }
     });

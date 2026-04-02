@@ -4312,19 +4312,18 @@ window.addEventListener('load',()=>{try{const p=performance.getEntriesByType('na
     setTimeout(()=>{acceptChallenge(chId);toast('Desafio aceito! Ganhe XP para subir.')},2000);
   }
 })();
-// Redirect recovery token to auth page
+// Recovery token: keep in app.html, auth.html still handles it if accessed directly
 if(location.hash && location.hash.includes('type=recovery')){
   window.location.replace('auth.html' + location.hash);
 }
-// Redirect OAuth errors back to auth page
+// OAuth errors: show toast instead of redirecting
 (function(){
   var sp=new URLSearchParams(location.search);
   var err=sp.get('error');
-  var errCode=sp.get('error_code');
-  var errDesc=sp.get('error_description');
   if(err){
-    var q='?oauth_error=1&error='+encodeURIComponent(err||'')+'&error_code='+encodeURIComponent(errCode||'')+'&error_description='+encodeURIComponent(errDesc||'');
-    window.location.replace('auth.html'+q);
+    var desc=sp.get('error_description')||err;
+    setTimeout(function(){if(typeof toast==='function')toast('Erro no login: '+decodeURIComponent(desc),'error')},1000);
+    history.replaceState(null,'',location.pathname);
   }
 })();
 if(location.hash){const m=location.hash.match(/module-(\d+)/);if(m)setTimeout(()=>goMod(parseInt(m[1])-1),100)}
@@ -4359,7 +4358,7 @@ function _renderAuth(){
   el.id='authSection';
   el.style.cssText='margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)';
   el.innerHTML='<div class="side-label" style="margin-top:.5rem">CONTA</div>'
-    +'<div id="authLoggedOut"><div class="ni" role="button" tabindex="0" onclick="location.href=\'auth.html\'"><div class="ni-icon" style="background:var(--sage-muted);color:var(--sage-light)">🔐</div><span style="font-size:.85rem">Entrar / Criar Conta</span></div></div>'
+    +'<div id="authLoggedOut"><div class="ni" role="button" tabindex="0" onclick="_showLoginModal()"><div class="ni-icon" style="background:var(--sage-muted);color:var(--sage-light)">🔐</div><span style="font-size:.85rem">Entrar / Criar Conta</span></div></div>'
     +'<div id="authLoggedIn" style="display:none"><div style="display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;margin-bottom:.25rem"><div style="width:28px;height:28px;border-radius:50%;background:var(--sage-muted);display:flex;align-items:center;justify-content:center;font-size:.8rem">👤</div><span id="authUserName" style="font-size:.85rem;color:var(--text-secondary)"></span></div>'
     +'<div class="ni" role="button" tabindex="0" onclick="location.href=\'perfil.html\'"><div class="ni-icon" style="background:var(--sky-muted);color:var(--sky)">⚙️</div><span style="font-size:.85rem">Meu Perfil</span></div>'
     +'<div class="ni" role="button" tabindex="0" onclick="_doSignOut()"><div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">🚪</div><span style="font-size:.85rem">Sair</span></div></div>';
@@ -4417,6 +4416,96 @@ async function _doSignOut(){
   }
   updateAuthUI();
 }
+
+// ============================================================
+// LOGIN MODAL (inline, no redirect)
+// ============================================================
+function _showLoginModal(){
+  if(document.getElementById('loginModal'))return;
+  closeSideMobile();
+  var overlay=document.createElement('div');
+  overlay.id='loginModal';
+  overlay.className='save-modal-overlay';
+  overlay.onclick=function(e){if(e.target===overlay)overlay.remove()};
+  overlay.innerHTML='<div class="save-modal" style="max-width:380px;padding:2rem 1.5rem">'
+    +'<button class="save-modal-close" onclick="document.getElementById(\'loginModal\').remove()" aria-label="Fechar">&times;</button>'
+    +'<div style="text-align:center;margin-bottom:1.5rem"><div style="font-size:2rem;margin-bottom:.5rem">🔐</div><h2 style="font-size:1.2rem;margin-bottom:.25rem">Entrar na Escola Liberal</h2><p style="font-size:.82rem;color:var(--text-muted)">Sincronize progresso entre dispositivos</p></div>'
+    +'<button class="btn btn-ghost" style="width:100%;padding:.75rem;font-size:.9rem;margin-bottom:.75rem;display:flex;align-items:center;justify-content:center;gap:.5rem" onclick="_loginGoogle()">'
+    +'<svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>'
+    +' Continuar com Google</button>'
+    +'<div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem"><div style="flex:1;height:1px;background:var(--border)"></div><span style="font-size:.7rem;color:var(--text-muted)">ou</span><div style="flex:1;height:1px;background:var(--border)"></div></div>'
+    +'<input id="loginEmail" type="email" placeholder="Email" style="width:100%;padding:.6rem .75rem;border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg-elevated);color:var(--text-primary);font-family:inherit;font-size:.85rem;margin-bottom:.5rem;box-sizing:border-box">'
+    +'<input id="loginPass" type="password" placeholder="Senha" style="width:100%;padding:.6rem .75rem;border:1px solid var(--border);border-radius:var(--r-md);background:var(--bg-elevated);color:var(--text-primary);font-family:inherit;font-size:.85rem;margin-bottom:.75rem;box-sizing:border-box" onkeydown="if(event.key===\'Enter\')_loginEmail()">'
+    +'<button class="btn btn-sage" style="width:100%;margin-bottom:.5rem" onclick="_loginEmail()">Entrar</button>'
+    +'<div id="loginError" style="display:none;color:var(--coral);font-size:.78rem;text-align:center;margin-bottom:.5rem"></div>'
+    +'<div style="text-align:center"><button class="btn btn-ghost" style="font-size:.75rem;padding:.35rem .75rem" onclick="document.getElementById(\'loginModal\').remove()">Continuar sem conta →</button></div>'
+    +'</div>';
+  document.body.appendChild(overlay);
+  setTimeout(function(){var el=document.getElementById('loginEmail');if(el)el.focus()},200);
+}
+
+async function _loginGoogle(){
+  if(typeof signInGoogle!=='function'){toast('Google login não disponível offline','error');return}
+  var result=await signInGoogle();
+  if(!result.success){
+    var err=document.getElementById('loginError');
+    if(err){err.style.display='block';err.textContent='Erro: '+(result.error||'Tente novamente')}
+  }
+  // OAuth redirects — modal will be gone when user returns
+}
+
+async function _loginEmail(){
+  var email=(document.getElementById('loginEmail')||{}).value||'';
+  var pass=(document.getElementById('loginPass')||{}).value||'';
+  var err=document.getElementById('loginError');
+  if(!email||!pass){if(err){err.style.display='block';err.textContent='Preencha email e senha'}return}
+  if(typeof sbClient==='undefined'||!sbClient){if(err){err.style.display='block';err.textContent='Sem conexão'}return}
+  try{
+    var{data,error}=await sbClient.auth.signInWithPassword({email:email,password:pass});
+    if(error){
+      // Try sign up if login fails
+      if(error.message.includes('Invalid login')){
+        var{data:d2,error:e2}=await sbClient.auth.signUp({email:email,password:pass});
+        if(e2)throw e2;
+        if(err){err.style.display='block';err.style.color='var(--sage)';err.textContent='Conta criada! Verifique seu email para confirmar.'}
+        return;
+      }
+      throw error;
+    }
+    // Login success
+    var modal=document.getElementById('loginModal');if(modal)modal.remove();
+    if(typeof initAfterAuth==='function')initAfterAuth(data.user);
+    updateAuthUI();
+    toast('Bem-vindo de volta!','success');
+  }catch(e){
+    if(err){err.style.display='block';err.textContent='Erro: '+e.message}
+  }
+}
+
+// Handle OAuth callback in app.html (not auth.html)
+(function(){
+  if(location.hash&&location.hash.includes('access_token')){
+    // OAuth returned here — let Supabase handle the session
+    setTimeout(function(){
+      if(typeof sbClient!=='undefined'&&sbClient){
+        sbClient.auth.getSession().then(function(r){
+          if(r.data.session){
+            updateAuthUI();
+            toast('Login realizado!','success');
+            // Clean URL
+            history.replaceState(null,'',location.pathname);
+          }
+        });
+      }
+    },1500);
+  }
+  // Handle OAuth error redirect
+  var sp=new URLSearchParams(location.search);
+  if(sp.get('error')){
+    setTimeout(function(){toast('Erro no login: '+(sp.get('error_description')||sp.get('error')),'error')},1000);
+    history.replaceState(null,'',location.pathname);
+  }
+})();
 
 // ============================================================
 // STRIPE BILLING (carrega de forma segura)
