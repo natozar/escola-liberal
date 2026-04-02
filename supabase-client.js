@@ -331,7 +331,8 @@ async function mergeLocalToCloud() {
         onboarding_done: localState.name !== 'Aluno',
         theme: localStorage.getItem('escola_theme') || 'dark',
         daily_goal: (typeof getDailyGoal === 'function' && getDailyGoal()?.target) ? getDailyGoal().target : 3,
-        pin: localStorage.getItem('escola_pin') || null
+        pin: localStorage.getItem('escola_pin') || null,
+        state: localState.state || null
       })
       .eq('id', currentUser.id);
 

@@ -1284,6 +1284,12 @@ function obNext(step){
   }
   if(step===2&&!obAgeGroup){toast('Selecione sua faixa etária');return}
   if(step===3){
+    // Estado (UF)
+    const stEl=document.getElementById('obState');
+    if(stEl&&stEl.value)S.state=stEl.value;
+    save();
+  }
+  if(step===4){
     if(typeof setLang==='function')setLang(obLangPref);
   }
   document.getElementById('obStep'+step).classList.remove('active');
@@ -1294,6 +1300,7 @@ function obFinish(){
     S.avatar=obAvatar;
     S.ageGroup=obAgeGroup;
     S.lang=obLangPref;
+    if(!S.state){const stEl=document.getElementById('obState');if(stEl&&stEl.value)S.state=stEl.value}
     save();
     // Salvar lead no Supabase
     if(S.email&&typeof saveLeadEmail==='function')saveLeadEmail(S.email,S.name,obAgeGroup,obLangPref);

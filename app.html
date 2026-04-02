@@ -180,21 +180,39 @@
       <button class="btn btn-sage" onclick="obNext(2)" style="width:100%">Continuar →</button>
     </div>
     <div class="onboard-step" id="obStep3">
+      <h2>De onde você é?</h2>
+      <p>Seu estado nos ajuda a entender o alcance da plataforma.</p>
+      <select class="onboard-input" id="obState" style="cursor:pointer;appearance:auto;padding:.7rem .8rem">
+        <option value="">Selecione seu estado (opcional)</option>
+        <option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option>
+        <option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option>
+        <option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option>
+        <option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option>
+        <option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option>
+        <option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option>
+        <option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option>
+        <option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option>
+        <option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
+        <option value="EX">Moro fora do Brasil</option>
+      </select>
+      <button class="btn btn-sage" onclick="obNext(3)" style="width:100%;margin-top:.75rem">Continuar →</button>
+    </div>
+    <div class="onboard-step" id="obStep4">
       <h2>Idioma preferido</h2>
       <p>O conteúdo principal é em Português, mas temos módulos em Inglês.</p>
       <div class="onboard-lang-grid">
         <button class="ob-lang-btn active" onclick="selectObLang('pt',this)">🇧🇷 Português</button>
         <button class="ob-lang-btn" onclick="selectObLang('en',this)">🇺🇸 English</button>
       </div>
-      <button class="btn btn-sage" onclick="obNext(3)" style="width:100%">Continuar →</button>
-    </div>
-    <div class="onboard-step" id="obStep4">
-      <h2>Escolha seu avatar</h2>
-      <p>Esse será seu perfil durante o curso.</p>
-      <div class="onboard-avatars" id="obAvatars"></div>
       <button class="btn btn-sage" onclick="obNext(4)" style="width:100%">Continuar →</button>
     </div>
     <div class="onboard-step" id="obStep5">
+      <h2>Escolha seu avatar</h2>
+      <p>Esse será seu perfil durante o curso.</p>
+      <div class="onboard-avatars" id="obAvatars"></div>
+      <button class="btn btn-sage" onclick="obNext(5)" style="width:100%">Continuar →</button>
+    </div>
+    <div class="onboard-step" id="obStep6">
       <h2>Tudo pronto!</h2>
       <p>66 módulos para dominar economia, matemática, filosofia, ciências e muito mais.</p>
       <div class="onboard-features">
