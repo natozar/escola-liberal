@@ -4277,16 +4277,22 @@ showDashSkeleton();
   updateLangToggle();
   streak();
   initOnboard();
-updateSfxLabel();
-scheduleStudyReminder();
-enhanceAria();
-updateGlobalProgress();
 if(S.name!=='Aluno'){
   document.getElementById('onboard').style.display='none';
   goDash();
-  setTimeout(checkWhatsNew,1500);
-  setTimeout(preloadModules,2000);
 }
+// Defer non-critical init to after first paint
+const _deferInit=typeof requestIdleCallback==='function'?requestIdleCallback:cb=>setTimeout(cb,100);
+_deferInit(()=>{
+  updateSfxLabel();
+  scheduleStudyReminder();
+  enhanceAria();
+  updateGlobalProgress();
+  if(S.name!=='Aluno'){
+    setTimeout(checkWhatsNew,1000);
+    setTimeout(preloadModules,1500);
+  }
+});
 // Challenge banner: rotate messages
 (function initChallengeBanner(){
   const banner=_origById('challengeBanner');

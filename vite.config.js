@@ -75,7 +75,12 @@ export default defineConfig({
     terserOptions: {
       compress: { drop_console: false, passes: 2 },
       format: { comments: false }
-    }
+    },
+    cssMinify: 'lightningcss',
+    reportCompressedSize: true,
+  },
+  css: {
+    devSourcemap: false,
   },
   plugins: [minifyLegacyJS()],
   server: {
