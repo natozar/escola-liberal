@@ -3313,8 +3313,13 @@ function _showPwaModal(force){
   if(obEl&&obEl.style.display!=='none')return;
   // Remove chaves antigas para garantir que o popup apareça após o rebrand
   localStorage.removeItem('escola_install_dismissed');
+  if(_isInStandaloneMode())return;
+  // Re-show after 7 days if dismissed
   const dismissed=localStorage.getItem(PWA_DISMISS_KEY);
-  if((dismissed&&!force)||_isInStandaloneMode())return;
+  if(dismissed&&!force){
+    try{const dismissedAt=parseInt(localStorage.getItem(PWA_DISMISS_KEY+'_ts')||'0');
+    if(Date.now()-dismissedAt<7*86400000)return}catch(e){return}
+  }
   const overlay=document.getElementById('pwaOverlay');
   if(!overlay)return;
   const ios=_isIos();
@@ -3368,13 +3373,14 @@ function doInstall(){
 function dismissInstall(){
   const overlay=document.getElementById('pwaOverlay');
   if(overlay)overlay.classList.remove('show');
-  localStorage.setItem(PWA_DISMISS_KEY,'1')
+  localStorage.setItem(PWA_DISMISS_KEY,'1');
+  localStorage.setItem(PWA_DISMISS_KEY+'_ts',String(Date.now()))
 }
 
 // ============================================================
 // VERSIONING + WHAT'S NEW
 // ============================================================
-const APP_VERSION='2.5.0';
+const APP_VERSION='3.0.0';
 const CHANGELOG=[
   {emoji:'📱',text:'<strong>Instalar como App</strong> — Banner personalizado para instalar no celular ou desktop'},
   {emoji:'💾',text:'<strong>Backup Completo</strong> — Exporte e importe todo seu progresso em JSON'},

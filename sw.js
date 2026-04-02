@@ -1,7 +1,8 @@
-// Escola Liberal PWA — Service Worker v23
+// Escola Liberal PWA — Service Worker v25
 // Estratégia: Network-first (navegação) + Stale-While-Revalidate (assets) + Cache-first (fonts)
-const CACHE_NAME = 'escola-liberal-v23';
-const STATIC_CACHE = 'escola-static-v23';
+const SW_VERSION = 'v25';
+const CACHE_NAME = 'escola-liberal-v25';
+const STATIC_CACHE = 'escola-static-v25';
 const FONT_CACHE = 'escola-fonts-v1';
 
 // Core assets — cached on install
@@ -35,31 +36,61 @@ const LAZY_ASSETS = ['./lessons.json', './lessons/index.json'].concat(
   Array.from({length:66},(_,i)=>'./lessons/mod-'+i+'.json')
 );
 
+// ========== INSTALL ==========
 self.addEventListener('install', e => {
+  console.log('[SW] Instalando', SW_VERSION);
   e.waitUntil(
     caches.open(CACHE_NAME).then(c => c.addAll(CORE_ASSETS))
   );
   // skipWaiting controlled by message from page (update banner)
 });
 
+// ========== MESSAGES ==========
 self.addEventListener('message', e => {
-  if(e.data && e.data.type === 'SKIP_WAITING') self.skipWaiting();
+  if (!e.data) return;
+  if (e.data.type === 'SKIP_WAITING') {
+    console.log('[SW] SKIP_WAITING recebido, ativando nova versão');
+    self.skipWaiting();
+  }
+  // Respond to version check requests
+  if (e.data.type === 'GET_VERSION') {
+    e.source.postMessage({ type: 'SW_VERSION', version: SW_VERSION, cache: CACHE_NAME });
+  }
+  // Force update check
+  if (e.data.type === 'CHECK_UPDATE') {
+    self.registration.update().then(() => {
+      e.source.postMessage({ type: 'UPDATE_CHECKED', version: SW_VERSION });
+    }).catch(() => {
+      e.source.postMessage({ type: 'UPDATE_CHECK_FAILED' });
+    });
+  }
 });
 
+// ========== ACTIVATE ==========
 self.addEventListener('activate', e => {
+  console.log('[SW] Ativando', SW_VERSION);
   const keepCaches = [CACHE_NAME, STATIC_CACHE, FONT_CACHE];
   e.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.filter(k => !keepCaches.includes(k)).map(k => caches.delete(k)))
+      Promise.all(keys.filter(k => !keepCaches.includes(k)).map(k => {
+        console.log('[SW] Removendo cache antigo:', k);
+        return caches.delete(k);
+      }))
     ).then(() => {
+      // Notify all open tabs that SW was updated
       self.clients.matchAll().then(clients => {
-        clients.forEach(client => client.postMessage({ type: 'SW_UPDATED', version: CACHE_NAME }));
+        clients.forEach(client => client.postMessage({
+          type: 'SW_UPDATED',
+          version: SW_VERSION,
+          cache: CACHE_NAME
+        }));
       });
     })
   );
   self.clients.claim();
 });
 
+// ========== FETCH ==========
 self.addEventListener('fetch', e => {
   const { request } = e;
   const url = new URL(request.url);
@@ -118,5 +149,14 @@ self.addEventListener('fetch', e => {
       }).catch(() => {
         // Offline SVG fallback for images
         if (request.destination === 'image') {
-          return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150"><rect fill="#1e293b" width="200" height="150"/><text fill="#64748b" x="100" y="80" text-anchor="middle" font-size="14">Offline</text></svg>', {
-            headers: { 'Content-T
+          return new Response(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150"><rect fill="#1e293b" width="200" height="150"/><text fill="#64748b" x="100" y="80" text-anchor="middle" font-size="14">Offline</text></svg>',
+            { headers: { 'Content-Type': 'image/svg+xml' } }
+          );
+        }
+        return undefined;
+      });
+      return cached || fetchPromise;
+    })
+  );
+});
