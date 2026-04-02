@@ -382,7 +382,18 @@
 
   <!-- MAIN -->
   <main class="main" id="mainC" role="main" aria-label="Conteúdo principal">
-    <!-- mobile-bar removed: mobile-header handles mobile nav -->
+
+    <!-- CHALLENGE BANNER — always visible on all tabs -->
+    <div class="challenge-banner" id="challengeBanner" onclick="shareWhatsApp()">
+      <div class="cb-left">
+        <span class="cb-icon">🏆</span>
+        <div class="cb-text">
+          <div class="cb-title">Desafie um amigo agora!</div>
+          <div class="cb-sub">Quem ganha mais XP esta semana? Compartilhe e descubra!</div>
+        </div>
+      </div>
+      <span class="cb-arrow">→</span>
+    </div>
 
     <!-- DASHBOARD -->
     <div class="dash" id="vDash">
@@ -725,7 +736,7 @@
 </div>
 
 <script src="i18n.js?v=19" defer></script>
-<script src="app.js?v=29" defer></script>
+<script src="app.js?v=30" defer></script>
 
 <!-- APP VERSION BAR (top) -->
 <div class="app-version-bar" id="appVersionBar">

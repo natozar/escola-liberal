@@ -4285,6 +4285,32 @@ if(S.name!=='Aluno'){
   setTimeout(checkWhatsNew,1500);
   setTimeout(preloadModules,2000);
 }
+// Challenge banner: rotate messages
+(function initChallengeBanner(){
+  const banner=_origById('challengeBanner');
+  if(!banner)return;
+  const msgs=[
+    {icon:'🏆',title:'Desafie um amigo agora!',sub:'Quem ganha mais XP esta semana? Compartilhe e descubra!'},
+    {icon:'⚡',title:'Você tem '+totalXP()+' XP — quem te supera?',sub:'Mande o link no WhatsApp e veja quem estuda mais!'},
+    {icon:'🔥',title:S.streak+' dias de sequência!',sub:'Desafie alguém a manter uma sequência maior que a sua!'},
+    {icon:'🎯',title:'Já completou '+Object.keys(S.done).length+' aulas',sub:'Desafie seus amigos a te alcançar!'},
+    {icon:'💪',title:'Nível '+S.lvl+' — quem chega primeiro?',sub:'Compartilhe e crie uma competição saudável!'},
+    {icon:'🧠',title:'Teste quem sabe mais!',sub:'Envie o app para um amigo e comparem resultados!'}
+  ];
+  let idx=Math.floor(Math.random()*msgs.length);
+  function updateBanner(){
+    const m=msgs[idx%msgs.length];
+    const iconEl=banner.querySelector('.cb-icon');
+    const titleEl=banner.querySelector('.cb-title');
+    const subEl=banner.querySelector('.cb-sub');
+    if(iconEl)iconEl.textContent=m.icon;
+    if(titleEl)titleEl.textContent=m.title;
+    if(subEl)subEl.textContent=m.sub;
+    idx++;
+  }
+  updateBanner();
+  setInterval(updateBanner,30000); // Rotate every 30s
+})();
 // Remove splash screen
 setTimeout(()=>{const sp=document.getElementById('appSplash');if(sp){sp.style.opacity='0';setTimeout(()=>sp.remove(),300)}},400);
 // Performance metrics
