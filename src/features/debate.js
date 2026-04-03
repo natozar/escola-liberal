@@ -121,19 +121,33 @@ function _renderRoomList(){
 }
 
 // ============================================================
-// RENDER — Room chat
+// AUTH CHECK — works in both OFFLINE_MODE and online
+// ============================================================
+function _isDebateAuthed(){
+  // 1. Check debate-specific offline auth
+  try{var da=JSON.parse(localStorage.getItem('escola_debate_auth')||'null');if(da&&da.name&&da.name.length>=2)return true}catch(e){}
+  // 2. Check app state (user completed onboarding with real name)
+  if(window.S&&window.S.name&&window.S.name!=='Aluno'&&window.S.name!=='Visitante')return true;
+  // 3. Check Supabase auth (when online)
+  if(typeof window.currentUser!=='undefined'&&window.currentUser)return true;
+  return false;
+}
+
+// ============================================================
+// RENDER — Room chat (messages visible to all, input only for authed)
 // ============================================================
 function _renderRoom(room){
   var view=window._origById?window._origById('vDebate'):document.getElementById('vDebate');
-  var isLoggedIn=typeof window.currentUser!=='undefined'&&window.currentUser;
-  var ph=isLoggedIn?'Escreva sua opiniao...':'🔒 Faca login para participar';
+  var isAuthed=_isDebateAuthed();
 
-  // Check suspension status for input
+  // Check suspension
   var susp=typeof window._isSuspended==='function'?window._isSuspended():{suspended:false};
-  if(susp.suspended){ph=susp.msg;isLoggedIn=false}// Force readonly if suspended
+  if(susp.suspended)isAuthed=false;
+
   var rulesBanner=typeof window.getRulesBannerHtml==='function'?window.getRulesBannerHtml():'';
 
-  view.innerHTML=rulesBanner
+  // Room header + messages (visible to ALL)
+  var html=rulesBanner
     +'<div class="debate-room-bar" style="--room-color:'+room.color+'">'
     +'<div class="debate-room-bar-info">'
     +'<span class="debate-room-bar-icon" style="color:'+room.color+'">'+room.icon+'</span>'
@@ -143,22 +157,51 @@ function _renderRoom(room){
     +'</div>'
     +'<div class="debate-chat" id="debateMessages" role="log" aria-live="polite">'
     +'<div class="debate-chat-loading">Carregando...</div>'
-    +'</div>'
-    +'<div class="debate-input-bar">'
-    +'<button class="debate-audio-btn" id="debateAudioBtn" onclick="toggleDebateAudio()" title="Enviar audio" aria-label="Gravar audio">🎤</button>'
-    +'<input class="debate-input" id="debateInput" placeholder="'+ph+'"'
-    +' onkeydown="if(event.key===\'Enter\')sendDebateMsg()"'
-    +' onfocus="if(!window.currentUser){this.blur();showLoginPrompt(\'debate\')}"'
-    +' aria-label="Mensagem"'+(isLoggedIn?'':' readonly')+'>'
-    +'<button class="debate-send-btn" onclick="sendDebateMsg()" aria-label="Enviar">Enviar</button>'
     +'</div>';
+
+  if(isAuthed){
+    // AUTHED: show full input with audio + text + send
+    var ph=susp.suspended?susp.msg:'Escreva sua opiniao...';
+    html+='<div class="debate-input-bar">'
+      +'<button class="debate-audio-btn" id="debateAudioBtn" onclick="toggleDebateAudio()" title="Enviar audio" aria-label="Gravar audio">🎤</button>'
+      +'<input class="debate-input" id="debateInput" placeholder="'+ph+'"'
+      +' onkeydown="if(event.key===\'Enter\')sendDebateMsg()"'
+      +' aria-label="Mensagem"'+(susp.suspended?' readonly':'')+'>'
+      +'<button class="debate-send-btn" onclick="sendDebateMsg()" aria-label="Enviar">Enviar</button>'
+      +'</div>';
+  } else {
+    // NOT AUTHED: show login prompt instead of input
+    html+='<div class="debate-login-prompt">'
+      +'<div class="debate-login-icon">🔐</div>'
+      +'<div class="debate-login-text">'
+      +'<strong>Faca login para participar</strong>'
+      +'<span>Voce pode ler as mensagens, mas precisa estar identificado para enviar.</span>'
+      +'</div>'
+      +'<div class="debate-login-buttons">';
+    if(window.OFFLINE_MODE){
+      // Offline: simple name+avatar login
+      html+='<button class="debate-login-btn email" onclick="_showDebateOfflineLogin(\''+room.id+'\')">👋 Entrar com Nome</button>';
+    } else {
+      html+='<button class="debate-login-btn google" onclick="_debateLoginGoogle(\''+room.id+'\')">'
+        +'<svg width="16" height="16" viewBox="0 0 24 24" style="margin-right:6px"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>'
+        +' Entrar com Google</button>'
+        +'<button class="debate-login-btn email" onclick="_debateLoginEmail(\''+room.id+'\')">✉️ Entrar com E-mail</button>';
+    }
+    html+='</div></div>';
+  }
+
+  view.innerHTML=html;
 }
 
 // ============================================================
 // SEND
 // ============================================================
 function sendDebateMsg(){
-  if(!window.currentUser){window.showLoginPrompt('debate');return}
+  if(!_isDebateAuthed()){
+    if(_currentRoom)_showDebateOfflineLogin(_currentRoom.id);
+    else if(typeof window.showLoginPrompt==='function')window.showLoginPrompt('debate');
+    return;
+  }
   var input=window._origById?window._origById('debateInput'):document.getElementById('debateInput');
   if(!input)return;
   var text=input.value.trim();
@@ -357,6 +400,74 @@ function _stopAudio(){
 }
 
 // ============================================================
+// DEBATE LOGIN (offline: name+avatar modal, online: OAuth/email)
+// ============================================================
+function _showDebateOfflineLogin(roomId){
+  var overlay=document.createElement('div');
+  overlay.className='debate-offline-login-overlay';
+  overlay.id='debateOfflineLoginOverlay';
+  overlay.innerHTML='<div class="debate-offline-login-modal">'
+    +'<h3>👋 Como voce se chama?</h3>'
+    +'<p>Seu nome aparecera nas mensagens do debate.</p>'
+    +'<input type="text" id="debateOfflineName" class="debate-offline-name-input" placeholder="Seu nome..." maxlength="30" autocomplete="off" onkeydown="if(event.key===\'Enter\')_confirmDebateLogin(\''+roomId+'\')">'
+    +'<div class="debate-offline-avatars">'
+    +'<span class="debate-avatar-opt selected" onclick="_pickAvatar(this,\'🧑‍🎓\')">🧑‍🎓</span>'
+    +'<span class="debate-avatar-opt" onclick="_pickAvatar(this,\'👩‍🎓\')">👩‍🎓</span>'
+    +'<span class="debate-avatar-opt" onclick="_pickAvatar(this,\'👨‍🎓\')">👨‍🎓</span>'
+    +'<span class="debate-avatar-opt" onclick="_pickAvatar(this,\'👩‍💻\')">👩‍💻</span>'
+    +'<span class="debate-avatar-opt" onclick="_pickAvatar(this,\'🧑‍🔬\')">🧑‍🔬</span>'
+    +'<span class="debate-avatar-opt" onclick="_pickAvatar(this,\'🦸‍♀️\')">🦸‍♀️</span>'
+    +'<span class="debate-avatar-opt" onclick="_pickAvatar(this,\'🧙‍♂️\')">🧙‍♂️</span>'
+    +'<span class="debate-avatar-opt" onclick="_pickAvatar(this,\'👨‍🚀\')">👨‍🚀</span>'
+    +'</div>'
+    +'<button class="debate-offline-confirm" onclick="_confirmDebateLogin(\''+roomId+'\')">Entrar no Debate</button>'
+    +'<button class="debate-offline-cancel" onclick="document.getElementById(\'debateOfflineLoginOverlay\').remove()">Cancelar</button>'
+    +'</div>';
+  document.body.appendChild(overlay);
+  setTimeout(function(){var i=document.getElementById('debateOfflineName');if(i)i.focus()},200);
+}
+
+window._debateAvatar='🧑‍🎓';
+function _pickAvatar(el,av){
+  window._debateAvatar=av;
+  var opts=document.querySelectorAll('.debate-avatar-opt');
+  opts.forEach(function(o){o.classList.remove('selected')});
+  el.classList.add('selected');
+}
+
+function _confirmDebateLogin(roomId){
+  var inp=document.getElementById('debateOfflineName');
+  var name=inp?inp.value.trim():'';
+  if(!name||name.length<2){
+    if(typeof window._showModToast==='function')window._showModToast('Digite seu nome (minimo 2 letras)','warning');
+    if(inp)inp.focus();
+    return;
+  }
+  // Save to app state
+  if(window.S){window.S.name=name;window.S.avatar=window._debateAvatar||'🧑‍🎓';if(typeof window.save==='function')window.save()}
+  // Save debate auth flag
+  localStorage.setItem('escola_debate_auth',JSON.stringify({name:name,avatar:window._debateAvatar||'🧑‍🎓',ts:Date.now()}));
+  // Close modal
+  var ov=document.getElementById('debateOfflineLoginOverlay');if(ov)ov.remove();
+  // Reload room with input enabled
+  goDebateRoom(roomId);
+}
+
+function _debateLoginGoogle(roomId){
+  if(typeof window.signInGoogle==='function'){
+    sessionStorage.setItem('escola_debate_return',roomId);
+    window.signInGoogle();
+  } else {
+    if(typeof window._showModToast==='function')window._showModToast('Login indisponivel.','warning');
+  }
+}
+
+function _debateLoginEmail(roomId){
+  sessionStorage.setItem('escola_debate_return',roomId);
+  window.location.href='auth.html';
+}
+
+// ============================================================
 // EXPORTS
 // ============================================================
 window.goDebate=goDebate;
@@ -364,4 +475,9 @@ window.goDebateRoom=goDebateRoom;
 window.sendDebateMsg=sendDebateMsg;
 window.getDebateActivity=getDebateActivity;
 window.toggleDebateAudio=toggleDebateAudio;
+window._showDebateOfflineLogin=_showDebateOfflineLogin;
+window._pickAvatar=_pickAvatar;
+window._confirmDebateLogin=_confirmDebateLogin;
+window._debateLoginGoogle=_debateLoginGoogle;
+window._debateLoginEmail=_debateLoginEmail;
 window.DEBATE_ROOMS=DEBATE_ROOMS;
