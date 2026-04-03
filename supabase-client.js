@@ -17,6 +17,10 @@ let syncQueue = [];
 let syncTimer = null;
 
 function initSupabase() {
+  if (window.OFFLINE_MODE) {
+    console.log('[Supabase] OFFLINE_MODE ativo — Supabase desligado');
+    return false;
+  }
   if (typeof window.supabase === 'undefined') {
     console.warn('[Supabase] SDK não carregado. Modo offline.');
     return false;
@@ -273,7 +277,9 @@ function isModuleUnlocked(moduleIndex) {
 
 // Load paywall setting from admin_settings (default: DISABLED = all free)
 (async function loadPaywallSetting(){
-  window._paywallDisabled = true; // Default: paywall OFF (all content free)
+  window._paywallDisabled = true; // Default: paywall OFF
+  // OFFLINE_MODE / DEMO_MODE: always disabled
+  if (window.OFFLINE_MODE || window.DEMO_MODE) return;
   try {
     if (typeof sbClient !== 'undefined' && sbClient) {
       const {data} = await sbClient.from('admin_settings').select('value').eq('key','paywall_enabled').single();

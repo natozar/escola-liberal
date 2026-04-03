@@ -170,6 +170,7 @@ function hideAllViews(){
   document.getElementById('vStudyPlan').classList.remove('on');
   document.getElementById('vExamPrep').classList.remove('on');
   document.getElementById('vAulas').style.display='none';
+  var vDebate=document.getElementById('vDebate');if(vDebate)vDebate.classList.remove('on');
   document.getElementById('focusBtn').classList.remove('always');
   window.stopTTS()
 }

@@ -136,6 +136,8 @@ async function sendChat(){
 }
 
 async function askAITutor(message){
+  // OFFLINE_MODE: skip API call, go straight to local KB
+  if(window.OFFLINE_MODE) throw new Error('offline');
   // Build context from current lesson
   const moduleTitle=window.S.cMod!==null&&window.M[window.S.cMod]?window.M[window.S.cMod].title:null;
   const lessonTitle=window.S.cLes!==null&&window.S.cMod!==null&&window.M[window.S.cMod]&&window.M[window.S.cMod].lessons[window.S.cLes]?window.M[window.S.cMod].lessons[window.S.cLes].title:null;

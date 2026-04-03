@@ -331,7 +331,7 @@ function renderDailyGoal(){
     ${reached?'<div class="dg-celebrate">🎉 Meta atingida! Excelente dedicação!</div>':''}
     <div class="dg-config">
       <label>Meta:</label>
-      <select onchange="changeDailyGoal(this.value)">
+      <select onchange="changeDailyGoal(this.value)" aria-label="Meta de aulas por dia">
         ${[1,2,3,5,7,10].map(n=>`<option value="${n}" ${n===g.target?'selected':''}>${n} aula${n>1?'s':''}/dia</option>`).join('')}
       </select>
     </div>`

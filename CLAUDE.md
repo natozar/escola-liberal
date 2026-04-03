@@ -340,6 +340,22 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 6. **Migration pendente** — `supabase/migrations/add_state_to_profiles.sql` precisa ser executado no SQL Editor do Supabase.
 7. ~~**App exigia login para acessar**~~ — **RESOLVIDO**: `DEMO_MODE = true` em boot.js permite acesso total sem auth. Todos os modulos desbloqueados, sem paywall, sem save modal. Login apenas via botao Perfil. Para reativar auth obrigatorio: mudar `DEMO_MODE` para `false`.
 8. ~~**App nao forcava atualizacao do SW**~~ — **RESOLVIDO**: `updateViaCache:'none'` no registro, polling `reg.update()` a cada 60s, `controllerchange` faz reload automatico, `skipWaiting()` + `clients.claim()` no SW.
+9. ~~**App dependia de Supabase para boot**~~ — **RESOLVIDO**: `OFFLINE_MODE = true` desliga Supabase completamente. Zero fetch de rede, zero erros no console. Boot em <2s. Dados demo pre-populados (seedDemoData). Para reconectar: mudar `OFFLINE_MODE` para `false` em src/boot.js.
+
+---
+
+## OFFLINE_MODE (Apresentacao Governo)
+
+Quando `OFFLINE_MODE = true` (src/boot.js):
+- Supabase SDK NAO e carregado (zero scripts CDN)
+- Stripe NAO e carregado
+- Zero chamadas de rede para hwjplecfqsckfiwxiedo.supabase.co
+- Zero erros/warnings no console
+- Tudo funciona com localStorage puro
+- `seedDemoData()` popula dados na primeira visita (750 XP, 15 aulas, streak 7)
+- Perfil → modal "Modo Apresentacao" (sem login)
+- Debate → mensagens mockadas por sala (4-5 msgs hardcoded)
+- Para reverter: `OFFLINE_MODE = false` + `DEMO_MODE = false`
 
 ---
 
@@ -498,6 +514,28 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 - index.html: h4→h3 (heading order correto), contraste muted corrigido
 - SW v39
 - Scores finais: index 100/94/100/100 | app 93/97/100/100
+
+### Concluido nesta sessao (2026-04-02 — sessao 6)
+- Onboarding simplificado: 1 tela (nome+avatar opcionais), botao Pular, sem email obrigatorio
+- showLoginPrompt(context): modal contextual (perfil/debate) com Google+Email+Agora nao
+- Debate ao Vivo: src/features/debate.js — 5 salas, Supabase Realtime, leitura sem login, envio requer auth
+- Botao debate 🔥 no mobile header (com badge) e sidebar desktop
+- CSS: .debate-rooms, .debate-msg, .debate-input, .mh-debate
+- hideAllViews() atualizado para incluir vDebate
+- SW v40
+
+### Concluido nesta sessao (2026-04-02 — sessao 7)
+- OFFLINE_MODE: Supabase completamente desligado, zero fetch de rede
+- seedDemoData(): dados demo pre-populados (750 XP, lvl 4, streak 7, 15 aulas, quizzes)
+- Supabase SDK e Stripe NAO carregam em OFFLINE_MODE (nem injeta script tags)
+- initSupabase() retorna false imediato com OFFLINE_MODE guard
+- loadPaywallSetting() retorna disabled imediato
+- handleProfileNav(): modal "Modo Apresentacao" em vez de login
+- Debate mock: mensagens hardcoded por sala (economia, filosofia, historia, ciencias, livre)
+- Online counter ficticio nas salas de debate
+- Boot reescrito: src/boot.js limpo, sem await auth, sem Promise de rede
+- Console limpo: apenas [App] OFFLINE_MODE, [Supabase] Desligado, [Lessons] N modulos
+- SW v41
 
 ---
 

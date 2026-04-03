@@ -7,7 +7,10 @@ Allow: /index.html
 Allow: /contato.html
 Allow: /termos.html
 Allow: /privacidade.html
+Allow: /blog.html
+Allow: /blog/
 Disallow: /app.html
+Disallow: /admin.html
 Disallow: /auth.html
 Disallow: /perfil.html
 Disallow: /admin-stripe.html

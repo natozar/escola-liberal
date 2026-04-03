@@ -36,6 +36,7 @@ import './features/spaced-repetition.js';
 import './features/study-plan.js';
 import './features/investment-game.js';
 import './features/backup.js';
+import './features/debate.js';    // debate ao vivo (Supabase Realtime)
 
 // Phase 5: Navigation (depends on features for goDash calls)
 import './core/navigation.js';  // goDash, goMod, openL, nextL, prevL, hideAllViews, etc.

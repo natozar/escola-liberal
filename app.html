@@ -149,79 +149,20 @@
   <div class="splash-bar"><div class="splash-fill" id="splashFill"></div></div>
 </div>
 
-<!-- ONBOARDING -->
+<!-- ONBOARDING (DEMO_MODE: light version — name + avatar only, skip button) -->
 <div class="onboard-overlay" id="onboard">
   <div class="onboard-card">
     <div class="onboard-step active" id="obStep1">
       <div class="onboard-logo">🎓</div>
-      <h2>Bem-vindo à Escola Liberal</h2>
-      <p>Plataforma curricular homeschool com 21 disciplinas e 660 aulas interativas.</p>
-      <label for="obName" style="font-weight:600;margin-bottom:.25rem;display:block">Qual é seu nome?</label>
-      <input class="onboard-input" id="obName" placeholder="Digite seu nome" maxlength="30" onkeydown="if(event.key==='Enter')document.getElementById('obEmail').focus()" autocomplete="given-name">
-      <label for="obEmail" style="font-weight:600;margin-bottom:.25rem;display:block;margin-top:.75rem">Seu email <span style="font-weight:400;color:var(--text-muted);font-size:.8rem">(para salvar progresso)</span></label>
-      <input class="onboard-input" id="obEmail" type="email" placeholder="seu@email.com" maxlength="60" onkeydown="if(event.key==='Enter')obNext(1)" autocomplete="email">
-      <button class="btn btn-sage" onclick="obNext(1)" style="width:100%">Continuar →</button>
-      <div style="display:flex;align-items:center;gap:.75rem;margin:.75rem 0;color:var(--text-muted);font-size:.8rem"><span style="flex:1;height:1px;background:var(--border)"></span>ou<span style="flex:1;height:1px;background:var(--border)"></span></div>
-      <button onclick="location.href='auth.html'" style="width:100%;padding:.7rem 1rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text-primary);font-family:inherit;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;transition:border-color .2s" onmouseover="this.style.borderColor='var(--border-hover)'" onmouseout="this.style.borderColor='var(--border)'">
-        <svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-        Entrar com Google
-      </button>
-      <div style="text-align:center;margin-top:.5rem"><a href="auth.html" style="color:var(--text-muted);font-size:.8rem;text-decoration:none">Já tem conta? <span style="color:var(--sage-light)">Entrar →</span></a></div>
-    </div>
-    <div class="onboard-step" id="obStep2">
-      <h2>Sua faixa etária</h2>
-      <p>Isso ajuda a personalizar seu aprendizado.</p>
-      <div class="onboard-age-grid" id="obAgeGrid">
-        <button class="ob-age-btn" onclick="selectAge('8-12',this)">👦 8–12 anos</button>
-        <button class="ob-age-btn" onclick="selectAge('13-16',this)">🧑 13–16 anos</button>
-        <button class="ob-age-btn" onclick="selectAge('17+',this)">🎓 17+ anos</button>
-        <button class="ob-age-btn" onclick="selectAge('parent',this)">👨‍👩‍👧 Sou pai/mãe</button>
-      </div>
-      <button class="btn btn-sage" onclick="obNext(2)" style="width:100%">Continuar →</button>
-    </div>
-    <div class="onboard-step" id="obStep3">
-      <h2>De onde você é?</h2>
-      <p>Seu estado nos ajuda a entender o alcance da plataforma.</p>
-      <select class="onboard-input" id="obState" style="cursor:pointer;appearance:auto;padding:.7rem .8rem">
-        <option value="">Selecione seu estado (opcional)</option>
-        <option value="AC">Acre</option><option value="AL">Alagoas</option><option value="AP">Amapá</option>
-        <option value="AM">Amazonas</option><option value="BA">Bahia</option><option value="CE">Ceará</option>
-        <option value="DF">Distrito Federal</option><option value="ES">Espírito Santo</option><option value="GO">Goiás</option>
-        <option value="MA">Maranhão</option><option value="MT">Mato Grosso</option><option value="MS">Mato Grosso do Sul</option>
-        <option value="MG">Minas Gerais</option><option value="PA">Pará</option><option value="PB">Paraíba</option>
-        <option value="PR">Paraná</option><option value="PE">Pernambuco</option><option value="PI">Piauí</option>
-        <option value="RJ">Rio de Janeiro</option><option value="RN">Rio Grande do Norte</option><option value="RS">Rio Grande do Sul</option>
-        <option value="RO">Rondônia</option><option value="RR">Roraima</option><option value="SC">Santa Catarina</option>
-        <option value="SP">São Paulo</option><option value="SE">Sergipe</option><option value="TO">Tocantins</option>
-        <option value="EX">Moro fora do Brasil</option>
-      </select>
-      <button class="btn btn-sage" onclick="obNext(3)" style="width:100%;margin-top:.75rem">Continuar →</button>
-    </div>
-    <div class="onboard-step" id="obStep4">
-      <h2>Idioma preferido</h2>
-      <p>O conteúdo principal é em Português, mas temos módulos em Inglês.</p>
-      <div class="onboard-lang-grid">
-        <button class="ob-lang-btn active" onclick="selectObLang('pt',this)">🇧🇷 Português</button>
-        <button class="ob-lang-btn" onclick="selectObLang('en',this)">🇺🇸 English</button>
-      </div>
-      <button class="btn btn-sage" onclick="obNext(4)" style="width:100%">Continuar →</button>
-    </div>
-    <div class="onboard-step" id="obStep5">
-      <h2>Escolha seu avatar</h2>
-      <p>Esse será seu perfil durante o curso.</p>
-      <div class="onboard-avatars" id="obAvatars"></div>
-      <button class="btn btn-sage" onclick="obNext(5)" style="width:100%">Continuar →</button>
-    </div>
-    <div class="onboard-step" id="obStep6">
-      <h2>Tudo pronto!</h2>
-      <p>66 módulos para dominar economia, matemática, filosofia, ciências e muito mais.</p>
-      <div class="onboard-features">
-        <div class="onboard-feat"><strong>📚 660 Aulas</strong>Conteúdo interativo e progressivo</div>
-        <div class="onboard-feat"><strong>🧪 140 Quizzes</strong>Teste seu conhecimento</div>
-        <div class="onboard-feat"><strong>🏅 Conquistas</strong>XP, níveis e certificados</div>
-        <div class="onboard-feat"><strong>🌎 Bilíngue</strong>Português + English</div>
-      </div>
-      <button class="btn btn-sage" onclick="obFinish()" style="width:100%">Começar a Aprender 🚀</button>
+      <h2>Bem-vindo!</h2>
+      <p>21 disciplinas, 660 aulas interativas. Sem login, sem cadastro.</p>
+      <label for="obName" style="font-weight:600;margin-bottom:.25rem;display:block">Como podemos te chamar?</label>
+      <input class="onboard-input" id="obName" placeholder="Seu nome (opcional)" maxlength="30" onkeydown="if(event.key==='Enter')obNext(1)" autocomplete="given-name">
+      <!-- Hidden email field (preserved for compat, not shown in DEMO_MODE) -->
+      <input type="hidden" id="obEmail" value="">
+      <div class="onboard-avatars" id="obAvatars" style="margin:.75rem 0"></div>
+      <button class="btn btn-sage" onclick="obQuickFinish()" style="width:100%">Comecar a Aprender 🚀</button>
+      <button class="btn btn-ghost" onclick="obSkip()" style="width:100%;margin-top:.5rem;font-size:.82rem">Pular →</button>
     </div>
   </div>
 </div>
@@ -251,6 +192,7 @@
     <div class="mh-right">
       <div class="mh-xp" id="mhXP"></div>
       <div class="mh-streak" id="mhStreak" title="Sequencia de dias">0🔥</div>
+      <button class="mh-debate" onclick="goDebate()" title="Debates ao Vivo" aria-label="Debates ao vivo">🔥<span class="mh-debate-badge" id="mhDebateBadge">5</span></button>
       <button class="mh-update-btn" id="mhUpdateBtn" onclick="checkForSwUpdate()" title="Atualizacao disponivel" aria-label="Atualizar app">↻</button>
       <a href="#" onclick="event.preventDefault();handleProfileNav()" class="mh-avatar" id="mhAvatar" title="Meu perfil" aria-label="Meu perfil">A</a>
     </div>
@@ -294,6 +236,10 @@
     <div class="ni active" onclick="goDash()" id="nDash" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goDash()">
       <div class="ni-icon ic-dash">🏠</div>
       <div><div class="ni-txt">Dashboard</div><div class="ni-sub">Visão geral</div></div>
+    </div>
+    <div class="ni" onclick="goDebate()" id="nDebate" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goDebate()">
+      <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">🔥</div>
+      <div><div class="ni-txt">Debates ao Vivo</div><div class="ni-sub">Salas de discussao</div></div>
     </div>
     <div class="ni" onclick="goPerf()" id="nPerf" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goPerf()">
       <div class="ni-icon" style="background:var(--lavender-muted);color:var(--lavender)">📊</div>
@@ -472,7 +418,7 @@
         <div id="favSection"></div>
         <div id="quoteSection"></div>
         <div class="ach-title">Conquistas</div>
-        <div class="achs" id="achs"></div>
+        <div class="achs" id="achs" tabindex="0" role="region" aria-label="Conquistas"></div>
       </div>
     </div>
 

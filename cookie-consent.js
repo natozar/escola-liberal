@@ -87,7 +87,7 @@
       + '.cb-text a{color:var(--sage,#4a9e7e);text-decoration:underline}'
       + '.cb-actions{display:flex;gap:.5rem;flex-shrink:0}'
       + '.cb-btn{padding:.55rem 1.2rem;border:none;border-radius:8px;font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}'
-      + '.cb-accept{background:var(--sage,#4a9e7e);color:#fff}'
+      + '.cb-accept{background:var(--sage,#347a62);color:#fff}'
       + '.cb-accept:hover{filter:brightness(1.1)}'
       + '.cb-reject{background:transparent;border:1px solid var(--border,rgba(255,255,255,.06));color:var(--text-secondary,#9ba3b5)}'
       + '.cb-reject:hover{border-color:var(--border-hover,rgba(255,255,255,.12))}'
