@@ -524,12 +524,15 @@ function checkOAuthError() {
 
   function doRedirect(){
     if(_redirecting) return;
-    // Don't redirect during recovery flow (new password form)
     var npf = document.getElementById('newPassForm');
     if(npf && npf.style.display === 'block') return;
     _redirecting = true;
-    console.log('[Auth] Redirecionando para app.html...');
-    window.location.replace('app.html'); // replace so back button doesn't return to auth
+    // Check for post-login redirect (e.g. from debate)
+    var postLogin = sessionStorage.getItem('postLoginRedirect');
+    sessionStorage.removeItem('postLoginRedirect');
+    var target = postLogin ? 'app.html' + postLogin : 'app.html';
+    console.log('[Auth] Redirecionando para:', target);
+    window.location.replace(target);
   }
 
   if(sbClient){
@@ -552,28 +555,39 @@ function checkOAuthError() {
       }).catch(function(e){ console.warn('[Auth] Fallback check:', e.message); });
     }, 2000);
 
-    // Fallback 2: for OAuth callback specifically — more aggressive polling
+    // Fallback 2: aggressive polling for OAuth callback (up to 20s)
     if(isOAuthCallback){
       var pollCount = 0;
-      var pollMax = 30; // 30 × 200ms = 6s
+      var pollMax = 40; // 40 × 500ms = 20s
       function pollSession(){
         pollCount++;
-        if(_redirecting || pollCount > pollMax) return;
+        if(_redirecting) return;
+        if(pollCount > pollMax){
+          // Timeout — show retry button
+          document.querySelector('.auth-card').innerHTML =
+            '<div style="text-align:center;padding:2rem 1rem">'
+            +'<p style="color:var(--coral);font-size:1rem;margin-bottom:1rem">Tempo esgotado ao conectar.</p>'
+            +'<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem">Isso pode acontecer por instabilidade na rede.</p>'
+            +'<button onclick="location.href=\'auth.html\'" style="padding:.6rem 1.5rem;background:var(--sage);color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer">Tentar novamente</button>'
+            +'</div>';
+          return;
+        }
         sbClient.auth.getSession().then(function(res){
           if(res.data && res.data.session && res.data.session.user){
-            console.log('[Auth] OAuth poll: sessão encontrada em ' + (pollCount * 200) + 'ms');
+            console.log('[Auth] OAuth poll: sessao encontrada em '+(pollCount*500)+'ms');
+            window.history.replaceState({},'',window.location.pathname);
             doRedirect();
-          } else if(pollCount <= pollMax){
-            setTimeout(pollSession, 200);
+          } else {
+            setTimeout(pollSession, 500);
           }
         }).catch(function(){
-          if(pollCount <= pollMax) setTimeout(pollSession, 200);
+          setTimeout(pollSession, 500);
         });
       }
-      setTimeout(pollSession, 300);
+      setTimeout(pollSession, 500);
     }
   } else if(isOAuthCallback) {
-    // SDK failed to load but we have OAuth tokens — retry initSupabase
+    // SDK failed to load — retry
     console.warn('[Auth] SDK not loaded for OAuth callback, retrying...');
     setTimeout(function(){
       if(typeof initSupabase === 'function') initSupabase();

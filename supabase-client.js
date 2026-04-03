@@ -150,6 +150,11 @@ async function resetPassword(email) {
 
 // ========== CALLBACKS PÓS-AUTH ==========
 async function onSignIn(user) {
+  // Guard: in auth.html context, skip app.js logic (auth.html has its own redirect)
+  if (window.location.pathname.includes('auth.html') || window.location.pathname.includes('auth')) {
+    console.log('[Supabase] onSignIn em auth.html — ignorando (auth.html tem redirect proprio)');
+    return;
+  }
   // Salvar uid e dados do perfil Google/email no estado local
   if (typeof S !== 'undefined') {
     S.uid = user.id;
@@ -209,7 +214,7 @@ function onSignOut() {
 
 // ========== PLANOS E ACESSO ==========
 async function loadUserPlan() {
-  if (!currentUser) return;
+  if (window.OFFLINE_MODE || !sbClient || !currentUser) return;
   try {
     const { data, error } = await sbClient
       .from('profiles')
