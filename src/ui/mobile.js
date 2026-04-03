@@ -348,6 +348,30 @@ if(_origGoGame){window.goGame=function(){_origGoGame();updateBottomNav('practice
 const _origGoErrorReview=typeof window.goErrorReview==='function'?window.goErrorReview:null;
 if(_origGoErrorReview){window.goErrorReview=function(){_origGoErrorReview();updateBottomNav('practice');updateMobileHeader('🔄 Revisar Erros',true);_mobileBackFn=()=>window.goDash();closeSideMobile()}}
 
+// Debate overrides
+const _origGoDebate=typeof window.goDebate==='function'?window.goDebate:null;
+if(_origGoDebate){
+  window.goDebate=function(){
+    _origGoDebate();
+    updateBottomNav('dash');
+    updateMobileHeader('🔥 Debates ao Vivo',true);
+    _mobileBackFn=()=>window.goDash();
+    closeSideMobile();
+  }
+}
+const _origGoDebateRoom=typeof window.goDebateRoom==='function'?window.goDebateRoom:null;
+if(_origGoDebateRoom){
+  window.goDebateRoom=function(roomId){
+    _origGoDebateRoom(roomId);
+    var room=window.DEBATE_ROOMS&&window.DEBATE_ROOMS.find(function(r){return r.id===roomId});
+    var name=room?(room.icon+' '+room.name):'Debate';
+    updateBottomNav('dash');
+    updateMobileHeader(name,true);
+    _mobileBackFn=()=>window.goDebate();
+    closeSideMobile();
+  }
+}
+
 // ============================================================
 // BLOCK PULL-TO-REFRESH (iOS Safari standalone fallback)
 // overscroll-behavior-y:contain handles Chrome/Edge/Firefox.
