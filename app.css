@@ -179,6 +179,18 @@ a.profile-row:hover{background:var(--bg-hover)}
 .streak-day.today{border:2px solid var(--honey);color:var(--honey);background:var(--honey-muted)}
 .streak-day-label{font-size:.55rem;color:var(--text-muted);text-align:center;margin-top:.15rem}
 
+/* ========== CHALLENGE BANNER ========== */
+.challenge-banner{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.65rem 1rem;margin-bottom:.75rem;background:linear-gradient(135deg,rgba(74,158,126,.12),rgba(74,158,126,.06));border:1px solid rgba(74,158,126,.2);border-radius:var(--r-lg,12px);cursor:pointer;transition:all .2s var(--ease);-webkit-tap-highlight-color:transparent}
+.challenge-banner:hover{background:rgba(74,158,126,.18);border-color:rgba(74,158,126,.35)}
+.challenge-banner:active{transform:scale(.98)}
+.cb-left{display:flex;align-items:center;gap:.5rem;min-width:0;flex:1}
+.cb-icon{font-size:1.1rem;flex-shrink:0}
+.cb-text{min-width:0;flex:1}
+.cb-title{font-size:.8rem;font-weight:700;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb-sub{font-size:.68rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cb-arrow{font-size:.9rem;color:var(--sage);flex-shrink:0}
+@media(max-width:600px){.challenge-banner{padding:.5rem .75rem;margin-bottom:.5rem}.cb-title{font-size:.75rem}.cb-sub{font-size:.62rem}}
+
 /* ========== DASHBOARD ========== */
 .dash{max-width:960px;margin:0 auto;width:100%}
 .welcome{background:linear-gradient(145deg,var(--sage-subtle),transparent);border:1px solid rgba(74,158,126,.1);border-radius:var(--r-lg);padding:2rem;margin-bottom:1.5rem;box-sizing:border-box;overflow:hidden}
@@ -499,6 +511,18 @@ a.profile-row:hover{background:var(--bg-hover)}
 .lb-leagues-row{display:flex;gap:.35rem;flex-wrap:wrap;margin-top:.75rem}
 .lb-league-chip{display:inline-flex;align-items:center;gap:.25rem;padding:.3rem .65rem;border-radius:var(--r-full);font-size:.7rem;font-weight:600;background:var(--bg-elevated);color:var(--text-muted);border:1px solid var(--border)}
 .lb-league-chip.active{color:#fff;border-color:transparent}
+/* Leaderboard widget (dashboard mini-preview) */
+.lb-widget{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:.85rem;transition:all .2s}
+.lb-widget:hover{border-color:var(--border-hover,var(--border));box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.lb-widget-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;font-size:.8rem;font-weight:700}
+.lb-widget-timer{font-size:.68rem;color:var(--text-muted);font-weight:500}
+.lb-widget-body{display:flex;flex-direction:column;gap:.25rem}
+.lb-widget-row{display:flex;align-items:center;gap:.45rem;padding:.3rem .4rem;border-radius:var(--r-sm)}
+.lb-widget-you{background:var(--sage-subtle,rgba(74,158,126,.08))}
+.lb-widget-rank{font-size:.85rem;min-width:22px;text-align:center;flex-shrink:0}
+.lb-widget-name{flex:1;font-size:.78rem;font-weight:500;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-widget-xp{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;color:var(--sage-light);flex-shrink:0}
+.lb-widget-foot{text-align:center;font-size:.72rem;color:var(--sage);font-weight:600;margin-top:.5rem;padding-top:.4rem;border-top:1px solid var(--border)}
 
 /* ========== VIEW TRANSITIONS ========== */
 @keyframes viewFadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
@@ -1232,7 +1256,7 @@ body{overscroll-behavior-y:contain}
   /* Hide desktop version bar on mobile — mobile header has everything */
   .app-version-bar{display:none!important}
   /* Adjust content for fixed header + bottom nav */
-  .main{padding:calc(50px + env(safe-area-inset-top,0px)) 1rem calc(68px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box;width:100%}
+  .main{padding:calc(48px + env(safe-area-inset-top,0px)) .75rem calc(64px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box;width:100%}
   /* Hamburger in header replaces sidebar toggle */
   .side{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
   .side.open{top:0;padding-top:calc(56px + env(safe-area-inset-top))}
@@ -1266,7 +1290,7 @@ body{overscroll-behavior-y:contain}
   .mh-breadcrumb span:active{background:var(--sage-muted)}
 }
 @media(max-width:600px){
-  .main{padding:calc(50px + env(safe-area-inset-top,0px)) .65rem calc(68px + env(safe-area-inset-bottom,0px))!important}
+  .main{padding:calc(48px + env(safe-area-inset-top,0px)) .5rem calc(64px + env(safe-area-inset-bottom,0px))!important}
   .welcome{padding:1rem}
   .welcome h2{font-size:1.25rem}
   .mc-status{font-size:.6rem}
