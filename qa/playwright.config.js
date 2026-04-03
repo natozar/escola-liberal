@@ -1,7 +1,7 @@
 // @ts-check
 const { defineConfig, devices } = require('@playwright/test');
 
-const BASE_URL = process.env.QA_URL || 'https://natozar.github.io/escola-liberal';
+const BASE_URL = process.env.QA_URL || 'https://escolaliberal.com.br';
 
 module.exports = defineConfig({
   testDir: './tests',

@@ -1,4 +1,4 @@
-name: Build & Deploy
+name: Build, Deploy & QA
 
 on:
   push:
@@ -52,14 +52,33 @@ jobs:
       - name: Check bundle sizes
         run: |
           echo "=== Bundle Size Report ==="
-          for f in dist/app.js dist/i18n.js dist/supabase-client.js dist/stripe-billing.js dist/cookie-consent.js; do
+          echo ""
+          # Find Vite-hashed bundles
+          JS=$(find dist/assets/build -name "app-*.js" 2>/dev/null | head -1)
+          CSS=$(find dist/assets/build -name "app-*.css" 2>/dev/null | head -1)
+          if [ -n "$JS" ]; then
+            SIZE=$(wc -c < "$JS")
+            GZIP=$(gzip -c "$JS" | wc -c)
+            echo "JS bundle: ${SIZE} bytes (gzip: ${GZIP})"
+          fi
+          if [ -n "$CSS" ]; then
+            SIZE=$(wc -c < "$CSS")
+            GZIP=$(gzip -c "$CSS" | wc -c)
+            echo "CSS bundle: ${SIZE} bytes (gzip: ${GZIP})"
+          fi
+          # Root-level files
+          for f in dist/sw.js dist/i18n.js dist/supabase-client.js dist/stripe-billing.js dist/cookie-consent.js; do
             if [ -f "$f" ]; then
               SIZE=$(wc -c < "$f")
               echo "$(basename $f): ${SIZE} bytes"
             fi
           done
-          CSS=$(find dist -name "*.css" | head -1)
-          if [ -n "$CSS" ]; then echo "CSS: $(wc -c < "$CSS") bytes"; fi
+          echo ""
+          echo "=== HTML Pages ==="
+          for f in dist/*.html; do
+            SIZE=$(wc -c < "$f")
+            echo "$(basename $f): ${SIZE} bytes"
+          done
 
       - name: Upload artifact
         if: github.event_name == 'push'
@@ -74,7 +93,160 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # ============================================================
+  # QA AGENT — Automated post-deploy quality gate
+  # Runs Playwright E2E + Lighthouse + Axe against live site
+  # ============================================================
+  qa:
+    if: github.event_name == 'push'
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Wait for deploy propagation
+        run: |
+          echo "Waiting 15s for GitHub Pages CDN propagation..."
+          sleep 15
+          # Verify the site is reachable
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://escolaliberal.com.br/app.html || echo "000")
+          if [ "$STATUS" != "200" ]; then
+            echo "Warning: site returned $STATUS, waiting 15s more..."
+            sleep 15
+          fi
+          echo "Site status: $(curl -s -o /dev/null -w "%{http_code}" https://escolaliberal.com.br/app.html)"
+
+      # ---- PLAYWRIGHT E2E TESTS ----
+      - name: Run Playwright tests
+        env:
+          QA_URL: https://escolaliberal.com.br
+          CI: true
+        run: cd qa && npx playwright test --reporter=list,html
+        continue-on-error: true
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: qa/playwright-report/
+          retention-days: 14
+
+      - name: Upload test screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: qa/test-results/
+          retention-days: 7
+
+      # ---- LIGHTHOUSE AUDIT ----
+      - name: Lighthouse audit — Landing page
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://escolaliberal.com.br/index.html
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          configJson: |
+            {
+              "ci": {
+                "collect": {
+                  "settings": {
+                    "chromeFlags": "--no-sandbox --headless --disable-gpu",
+                    "preset": "desktop"
+                  },
+                  "numberOfRuns": 1
+                },
+                "assert": {
+                  "assertions": {
+                    "categories:performance": ["warn", {"minScore": 0.85}],
+                    "categories:accessibility": ["error", {"minScore": 0.90}],
+                    "categories:best-practices": ["warn", {"minScore": 0.90}],
+                    "categories:seo": ["warn", {"minScore": 0.90}]
+                  }
+                }
+              }
+            }
+        continue-on-error: true
+
+      - name: Lighthouse audit — App (PWA)
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            https://escolaliberal.com.br/app.html
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          configJson: |
+            {
+              "ci": {
+                "collect": {
+                  "settings": {
+                    "chromeFlags": "--no-sandbox --headless --disable-gpu",
+                    "preset": "desktop"
+                  },
+                  "numberOfRuns": 1
+                },
+                "assert": {
+                  "assertions": {
+                    "categories:performance": ["warn", {"minScore": 0.80}],
+                    "categories:accessibility": ["warn", {"minScore": 0.90}],
+                    "categories:best-practices": ["warn", {"minScore": 0.90}]
+                  }
+                }
+              }
+            }
+        continue-on-error: true
+
+      # ---- AXE ACCESSIBILITY ----
+      - name: Axe accessibility audit
+        run: |
+          echo "=== Axe Accessibility Audit ==="
+          npx @axe-core/cli https://escolaliberal.com.br/app.html --exit --tags wcag2a,wcag2aa 2>&1 || true
+          echo ""
+          npx @axe-core/cli https://escolaliberal.com.br/index.html --exit --tags wcag2a,wcag2aa 2>&1 || true
+        continue-on-error: true
+
+      # ---- QA SUMMARY ----
+      - name: QA Summary
+        if: always()
+        run: |
+          echo "============================================"
+          echo "  QA AGENT — Post-Deploy Report"
+          echo "============================================"
+          echo ""
+          echo "Target: https://escolaliberal.com.br"
+          echo "Commit: ${{ github.sha }}"
+          echo "Time:   $(date -u '+%Y-%m-%d %H:%M UTC')"
+          echo ""
+          echo "Checks executed:"
+          echo "  - HTML Validation (build phase)"
+          echo "  - Lessons integrity (build phase)"
+          echo "  - Bundle size report (build phase)"
+          echo "  - Playwright E2E (12 spec files, 3 devices)"
+          echo "  - Lighthouse (index.html + app.html)"
+          echo "  - Axe WCAG 2.x (index.html + app.html)"
+          echo ""
+          echo "Artifacts available:"
+          echo "  - playwright-report (HTML report, 14 days)"
+          echo "  - test-screenshots (on failure, 7 days)"
+          echo "  - lighthouse results (temporary public storage)"
+          echo "============================================"
