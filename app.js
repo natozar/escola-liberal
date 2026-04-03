@@ -160,45 +160,14 @@ function getDiscModules(disc){return M.map((m,i)=>({mod:m,idx:i})).filter(x=>x.m
 
 // Build sidebar navigation dynamically from M — grouped accordion by discipline
 function buildSidebar(){
-  const nav=document.getElementById('modNav');
-  if(!nav)return;
-  let html='';
-  const grouped={};const order=[];
-  M.forEach((m,i)=>{
-    const disc=m.discipline||'economia';
-    if(!grouped[disc]){grouped[disc]=[];order.push(disc)}
-    grouped[disc].push({mod:m,idx:i});
-  });
-  order.forEach(disc=>{
-    const d=DISCIPLINES[disc]||{label:disc,icon:'📚'};
-    const mods=grouped[disc];
-    const totalL=mods.reduce((s,x)=>s+x.mod.lessons.length,0);
-    const doneL=mods.reduce((s,x)=>s+x.mod.lessons.filter((_,li)=>S.done[`${x.idx}-${li}`]).length,0);
-    const pct=totalL?Math.round(doneL/totalL*100):0;
-    const clr=getModColor(mods[0].mod.color||'sage');
-    // Single-module discipline: show flat item (no accordion)
-    if(mods.length===1){
-      const x=mods[0],c=x.mod.color||'sage';
-      html+=`<div class="ni" onclick="goMod(${x.idx})" id="nM${x.idx}" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goMod(${x.idx})"><div class="ni-icon" style="background:${getModColorMuted(c)};color:${getModColor(c)}">${d.icon}</div><div><div class="ni-txt">${d.label}</div><div class="ni-sub">${x.mod.lessons.length} aulas · ${pct}%</div><div class="ni-prog"><div class="ni-prog-bar" style="width:${pct}%;background:${clr}"></div></div></div></div>`;
-    } else {
-      // Multi-module: accordion
-      html+=`<div class="disc-group" id="dg-${disc}"><div class="disc-group-head" onclick="toggleDiscGroup('${disc}')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleDiscGroup('${disc}')"><span style="font-size:.95rem">${d.icon}</span><span style="font-size:.8rem;font-weight:600">${d.label}</span><span class="disc-count">${mods.length}</span><div class="disc-prog"><div class="disc-prog-fill" style="width:${pct}%;background:${clr}"></div></div><span class="disc-arrow" id="dga-${disc}">▸</span></div><div class="disc-group-body" id="dgb-${disc}">`;
-      mods.forEach(x=>{
-        const c=x.mod.color||'sage';
-        html+=`<div class="ni" onclick="goMod(${x.idx})" id="nM${x.idx}" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goMod(${x.idx})"><div class="ni-icon" style="background:${getModColorMuted(c)};color:${getModColor(c)}">${x.mod.icon}</div><div><div class="ni-txt">${x.mod.title}</div><div class="ni-sub">${x.mod.lessons.length} aulas</div></div></div>`;
-      });
-      html+=`</div></div>`;
-    }
-  });
-  nav.innerHTML=html;
+  try{
+    var discs=new Set();
+    M.forEach(function(m){discs.add(m.discipline||'economia')});
+    var el=document.getElementById('discSubtitle');
+    if(el) el.textContent=discs.size+' disciplinas · '+M.length+' módulos';
+  }catch(e){}
 }
-function toggleDiscGroup(disc){
-  const g=document.getElementById('dg-'+disc);
-  const a=document.getElementById('dga-'+disc);
-  if(!g)return;
-  g.classList.toggle('open');
-  if(a)a.textContent=g.classList.contains('open')?'▾':'▸';
-}
+function toggleDiscGroup(){} // stub — accordion removed
 
 // ============================================================
 // STATE
@@ -294,8 +263,9 @@ function ui(){
       cal.innerHTML=calH;
     }
   }catch(e){}
-  // Sidebar module progress
-  M.forEach((m,mi)=>{
+  // Sidebar module progress (nM* only exist when modNav is visible)
+  var _modNav=_origById('modNav');
+  if(_modNav&&_modNav.style.display!=='none') M.forEach((m,mi)=>{
     const el=_origById('nM'+mi);
     if(!el)return;
     const d=m.lessons.filter((_,li)=>S.done[`${mi}-${li}`]).length;
@@ -4000,11 +3970,20 @@ try{if(localStorage.getItem('escola_rail')==='1'){const s=document.getElementByI
 function goAulasTab(){
   hideAllViews();
   document.getElementById('vAulas').style.display='block';
-  updateBottomNav('aulas');
-  updateMobileHeader('Disciplinas',false);
-  _mobileBackFn=null;
+  if(typeof updateBottomNav==='function') try{updateBottomNav('aulas')}catch(e){}
+  if(typeof updateMobileHeader==='function') try{updateMobileHeader('Disciplinas',false)}catch(e){}
+  if(typeof _mobileBackFn!=='undefined') _mobileBackFn=null;
   renderDiscGrid();
-  closeSideMobile();
+  if(typeof closeSideMobile==='function') try{closeSideMobile()}catch(e){}
+  if(typeof setNav==='function') setNav('nDisc');
+  try{history.pushState({view:'aulas'},'')}catch(e){}
+  try{
+    var discs=new Set();
+    M.forEach(function(m){discs.add(m.discipline||'economia')});
+    var sub=document.getElementById('aulasSubtitle');
+    if(sub) sub.textContent=discs.size+' disciplinas · '+M.length+' módulos · '+M.reduce(function(s,m){return s+m.lessons.length},0)+' aulas';
+  }catch(e){}
+  try{document.querySelector('.main').scrollTop=0}catch(e){}
 }
 
 function renderDiscGrid(){
@@ -4090,6 +4069,8 @@ function toggleDiscMobile(disc){
     </div>`;
   });
   grid.innerHTML=html;
+  if(typeof setNav==='function') setNav('nDisc');
+  try{history.pushState({view:'disc',disc:disc},'')}catch(e){}
 }
 // Expose to global scope (Vite may wrap in module scope)
 window.goAulasTab=goAulasTab;
@@ -4243,12 +4224,21 @@ function updateLangToggle(){
 
 // BROWSER BACK/FORWARD — restore view from history state
 window.addEventListener('popstate',function(e){
-  const s=e.state;
+  var s=e.state;
   if(!s||!s.view){goDash();return}
-  if(s.view==='mod'&&M[s.mod])goMod(s.mod);
-  else if(s.view==='lesson'&&M[s.mod]&&M[s.mod].lessons[s.les])openL(s.mod,s.les);
-  else if(s.view==='leaderboard')goLeaderboard();
-  else if(s.view==='studyplan')goStudyPlan();
+  if(s.view==='dash') goDash();
+  else if(s.view==='aulas'&&typeof goAulasTab==='function') goAulasTab();
+  else if(s.view==='disc'&&s.disc&&typeof toggleDiscMobile==='function') toggleDiscMobile(s.disc);
+  else if(s.view==='mod'&&M[s.mod]) goMod(s.mod);
+  else if(s.view==='lesson'&&M[s.mod]&&M[s.mod].lessons[s.les]) openL(s.mod,s.les);
+  else if(s.view==='leaderboard'&&typeof goLeaderboard==='function') goLeaderboard();
+  else if(s.view==='studyplan'&&typeof goStudyPlan==='function') goStudyPlan();
+  else if(s.view==='debate'&&typeof goDebate==='function') goDebate();
+  else if(s.view==='perf'&&typeof goPerf==='function') goPerf();
+  else if(s.view==='badges'&&typeof goBadges==='function') goBadges();
+  else if(s.view==='glossary'&&typeof goGlossary==='function') goGlossary();
+  else if(s.view==='flashcards'&&typeof goFlashcards==='function') goFlashcards();
+  else if(s.view==='game'&&typeof goGame==='function') goGame();
   else goDash();
 });
 

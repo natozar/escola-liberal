@@ -139,7 +139,7 @@ function goAulasTab(){
   window.hideAllViews();
   document.getElementById('vAulas').style.display='block';
   try{history.pushState({view:'aulas'},'')}catch(e){}
-  updateBottomNav('mod');
+  updateBottomNav('aulas');
   updateMobileHeader('Disciplinas',false);
   _mobileBackFn=null;
   renderDiscGrid();
@@ -210,7 +210,7 @@ function toggleDiscMobile(disc){
   const d=window.DISCIPLINES[disc]||{label:disc,icon:'📚'};
   window.hideAllViews();
   document.getElementById('vAulas').style.display='block';
-  updateBottomNav('mod');
+  updateBottomNav('aulas');
   updateMobileHeader(d.icon+' '+d.label,true);
   _mobileBackFn=()=>goAulasTab();
 
