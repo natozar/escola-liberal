@@ -199,21 +199,22 @@ if('serviceWorker' in navigator){
 <button class="focus-btn" id="focusBtn" onclick="toggleFocus()" title="Modo Foco" aria-label="Alternar modo foco">⛶</button>
 
 <!-- MOBILE HEADER -->
-<div class="mobile-header" id="mobileHeader">
-  <div class="mh-row">
-    <div class="mh-back" id="mhBack" onclick="mobileBack()" aria-label="Voltar">←</div>
-    <div class="mh-title" id="mhTitle">escola liberal</div>
-    <div class="mh-right">
-      <div class="mh-xp" id="mhXP"></div>
-      <div class="mh-streak" id="mhStreak" title="Sequencia de dias">0🔥</div>
-      <button id="debateTopBtn" class="debate-btn-top has-activity" onclick="goDebate()"><span class="debate-icon">💬</span><span class="debate-label">Debate</span><span class="live-dot"></span><span class="online-count" id="debateOnlineCount">0</span></button>
-      <button class="mh-update-btn" id="mhUpdateBtn" onclick="checkForSwUpdate()" title="Atualizacao disponivel" aria-label="Atualizar app">↻</button>
-      <a href="#" onclick="event.preventDefault();handleProfileNav()" class="mh-avatar" id="mhAvatar" title="Meu perfil" aria-label="Meu perfil">A</a>
-    </div>
+<!-- MOBILE HEADER — Single unified bar -->
+<header class="mobile-header" id="mobileHeader">
+  <div class="mh-left">
+    <button class="mh-back" id="mhBack" onclick="mobileBack()" aria-label="Voltar" style="display:none">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="mh-title" id="mhTitle"></span>
   </div>
-  <div class="mh-breadcrumb" id="mhBreadcrumb"></div>
-  <div class="mh-progress" id="mhProgress"><div class="mh-progress-fill" id="mhProgressFill" style="width:0%"></div></div>
-</div>
+  <button id="debateTopBtn" class="debate-btn-top has-activity" onclick="goDebate()"><span class="debate-icon">💬</span><span class="debate-label">Debate</span><span class="live-dot"></span><span class="online-count" id="debateOnlineCount">0</span></button>
+  <div class="mh-right">
+    <span class="mh-streak" id="mhStreak">🔥0</span>
+    <span class="mh-xp" id="mhXP">0 XP</span>
+    <button class="mh-avatar-btn" id="mhAvatar" onclick="handleProfileNav()" aria-label="Perfil">🧑‍🎓</button>
+    <button class="mh-update-btn" id="mhUpdateBtn" onclick="applyUpdate()" style="display:none" aria-label="Atualizar">🔄</button>
+  </div>
+</header>
 
 <div class="shell" id="shell">
   <!-- SIDEBAR SCRIM (mobile overlay) -->

@@ -9,35 +9,19 @@ function updateBottomNav(active){
   if(btn)btn.classList.add('active')
 }
 
-function updateMobileHeader(title,showBack,breadcrumb,progress){
-  const mh=document.getElementById('mobileHeader');
+function updateMobileHeader(title,showBack){
+  var mh=document.getElementById('mobileHeader');
   if(!mh)return;
-  document.getElementById('mhTitle').textContent=title||'escola liberal';
-  document.getElementById('mhBack').style.visibility=showBack?'visible':'hidden';
-  document.getElementById('mhXP').textContent=window.S.xp+' XP';
-  // Update streak
-  const streakEl=document.getElementById('mhStreak');
-  if(streakEl)streakEl.textContent=(window.S.streak||0)+'🔥';
-  // Update avatar
-  const avatarEl=document.getElementById('mhAvatar');
-  if(avatarEl){
-    var av=window.S.avatar;
-    avatarEl.textContent=av||(window.S.name?window.S.name[0]:'A');
-    // League border color
-    avatarEl.className='mh-avatar';
-    try{
-      var lb=JSON.parse(localStorage.getItem('escola_leaderboard')||'{}');
-      var leagues=['bronze','silver','gold','diamond','ruby'];
-      if(lb.league!==undefined&&leagues[lb.league])avatarEl.classList.add('league-'+leagues[lb.league]);
-    }catch(e){}
-  }
-  // Breadcrumb
-  const bc=document.getElementById('mhBreadcrumb');
-  if(bc){bc.innerHTML=breadcrumb||'';bc.classList.toggle('show',!!breadcrumb)}
-  // Progress bar
-  const pg=document.getElementById('mhProgress');
-  const pf=document.getElementById('mhProgressFill');
-  if(pg&&pf){pg.classList.toggle('show',progress!==undefined);if(progress!==undefined)pf.style.width=progress+'%'}
+  var titleEl=document.getElementById('mhTitle');
+  if(titleEl)titleEl.textContent=title||'';
+  var backEl=document.getElementById('mhBack');
+  if(backEl)backEl.style.display=showBack?'flex':'none';
+  var xpEl=document.getElementById('mhXP');
+  if(xpEl)xpEl.textContent=(typeof window.totalXP==='function'?window.totalXP():window.S.xp||0)+' XP';
+  var streakEl=document.getElementById('mhStreak');
+  if(streakEl)streakEl.textContent='🔥'+(window.S.streak||0);
+  var avatarEl=document.getElementById('mhAvatar');
+  if(avatarEl)avatarEl.textContent=window.S.avatar||(window.S.name?window.S.name[0]:'🧑‍🎓');
 }
 
 let _mobileBackFn=null;
