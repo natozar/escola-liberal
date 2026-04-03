@@ -144,7 +144,7 @@ function nextL(){
 }
 function prevL(){const S=window.S;const M=window.M;if(S.cMod!==null&&M[S.cMod]&&S.cLes>0)window.openL(S.cMod,S.cLes-1)}
 function goBackMod(){const S=window.S;const M=window.M;if(S.cMod!==null&&M[S.cMod])window.goMod(S.cMod)}
-function setNav(id){document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));const e=document.getElementById(id);if(e)e.classList.add('active')}
+function setNav(id){document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));const e=document.getElementById(id);if(e){e.classList.add('active');if(window.innerWidth>900)e.scrollIntoView({block:'nearest',behavior:'smooth'})}}
 function resetAll(){if(confirm('Resetar todo progresso?')){const SK=window.SK;localStorage.removeItem(SK);window.S=window.def();window.save();window.goDash()}}
 
 // ============================================================

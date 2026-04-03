@@ -89,6 +89,7 @@ window.addEventListener('popstate',function(e){
   if(!s||!s.view){window.goDash();return}
   switch(s.view){
     case'dash':window.goDash();break;
+    case'disc':if(s.disc&&typeof window.goDisc==='function')window.goDisc(s.disc);else window.goDash();break;
     case'mod':if(window.M[s.mod])window.goMod(s.mod);else window.goDash();break;
     case'lesson':if(window.M[s.mod]&&window.M[s.mod].lessons&&window.M[s.mod].lessons[s.les])window.openL(s.mod,s.les);else window.goDash();break;
     case'glossary':if(typeof window.goGlossary==='function')window.goGlossary();else window.goDash();break;
