@@ -1255,13 +1255,13 @@ body{overscroll-behavior-y:contain}
   .mobile-header{display:flex}
   /* Hide desktop version bar on mobile — mobile header has everything */
   .app-version-bar{display:none!important}
-  /* Adjust content for fixed header + bottom nav */
-  .main{padding:calc(48px + env(safe-area-inset-top,0px)) .75rem calc(64px + env(safe-area-inset-bottom,0px))!important;box-sizing:border-box;width:100%;max-height:none!important;overflow-y:visible!important;height:auto!important;min-height:calc(100vh - 48px)}
+  /* Adjust content for fixed header + bottom nav — FIXED POSITION scroll container */
+  .main{position:fixed!important;top:calc(48px + env(safe-area-inset-top,0px))!important;bottom:calc(64px + env(safe-area-inset-bottom,0px))!important;left:0!important;right:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding:.75rem!important;box-sizing:border-box;width:100%;max-height:none!important;height:auto!important;overscroll-behavior-y:contain}
   /* Hamburger in header replaces sidebar toggle */
   .side{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
   .side.open{top:0;padding-top:calc(56px + env(safe-area-inset-top))}
-  /* Global progress under header */
-  .global-progress{top:calc(var(--mobile-header-h,56px) + env(safe-area-inset-top))}
+  /* Hide global progress line on mobile */
+  .global-progress{display:none!important}
   /* PWA overlay: full screen on mobile */
   .pwa-overlay{align-items:flex-end}
   .pwa-card{border-radius:var(--r-xl) var(--r-xl) 0 0;max-width:100%}
@@ -1290,7 +1290,7 @@ body{overscroll-behavior-y:contain}
   .mh-breadcrumb span:active{background:var(--sage-muted)}
 }
 @media(max-width:600px){
-  .main{padding:calc(48px + env(safe-area-inset-top,0px)) .5rem calc(64px + env(safe-area-inset-bottom,0px))!important;max-height:none!important;overflow-y:visible!important;height:auto!important}
+  .main{padding:.5rem!important}
   .welcome{padding:1rem}
   .welcome h2{font-size:1.25rem}
   .mc-status{font-size:.6rem}
