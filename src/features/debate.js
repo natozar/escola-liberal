@@ -124,12 +124,11 @@ function _renderRoomList(){
 // AUTH CHECK — works in both OFFLINE_MODE and online
 // ============================================================
 function _isDebateAuthed(){
-  // 1. Check debate-specific offline auth
+  // 1. Check debate-specific offline auth (user explicitly logged in for debate)
   try{var da=JSON.parse(localStorage.getItem('escola_debate_auth')||'null');if(da&&da.name&&da.name.length>=2)return true}catch(e){}
-  // 2. Check app state (user completed onboarding with real name)
-  if(window.S&&window.S.name&&window.S.name!=='Aluno'&&window.S.name!=='Visitante')return true;
-  // 3. Check Supabase auth (when online)
+  // 2. Check Supabase auth (real login)
   if(typeof window.currentUser!=='undefined'&&window.currentUser)return true;
+  // 3. NOT authed: demo data names like 'Aluno Demo', 'Aluno', 'Visitante' don't count
   return false;
 }
 
