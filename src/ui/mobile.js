@@ -145,6 +145,14 @@ function goAulasTab(){
   renderDiscGrid();
   closeSideMobile();
   window.setNav('nDisc');
+  // Update subtitle with real counts
+  var discs=new Set();
+  window.M.forEach(function(m){discs.add(m.discipline||'economia')});
+  var sub=document.getElementById('aulasSubtitle');
+  if(sub)sub.textContent=discs.size+' disciplinas · '+window.M.length+' módulos · '+window.M.reduce(function(s,m){return s+m.lessons.length},0)+' aulas';
+  // Scroll to top
+  var mainEl=document.querySelector('.main');
+  if(mainEl)mainEl.scrollTop=0;
 }
 
 function renderDiscGrid(){
@@ -152,10 +160,10 @@ function renderDiscGrid(){
   const tools=document.getElementById('toolsGrid');
   if(!grid)return;
   const titleEl=document.querySelector('.aulas-title');
-  if(titleEl)titleEl.textContent='Escolha uma Disciplina';
+  if(titleEl)titleEl.textContent='📚 Disciplinas';
   if(tools)tools.style.display='';
-  const toolsTitle=document.querySelector('.tools-title');
-  if(toolsTitle)toolsTitle.style.display='';
+  var toolsSection=document.querySelector('.aulas-tools-section');
+  if(toolsSection)toolsSection.style.display='';
 
   const grouped={};const order=[];
   window.M.forEach((m,i)=>{
@@ -207,12 +215,10 @@ function toggleDiscMobile(disc){
   _mobileBackFn=()=>goAulasTab();
 
   const grid=document.getElementById('discGrid');
-  const tools=document.getElementById('toolsGrid');
   const titleEl=document.querySelector('.aulas-title');
-  if(titleEl)titleEl.textContent=d.label;
-  if(tools)tools.style.display='none';
-  const toolsTitle=document.querySelector('.tools-title');
-  if(toolsTitle)toolsTitle.style.display='none';
+  if(titleEl)titleEl.textContent=d.icon+' '+d.label;
+  var toolsSection=document.querySelector('.aulas-tools-section');
+  if(toolsSection)toolsSection.style.display='none';
 
   let html='';
   mods.forEach(x=>{
@@ -226,6 +232,9 @@ function toggleDiscMobile(disc){
     </div>`;
   });
   grid.innerHTML=html;
+  // Desktop: sidebar active + history
+  window.setNav('nDisc');
+  try{history.pushState({view:'disc',disc:disc},'')}catch(e){}
 }
 
 // ============================================================

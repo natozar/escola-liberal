@@ -50,7 +50,7 @@ function ui(){
       cal.innerHTML=calH;
     }
   }catch(e){}
-  // Sidebar module progress
+  // Sidebar module progress (nM* elements no longer exist — _origById returns null, loop skips)
   window.M.forEach((m,mi)=>{
     const el=window._origById('nM'+mi);
     if(!el)return;

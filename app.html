@@ -266,11 +266,10 @@ if('serviceWorker' in navigator){
     </div>
 
     <!-- Disciplinas — single link, modules render in main area -->
-    <div class="ni" onclick="goAulasTab()" id="nDisc" role="button" tabindex="0" style="margin-top:.75rem">
+    <div class="ni" onclick="goAulasTab()" id="nDisc" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goAulasTab()" style="margin-top:.75rem">
       <div class="ni-icon" style="background:var(--sage-muted);color:var(--sage)">📚</div>
       <div><div class="ni-txt">Disciplinas</div><div class="ni-sub" id="discSubtitle">21 disciplinas</div></div>
     </div>
-    <div id="modNav" style="display:none"></div>
 
     <!-- GRUPO 2: Ferramentas (colapsável, aberto por padrão) -->
     <div class="side-label side-label-toggle" style="margin-top:1rem;cursor:pointer" onclick="toggleSideSection('toolsSection')">Ferramentas <span id="toolsArrow">▾</span></div>
@@ -648,12 +647,17 @@ if('serviceWorker' in navigator){
       <div class="lb-rules" id="lbRules"></div>
     </div>
 
-    <!-- AULAS TAB VIEW (mobile disciplines + tools grid) -->
-    <div id="vAulas" style="display:none">
-      <h2 class="aulas-title">Escolha uma Disciplina</h2>
+    <!-- AULAS TAB VIEW — Discipline explorer (mobile + desktop) -->
+    <div id="vAulas" class="aulas-view" style="display:none">
+      <div class="aulas-header">
+        <h2 class="aulas-title">📚 Disciplinas</h2>
+        <p class="aulas-subtitle" id="aulasSubtitle">Explore todas as áreas do conhecimento</p>
+      </div>
       <div class="disc-grid" id="discGrid"></div>
-      <h3 class="tools-title">Ferramentas</h3>
-      <div class="tools-grid" id="toolsGrid"></div>
+      <div class="aulas-tools-section">
+        <h3 class="tools-title">⚡ Ferramentas de Estudo</h3>
+        <div class="tools-grid" id="toolsGrid"></div>
+      </div>
     </div>
 
   </main>
