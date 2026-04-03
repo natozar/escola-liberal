@@ -1133,6 +1133,12 @@ body{overscroll-behavior-y:contain}
 .debate-send-btn{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none;border-radius:24px;padding:10px 20px;font-weight:700;font-size:.88rem;cursor:pointer;white-space:nowrap;transition:all .15s;box-shadow:0 2px 6px rgba(16,185,129,.25);font-family:inherit}
 .debate-send-btn:hover{box-shadow:0 3px 10px rgba(16,185,129,.35)}
 .debate-send-btn:active{transform:scale(.95)}
+/* Audio button */
+.debate-audio-btn{width:42px;height:42px;border-radius:50%;border:2px solid var(--border);background:var(--bg-card);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.debate-audio-btn:active{transform:scale(.9)}
+.debate-audio-btn.recording{border-color:#ef4444;background:#fef2f2;animation:recPulse 1s ease-in-out infinite}
+[data-theme="dark"] .debate-audio-btn.recording{background:#451a1a}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
 /* Moderation */
 .debate-rules-banner{background:var(--honey-muted,#fef3c7);color:var(--honey,#92400e);padding:6px 10px;font-size:.72rem;text-align:center;border-bottom:1px solid rgba(219,165,80,.3);position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:.5rem;border-radius:var(--r-sm) var(--r-sm) 0 0;line-height:1.4}
 .mod-toast{position:fixed;bottom:calc(80px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);padding:10px 18px;border-radius:12px;font-size:.82rem;font-weight:600;z-index:9999;animation:modIn .3s ease;max-width:90vw;text-align:center}

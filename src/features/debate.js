@@ -133,7 +133,8 @@ function _renderRoom(room){
   if(susp.suspended){ph=susp.msg;isLoggedIn=false}// Force readonly if suspended
   var rulesBanner=typeof window.getRulesBannerHtml==='function'?window.getRulesBannerHtml():'';
 
-  view.innerHTML=rulesBanner+'<div class="debate-room-bar" style="--room-color:'+room.color+'">'
+  view.innerHTML=rulesBanner
+    +'<div class="debate-room-bar" style="--room-color:'+room.color+'">'
     +'<div class="debate-room-bar-info">'
     +'<span class="debate-room-bar-icon" style="color:'+room.color+'">'+room.icon+'</span>'
     +'<div><div class="debate-room-bar-name">'+room.name+'</div>'
@@ -144,11 +145,12 @@ function _renderRoom(room){
     +'<div class="debate-chat-loading">Carregando...</div>'
     +'</div>'
     +'<div class="debate-input-bar">'
+    +'<button class="debate-audio-btn" id="debateAudioBtn" onclick="toggleDebateAudio()" title="Enviar audio" aria-label="Gravar audio">🎤</button>'
     +'<input class="debate-input" id="debateInput" placeholder="'+ph+'"'
     +' onkeydown="if(event.key===\'Enter\')sendDebateMsg()"'
     +' onfocus="if(!window.currentUser){this.blur();showLoginPrompt(\'debate\')}"'
     +' aria-label="Mensagem"'+(isLoggedIn?'':' readonly')+'>'
-    +'<button class="debate-send-btn" onclick="sendDebateMsg()" style="background:'+room.color+'" aria-label="Enviar">➤</button>'
+    +'<button class="debate-send-btn" onclick="sendDebateMsg()" aria-label="Enviar">Enviar</button>'
     +'</div>';
 }
 
@@ -314,10 +316,52 @@ function _loadMock(roomId){
 function getDebateActivity(){return DEBATE_ROOMS.reduce(function(s,r){return s+r.online},0)}
 
 // ============================================================
+// SPEECH-TO-TEXT (Web Speech API)
+// ============================================================
+var _debateRecognition=null;
+var _debateRecording=false;
+
+function toggleDebateAudio(){
+  if(_debateRecording){_stopAudio();return}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){if(typeof window._showModToast==='function')window._showModToast('Seu navegador nao suporta reconhecimento de voz.','info');return}
+  _debateRecognition=new SR();
+  _debateRecognition.lang='pt-BR';
+  _debateRecognition.continuous=false;
+  _debateRecognition.interimResults=false;
+  _debateRecognition.maxAlternatives=1;
+  _debateRecognition.onresult=function(ev){
+    var txt=ev.results[0][0].transcript;
+    var input=window._origById?window._origById('debateInput'):null;
+    if(input){input.value=(input.value?input.value+' ':'')+txt;input.focus()}
+    _stopAudio();
+  };
+  _debateRecognition.onerror=function(ev){
+    if(ev.error==='not-allowed'){if(typeof window._showModToast==='function')window._showModToast('Permissao de microfone negada.','warning')}
+    else if(ev.error!=='aborted'){if(typeof window._showModToast==='function')window._showModToast('Erro no reconhecimento de voz.','info')}
+    _stopAudio();
+  };
+  _debateRecognition.onend=function(){_stopAudio()};
+  _debateRecognition.start();
+  _debateRecording=true;
+  var btn=window._origById?window._origById('debateAudioBtn'):null;
+  if(btn){btn.classList.add('recording');btn.innerHTML='🔴'}
+  if(typeof window._showModToast==='function')window._showModToast('Ouvindo... fale agora','info');
+}
+
+function _stopAudio(){
+  _debateRecording=false;
+  if(_debateRecognition){try{_debateRecognition.stop()}catch(e){}_debateRecognition=null}
+  var btn=window._origById?window._origById('debateAudioBtn'):null;
+  if(btn){btn.classList.remove('recording');btn.innerHTML='🎤'}
+}
+
+// ============================================================
 // EXPORTS
 // ============================================================
 window.goDebate=goDebate;
 window.goDebateRoom=goDebateRoom;
 window.sendDebateMsg=sendDebateMsg;
 window.getDebateActivity=getDebateActivity;
+window.toggleDebateAudio=toggleDebateAudio;
 window.DEBATE_ROOMS=DEBATE_ROOMS;
