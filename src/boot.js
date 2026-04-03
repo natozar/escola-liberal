@@ -243,10 +243,10 @@ export async function boot(){
             if(ok){_renderAuth()}
           }
         };
-        cl.onerror=function(){console.warn('[Supabase] client.js nao encontrado, modo offline.')};
+        cl.onerror=function(){console.warn('[Supabase] client.js nao encontrado, modo offline.');_renderAuth()};
         document.body.appendChild(cl);
       };
-      sdk.onerror=function(){console.warn('[Supabase] SDK offline.')};
+      sdk.onerror=function(){console.warn('[Supabase] SDK offline.');_renderAuth()};
       document.body.appendChild(sdk);
     })();
   } else {
