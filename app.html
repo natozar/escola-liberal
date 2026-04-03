@@ -211,6 +211,7 @@ if('serviceWorker' in navigator){
   <div class="mh-right">
     <span class="mh-streak" id="mhStreak">🔥0</span>
     <span class="mh-xp" id="mhXP">0 XP</span>
+    <button class="mh-check-btn" id="mhCheckBtn" onclick="_checkForUpdates()" aria-label="Verificar atualizações" title="Verificar atualizações">↻</button>
     <button class="mh-avatar-btn" id="mhAvatar" onclick="handleProfileNav()" aria-label="Perfil">🧑‍🎓</button>
     <button class="mh-update-btn" id="mhUpdateBtn" onclick="applyUpdate()" style="display:none" aria-label="Atualizar">🔄</button>
   </div>
@@ -849,21 +850,29 @@ if('serviceWorker' in navigator){
 
   window._checkForUpdates = function(){
     var btn=document.getElementById('avbCheck');
+    var mBtn=document.getElementById('mhCheckBtn');
     if(btn){btn.textContent='...';btn.disabled=true}
+    if(mBtn)mBtn.classList.add('checking');
     _updateBar(null,'🔍 Verificando...','avb-checking');
     if(!_registration){
       _updateBar(null,'⚠ SW nao registrado','avb-offline');
       if(btn){btn.textContent='↻';btn.disabled=false}
+      if(mBtn)mBtn.classList.remove('checking');
       return;
     }
     _registration.update().then(function(){
       setTimeout(function(){
-        if(!_pendingWorker)_updateBar(_swVersion,'✓ Atualizado','avb-ok');
+        if(!_pendingWorker){
+          _updateBar(_swVersion,'✓ Atualizado','avb-ok');
+          if(typeof toast==='function')toast('Versao '+_swVersion+' — ja esta atualizado!','success');
+        }
         if(btn){btn.textContent='↻';btn.disabled=false}
+        if(mBtn)mBtn.classList.remove('checking');
       },2000);
     }).catch(function(){
       _updateBar(null,'⚠ Sem conexao','avb-offline');
       if(btn){btn.textContent='↻';btn.disabled=false}
+      if(mBtn)mBtn.classList.remove('checking');
     });
   };
 

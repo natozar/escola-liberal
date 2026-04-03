@@ -1027,6 +1027,11 @@ body{overscroll-behavior-y:contain}
 .mh-avatar.league-diamond{border-color:#b9f2ff}
 .mh-avatar.league-ruby{border-color:#e0115f}
 .mh-streak{font-size:.7rem;font-weight:700;color:var(--honey);white-space:nowrap;font-family:'JetBrains Mono',monospace}
+.mh-check-btn{width:28px;height:28px;border-radius:50%;background:none;border:1px solid var(--border);color:var(--text-muted);font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;padding:0;line-height:1;-webkit-tap-highlight-color:transparent}
+.mh-check-btn:hover{border-color:var(--sage);color:var(--sage);background:var(--sage-muted)}
+.mh-check-btn:active{transform:scale(.9)}
+.mh-check-btn.checking{animation:mhSpin 1s linear infinite;opacity:.5;pointer-events:none}
+@keyframes mhSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 .mh-update-btn{width:32px;height:32px;border-radius:50%;background:var(--sage-muted);color:var(--sage-light);border:none;font-size:1rem;cursor:pointer;display:none;align-items:center;justify-content:center;animation:mh-pulse 2s ease infinite}
 .mh-update-btn.show{display:flex}
 @keyframes mh-pulse{0%,100%{opacity:1}50%{opacity:.5}}
