@@ -229,8 +229,12 @@ export async function boot(){
     update();setInterval(update,30000);
   })();
 
-  // Remove splash
-  setTimeout(function(){var sp=document.getElementById('appSplash');if(sp){sp.style.opacity='0';setTimeout(function(){sp.remove()},300)}},400);
+  // Remove ALL overlays (splash, onboard) — guarantee nothing blocks content
+  setTimeout(function(){
+    var sp=document.getElementById('appSplash');if(sp){sp.style.opacity='0';setTimeout(function(){sp.remove()},300)}
+    var sp2=document.getElementById('splash');if(sp2){sp2.style.opacity='0';sp2.style.pointerEvents='none';setTimeout(function(){sp2.style.display='none'},500)}
+    var ob=document.getElementById('onboard');if(ob&&ob.style.display!=='none'){ob.style.display='none'}
+  },600);
 
   // Hash navigation
   if(location.hash&&!location.hash.includes('access_token')&&!location.hash.includes('type=recovery')){

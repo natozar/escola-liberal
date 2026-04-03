@@ -1,15 +1,11 @@
-// Escola Liberal PWA — Service Worker v25
-// Estratégia: Network-first (navegação) + Stale-While-Revalidate (assets) + Cache-first (fonts)
-const SW_VERSION = 'v72';
-const CACHE_NAME = 'escola-liberal-v72';
-const STATIC_CACHE = 'escola-static-v72';
+// Escola Liberal PWA — Service Worker v73
+// Estratégia: Network-first (navigation + Vite bundles) + Stale-While-Revalidate (other assets) + Cache-first (fonts)
+const SW_VERSION = 'v73';
+const CACHE_NAME = 'escola-liberal-v73';
+const STATIC_CACHE = 'escola-static-v73';
 const FONT_CACHE = 'escola-fonts-v1';
 
-// Core assets — cached on install
-// CORE_ASSETS: pre-cached on install.
-// NOTE: Vite bundles app.js/app.css into hashed filenames (assets/build/app-HASH.js).
-// Those are cached via stale-while-revalidate on first fetch, not pre-cached here.
-// Only list files with STABLE names that exist in the dist root.
+// Core assets — cached on install (only stable filenames that exist in dist root)
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -21,15 +17,10 @@ const CORE_ASSETS = [
   './privacidade.html',
   './contato.html',
   './blog.html',
-  './manifest.json',
   './i18n.js',
   './cookie-consent.js',
   './supabase-client.js',
   './stripe-billing.js',
-  './assets/icons/favicon.ico',
-  './assets/icons/favicon.svg',
-  './assets/icons/icon-192.png',
-  './assets/icons/icon-512.png',
   './lessons/index.json'
 ];
 
@@ -42,12 +33,13 @@ const LAZY_ASSETS = ['./lessons.json', './lessons/index.json'].concat(
 self.addEventListener('install', e => {
   console.log('[SW] Instalando', SW_VERSION);
   e.waitUntil(
-    caches.open(CACHE_NAME).then(c => c.addAll(CORE_ASSETS))
+    caches.open(CACHE_NAME).then(c =>
+      // Cache core assets individually — don't fail entire install if one 404s
+      Promise.allSettled(CORE_ASSETS.map(url =>
+        c.add(url).catch(err => console.warn('[SW] Skip cache:', url, err.message))
+      ))
+    )
   );
-  // FASE 1 (TEMPORARIO): skipWaiting incondicional para forcar update
-  // em TODOS os dispositivos que ja tem PWA instalada.
-  // FASE 2 (proximo deploy): remover esta linha e deixar user controlar via banner.
-  // TODO: Remover self.skipWaiting() no proximo commit apos confirmar que todos atualizaram.
   self.skipWaiting();
 });
 
@@ -58,11 +50,9 @@ self.addEventListener('message', e => {
     console.log('[SW] SKIP_WAITING recebido, ativando nova versão');
     self.skipWaiting();
   }
-  // Respond to version check requests
   if (e.data.type === 'GET_VERSION') {
     e.source.postMessage({ type: 'SW_VERSION', version: SW_VERSION, cache: CACHE_NAME });
   }
-  // Force update check
   if (e.data.type === 'CHECK_UPDATE') {
     self.registration.update().then(() => {
       e.source.postMessage({ type: 'UPDATE_CHECKED', version: SW_VERSION });
@@ -83,7 +73,6 @@ self.addEventListener('activate', e => {
         return caches.delete(k);
       }))
     ).then(() => {
-      // Notify all open tabs that SW was updated
       self.clients.matchAll().then(clients => {
         clients.forEach(client => client.postMessage({
           type: 'SW_UPDATED',
@@ -101,10 +90,10 @@ self.addEventListener('fetch', e => {
   const { request } = e;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
+  // Skip non-GET
   if (request.method !== 'GET') return;
 
-  // Skip Supabase, Stripe, Google Auth, Analytics requests (never cache)
+  // Skip external APIs (never cache)
   if (url.hostname.includes('supabase') ||
       url.hostname.includes('stripe') ||
       url.hostname.includes('accounts.google') ||
@@ -143,8 +132,44 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // 3. App assets: Stale-While-Revalidate (fast + fresh)
+  // 3. Vite hashed bundles (/assets/build/app-HASH.js|css): Network-first
+  //    CRITICAL: After SW update, old cache is purged. These files MUST come from network first.
+  //    Hashed filenames are immutable — once cached, they never change.
+  if (url.pathname.includes('/assets/build/')) {
+    e.respondWith(
+      fetch(request)
+        .then(res => {
+          if (res.status === 200) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then(c => c.put(request, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(request).then(r => r || new Response('', { status: 408, statusText: 'Offline' })))
+    );
+    return;
+  }
+
+  // 4. All other app assets: Stale-While-Revalidate (fast + fresh)
   e.respondWith(
     caches.match(request).then(cached => {
       const fetchPromise = fetch(request).then(res => {
-        if (res.status === 200
+        if (res.status === 200) {
+          const cacheName = LAZY_ASSETS.some(a => request.url.includes(a)) ? STATIC_CACHE : CACHE_NAME;
+          caches.open(cacheName).then(c => c.put(request, res.clone()));
+        }
+        return res;
+      }).catch(() => {
+        if (request.destination === 'image') {
+          return new Response(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="150"><rect fill="#1e293b" width="200" height="150"/><text fill="#64748b" x="100" y="80" text-anchor="middle" font-size="14">Offline</text></svg>',
+            { headers: { 'Content-Type': 'image/svg+xml' } }
+          );
+        }
+        return new Response('', { status: 408, statusText: 'Offline' });
+      });
+      if (cached) return cached;
+      return fetchPromise.then(r => r || new Response('', { status: 408 }));
+    })
+  );
+});
