@@ -102,9 +102,10 @@ h1,h2,h3{font-family:'DM Serif Display',Georgia,serif;font-weight:400;line-heigh
 .side::-webkit-scrollbar{width:6px}
 .side::-webkit-scrollbar-track{background:transparent}
 .side::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:3px}
-.side-logo{display:flex;align-items:center;gap:.6rem;margin-bottom:1.75rem;text-decoration:none;color:var(--text-primary)}
-.side-mark{width:30px;height:30px;background:linear-gradient(135deg,var(--sage),var(--sage-light));border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:.8rem;color:#fff}
-.side-name{font-family:'DM Serif Display',serif;font-size:.9rem}
+.side-logo{display:flex;align-items:center;gap:.65rem;margin-bottom:1.75rem;text-decoration:none;color:var(--text-primary)}
+.side-logo-img{width:34px;height:34px;border-radius:8px;flex-shrink:0;object-fit:contain}
+.side-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--sage),var(--sage-light));border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:.85rem;color:#fff;flex-shrink:0}
+.side-name{font-family:'DM Serif Display',serif;font-size:1rem;font-weight:700}
 .side-name em{font-style:italic;color:var(--sage-light)}
 
 /* Profile */
