@@ -52,7 +52,7 @@ function minifyLegacyJS() {
       } catch(e) { console.error('  ✗ assets:', e.message); }
 
       // Copy individual files
-      for (const f of ['lessons.json', 'sw.js', 'CNAME', 'robots.txt', 'sitemap.xml']) {
+      for (const f of ['lessons.json', 'sw.js', 'pin-gate.js', 'CNAME', 'robots.txt', 'sitemap.xml']) {
         const src = resolve(root, f);
         if (existsSync(src)) {
           try { copyFileSync(src, resolve(dist, f)); console.log(`  ✓ Copied ${f}`); }
