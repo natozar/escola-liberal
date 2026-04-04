@@ -2,7 +2,7 @@
 
 ## Identidade do Projeto
 
-Plataforma PWA educacional para homeschool brasileiro. 21 disciplinas, 61 módulos, 610+ aulas interativas. Público: jovens de 10 a 16 anos. Bilíngue PT/EN. Gratuita. Offline-first. Gamificação completa. Compatível com ANED. Criada por Renato Rodrigues (Ribeirão Preto/SP).
+Plataforma PWA educacional para homeschool brasileiro. 21 disciplinas, 66 módulos, 660 aulas interativas. Público: jovens de 10 a 16 anos. Bilíngue PT/EN. Gratuita. Offline-first. Gamificação completa. Compatível com ANED. Criada por Renato Rodrigues (Ribeirão Preto/SP).
 
 **Domínio:** escolaliberal.com.br
 **Repo:** github.com/natozar/escola-liberal
@@ -19,7 +19,7 @@ Plataforma PWA educacional para homeschool brasileiro. 21 disciplinas, 61 módul
 | Backend | Supabase (auth, database, realtime sync) |
 | Pagamentos | Stripe (checkout via Edge Functions) |
 | IA | API Anthropic (Claude) — tutor + quiz generator |
-| PWA | Service Worker v37 (network-first + stale-while-revalidate + cache-first) |
+| PWA | Service Worker v79 (network-first + stale-while-revalidate + cache-first) |
 | Testes | Playwright + html-validate + Lighthouse + Axe |
 | CI/CD | GitHub Actions → GitHub Pages |
 
@@ -334,7 +334,7 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 
 1. ~~**`shareProgress()` duplicada**~~ — **RESOLVIDO** (só existe uma definição agora)
 2. **Credenciais hardcoded** em `supabase-client.js` (URL e anon key expostos no client-side). Para SPA é aceitável com RLS, mas auditar RLS policies.
-3. ~~**Google OAuth redirect loop**~~ — **RESOLVIDO v2** (causa raiz: `redirectTo` apontava para `app.html` onde SDK carrega via script injection dinâmica, criando race condition com `detectSessionInUrl`. Fix: redirect OAuth para `auth.html` que carrega SDK sincronamente, detecta sessão via `onAuthStateChange`/polling, e redireciona para `app.html`. Também corrigido: `INITIAL_SESSION` event handling em supabase-client.js, loading state visual durante OAuth callback)
+3. ~~**Google OAuth redirect loop**~~ — **RESOLVIDO v3** (v2 fix: redirect para auth.html com SDK sincrono. v3 fix: trigger `handle_new_user` no Supabase falhava com "Database error saving new user" — reescrita com ON CONFLICT DO NOTHING + EXCEPTION handler. `sync_profile_email` tambem corrigida. auth.html: `initSupabase()` agora executa antes de `checkOAuthError()` return para evitar sbClient null.)
 4. **AI Tutor/Quiz desabilitado** — precisa de créditos na API Anthropic. Disclaimer LGPD e system prompt já implementados.
 5. **Leaderboard migration** — SQL existe mas não foi executado no Supabase.
 6. **Migration pendente** — `supabase/migrations/add_state_to_profiles.sql` precisa ser executado no SQL Editor do Supabase.
@@ -412,6 +412,19 @@ Quando `OFFLINE_MODE = true` (src/boot.js):
 
 ### Rodapé legal
 - Presente em todas as páginas públicas (8 arquivos)
+
+### Compliance Lei Felca (Lei 15.211/2025) — aplicado 2026-04-04
+- **Verificacao de idade:** Campo data de nascimento no onboarding. Salva apenas birthYear (minimizacao LGPD). Faixas: blocked (<10), child (10-11), teen (12-15), young (16-17), adult (18+).
+- **Consentimento parental:** Obrigatorio para child e teen. PIN de 4 digitos + checkbox legal. Salva parentalConsent + parentalConsentAt.
+- **Debate ao vivo:** Bloqueado para child e teen (< 16 anos). Gate no inicio de goDebate().
+- **Design persuasivo:** Removidas todas as mensagens de urgencia, perda, ansiedade nas notificacoes e streaks.
+- **Gamificacao educacional:** Mantida (XP, badges, missoes, leaderboard) — excepcao legal por conteudo com controle editorial.
+- **AI Tutor:** ageGroup passado corretamente na chamada a Edge Function. Disclaimer LGPD por sessao ja existia.
+- **Termos de uso:** Nova secao 14 sobre Lei 15.211/2025.
+- **Politica de privacidade:** Nova secao 10 sobre Lei 15.211/2025.
+- **Badge de conformidade:** Visivel no version bar desktop.
+- **DEMO_MODE e OFFLINE_MODE:** Age gate e consent pulados (comportamento de demonstracao preservado).
+- **Fiscalizacao:** ANPD. Multa: ate R$50 milhoes ou 10% do faturamento.
 
 ---
 
@@ -619,7 +632,7 @@ Deploy → SW novo detectado (polling 60s)
 - FASE 1 TRANSITORIA: SW v45 com skipWaiting() incondicional no install para forcar update em TODOS os dispositivos
 - controllerchange auto-reload TEMPORARIO para transicao
 - CORE_ASSETS limpo: removido app.css e app.js (nao existem no dist, Vite gera hashes)
-- PENDENTE FASE 2: proximo deploy remover skipWaiting do install + remover controllerchange automatico
+- FASE 2 concluida: skipWaiting removido do install, controllerchange condicionado a _userRequestedUpdate
 
 ### Ultimo teste completo: 2026-04-03
 - Plataformas: Chrome Android, Safari iOS, Chrome Desktop, Firefox Desktop
@@ -629,12 +642,50 @@ Deploy → SW novo detectado (polling 60s)
 - Bugs corrigidos: 2 (launchConfetti missing, iOS input zoom)
 - Score Lighthouse: Perf 94, A11y 97, BP 100, SEO 100
 
-### ⚠️ PENDENTE: FASE 2 do update PWA
-No PROXIMO commit/deploy, executar:
-1. Remover `self.skipWaiting()` do install event no sw.js (deixar apenas no message handler)
-2. Remover o controllerchange listener automatico no final do script em app.html (marcado com TODO)
-3. Incrementar SW_VERSION
-4. Isso ativa o sistema permanente: updates apenas via banner + botao do user
+### Concluido nesta sessao (2026-04-04 — Lei Felca)
+- Adequacao a Lei 15.211/2025 (ECA Digital / Lei Felca)
+- Gate de idade no onboarding: campo data de nascimento, salva apenas birthYear (LGPD minimizacao)
+- Faixas: blocked (<10), child (10-11), teen (12-15), young (16-17), adult (18+)
+- Consentimento parental obrigatorio para child e teen (PIN + checkbox legal)
+- Debate ao vivo bloqueado para child e teen (< 16 anos)
+- Gamificacao revisada: removidas mensagens de urgencia/ansiedade/perda
+  - "Sua sequencia esta em perigo!" → "Voce esta indo bem!"
+  - "Estude antes de meia-noite para nao perder!" → "Que tal estudar um pouco antes de dormir?"
+  - "Mantenha sua sequencia" → "Que tal estudar um pouco hoje?"
+  - "Faltam X aulas" → "Voce ja completou X aulas"
+  - "Estude todos os dias para manter" → "Quanto mais dias voce estuda, mais rapido aprende"
+  - "Comece sua sequencia!" → "Comece a aprender!"
+- AI Tutor: ageGroup passado corretamente (sem fallback '17+')
+- Termos de uso: nova secao 14 (Lei 15.211/2025)
+- Politica de privacidade: nova secao 10 (Lei 15.211/2025)
+- Badge de conformidade no version bar do app
+- DEMO_MODE e OFFLINE_MODE preservados (skip de age gate e consent)
+- Arquivos alterados: onboarding.js, debate.js, chat.js, study-plan.js, dashboard.js, pwa.js, app.js, app.html, termos.html, privacidade.html, sw.js, CLAUDE.md
+- SW v79
+
+### Concluido nesta sessao (2026-04-04 — Google OAuth Fix)
+- **Causa raiz:** Trigger `handle_new_user` no Supabase falhava ao criar perfil no OAuth callback, retornando `500: Database error saving new user`
+- **Diagnostico:** Logs do Supabase Auth mostraram erro no `/callback`. As funcoes `handle_new_user` e `sync_profile_email` nao tinham exception handling — qualquer falha cancelava toda a transacao de criacao de usuario.
+- **Fix 1 (Supabase SQL):** `handle_new_user` reescrita com `ON CONFLICT DO NOTHING` + `EXCEPTION WHEN OTHERS THEN RETURN NEW` + insert em `subscriptions`
+- **Fix 2 (Supabase SQL):** `sync_profile_email` reescrita com `EXCEPTION WHEN OTHERS THEN RETURN NEW`
+- **Fix 3 (auth.html):** `initSupabase()` agora executa SEMPRE, mesmo apos erro OAuth. Antes, `checkOAuthError()` retornava early e `sbClient` ficava null, impedindo o usuario de tentar novamente.
+- **Arquivos alterados:** auth.html, supabase-schema.sql, CLAUDE.md
+- **SQL executado no Supabase:** handle_new_user + sync_profile_email (ambas com exception handler)
+- **Testado:** Login Google com chatsagrado@gmail.com → redirect para app.html com currentUser ativo
+
+### Concluido nesta sessao (2026-04-04 — consolidacao e deploy)
+- Commit consolidado: auth.html fix OAuth, supabase-schema.sql, CLAUDE.md
+- Build Vite: dist/ atualizado com SW v79
+- FASE 2 PWA marcada como concluida (ja estava implementada desde sessao 9)
+- Branch feat/lei-felca-compliance mergeada na main
+- Deploy via GitHub Pages
+- 31 agentes IA (.agents/) — 6 novos: performance, content, i18n, pwa, a11y, onboarding
+
+### ✅ CONCLUÍDO: FASE 2 do update PWA
+- skipWaiting() removido do install event (só no message handler)
+- controllerchange condicionado a _userRequestedUpdate
+- Política de atualização permanente aplicada
+- SW v79
 
 ---
 
@@ -669,22 +720,27 @@ No PROXIMO commit/deploy, executar:
 
 ## Agentes Disponíveis
 
-Sistema de 26 agentes em `.agents/`. Invoque por objetivo:
+Sistema de 31 agentes em `.agents/`. Invoque por objetivo:
 
 | Objetivo | Agentes |
 |----------|---------|
-| Melhorar performance | Frontend + Mobile + QA + DevOps |
+| Melhorar performance | Performance + Frontend + DevOps + QA |
 | Nova feature | Architect + PM → Frontend + Backend + QA |
 | Bug mobile | Mobile + QA |
 | Campanha marketing | Marketing + Copywriter + Social + Traffic |
 | Revisar segurança | Security + LGPD + Backend |
 | Melhorar conversão | UX + Copywriter + Data + Frontend |
-| Adicionar aulas | PM + Backend + Frontend + QA |
+| Adicionar aulas | Content + PM + Frontend + QA |
 | Deploy | DevOps + QA |
 | Integrar AI | AI Integrations + Architect + Backend + Frontend |
 | Revisar legal | Legal + LGPD + Copyright |
 | Pricing | Monetization + Business + Data |
 | SEO | Marketing + Copywriter + Frontend + DevOps |
+| Acessibilidade | a11y + Frontend + QA |
+| Service Worker | PWA + Frontend + Mobile |
+| Traducoes | i18n + Frontend + Content |
+| Revisar conteudo | Content + Legal + Copyright |
+| Onboarding/Retencao | Onboarding + UX + Data + Marketing |
 
 ### Modos de execução
 - **Autônomo** — baixo risco (refactoring, testes, docs)

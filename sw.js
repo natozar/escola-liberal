@@ -1,8 +1,8 @@
 // Escola Liberal PWA — Service Worker v73
 // Estratégia: Network-first (navigation + Vite bundles) + Stale-While-Revalidate (other assets) + Cache-first (fonts)
-const SW_VERSION = 'v77';
-const CACHE_NAME = 'escola-liberal-v77';
-const STATIC_CACHE = 'escola-static-v77';
+const SW_VERSION = 'v79';
+const CACHE_NAME = 'escola-liberal-v79';
+const STATIC_CACHE = 'escola-static-v79';
 const FONT_CACHE = 'escola-fonts-v1';
 
 // Core assets — cached on install (only stable filenames that exist in dist root)
@@ -40,7 +40,9 @@ self.addEventListener('install', e => {
       ))
     )
   );
-  self.skipWaiting();
+  // NAO chamar self.skipWaiting() aqui!
+  // SW novo deve ficar em "waiting" ate o usuario clicar "Atualizar".
+  // O skipWaiting so roda quando o app envia postMessage({type:'SKIP_WAITING'}).
 });
 
 // ========== MESSAGES ==========

@@ -245,7 +245,7 @@ function ui(){
   const qt=Object.keys(S.quiz).length,qc=Object.values(S.quiz).filter(v=>v).length;
   document.getElementById('sQuiz').textContent=qt?Math.round(qc/qt*100)+'%':'0%';
   const sb=document.getElementById('streakB');
-  sb.textContent=S.streak>0?`🔥 ${S.streak} dia${S.streak>1?'s':''} de sequência!`:'🔥 Comece sua sequência!';
+  sb.textContent=S.streak>0?`🔥 ${S.streak} dia${S.streak>1?'s':''} de estudo!`:'🔥 Comece a aprender!';
   // Streak calendar (7 days)
   try{
     const cal=document.getElementById('streakCalendar');
@@ -797,7 +797,7 @@ async function askAITutor(message){
     moduleTitle,
     lessonTitle,
     lessonContext:lessonContent,
-    ageGroup:S.ageGroup||'17+',
+    ageGroup:S.ageGroup||'teen',
     lang:typeof CURRENT_LANG!=='undefined'?CURRENT_LANG:'pt'
   };
 
@@ -2376,7 +2376,7 @@ function renderStudyPlan(){
 
   // Tips
   html+=`<div class="sp-section sp-tips"><h3>💡 Dicas para Você</h3><div class="sp-tips-list">`;
-  if(S.streak<3)html+=`<div class="sp-tip">🔥 Estude todos os dias para manter sua sequência. Consistência vale mais que intensidade!</div>`;
+  if(S.streak<3)html+=`<div class="sp-tip">🔥 Quanto mais dias voce estuda, mais rapido aprende. Continue no seu ritmo!</div>`;
   if(a.quizPct<60&&a.quizPct>0)html+=`<div class="sp-tip">📖 Revise as aulas antes de refazer os quizzes. Use os Flashcards para memorizar conceitos-chave.</div>`;
   if(a.weakAreas.length)html+=`<div class="sp-tip">🎯 Foque em ${a.weakAreas[0][1].label} — é sua área mais fraca. Prática com IA pode ajudar!</div>`;
   if(a.doneCount>20&&a.doneCount<a.totalL)html+=`<div class="sp-tip">🏆 Você já fez ${Math.round(a.doneCount/a.totalL*100)}% do currículo! Faltam ${a.remaining} aulas. Continue assim!</div>`;
@@ -3497,11 +3497,11 @@ function requestNotifPermission(){
 let _reminderTimer=null;
 let _streakDangerTimer=null;
 const NOTIF_MESSAGES=[
-  ()=>`Hora de estudar! Mantenha sua sequência de ${S.streak} dia${S.streak!==1?'s':''}.`,
-  ()=>`Faltam ${M.reduce((s,m)=>s+m.lessons.length,0)-Object.keys(S.done).length} aulas para completar o currículo!`,
-  ()=>'5 minutos de estudo fazem diferença. Vamos lá?',
-  ()=>`Você está no nível ${S.lvl}. Que tal subir mais um hoje?`,
-  ()=>'Consistência é o segredo. Uma aula por dia muda tudo.',
+  ()=>`Que tal estudar um pouco hoje? Voce ja tem ${S.streak} dia${S.streak!==1?'s':''} de sequencia!`,
+  ()=>`Voce ja completou ${Object.keys(S.done).length} aulas. Continue no seu ritmo!`,
+  ()=>'5 minutos de estudo fazem diferenca. Sua jornada te espera!',
+  ()=>`Voce esta no nivel ${S.lvl}. Cada aula conta!`,
+  ()=>'Aprender e uma aventura. Que tal explorar algo novo hoje?',
 ];
 function _notifMsg(){return NOTIF_MESSAGES[Math.floor(Math.random()*NOTIF_MESSAGES.length)]()}
 
@@ -3536,8 +3536,8 @@ function scheduleStudyReminder(){
         _streakDangerTimer=null;
         const todayCheck=new Date().toISOString().slice(0,10);
         if(!(S.streakDays&&S.streakDays.includes(todayCheck))&&Notification.permission==='granted'){
-          new Notification('Sua sequência está em perigo! 🔥',{
-            body:`Você tem ${S.streak} dia${S.streak!==1?'s':''} de sequência. Estude antes de meia-noite para não perder!`,
+          new Notification('Voce esta indo bem! 🔥',{
+            body:`Sua sequencia esta em ${S.streak} dia${S.streak!==1?'s':''}. Que tal estudar um pouco antes de dormir?`,
             icon:'assets/icons/icon-192.png',badge:'assets/icons/favicon.svg',tag:'streak-danger'
           })
         }

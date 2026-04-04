@@ -488,15 +488,21 @@ function checkOAuthError() {
 // ========== INIT ==========
 (function init(){
   // 1. Check OAuth error redirect (query params from Supabase)
-  if(checkOAuthError()) return;
+  var hadOAuthError = checkOAuthError();
 
-  // 2. Detect recovery flow BEFORE SDK init (hash still intact)
+  // 2. ALWAYS initialize Supabase — even after OAuth error, so user can retry
+  if(typeof initSupabase === 'function') initSupabase();
+
+  // 3. If there was an OAuth error, stop here (error message already shown)
+  if(hadOAuthError) return;
+
+  // 4. Detect recovery flow BEFORE hash is cleaned
   var isRecovery = window.location.hash.includes('type=recovery');
 
-  // 3. Detect OAuth callback — hash contains access_token from Google redirect
+  // 5. Detect OAuth callback — hash contains access_token from Google redirect
   var isOAuthCallback = window.location.hash.includes('access_token');
 
-  // 4. If OAuth callback, show loading state immediately (before SDK init)
+  // 6. If OAuth callback, show loading state immediately
   if(isOAuthCallback){
     document.querySelector('.auth-card').innerHTML =
       '<div style="text-align:center;padding:2rem 1rem">'
@@ -505,10 +511,6 @@ function checkOAuthError() {
       + '<p style="color:var(--text-muted);font-size:.8rem">Aguarde um momento</p>'
       + '</div>';
   }
-
-  // 5. Initialize Supabase — CRITICAL: must happen BEFORE hash is cleaned
-  //    detectSessionInUrl:true will read the #access_token from the hash
-  if(typeof initSupabase === 'function') initSupabase();
 
   // 6. Recovery flow: show new password form
   if(isRecovery){

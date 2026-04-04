@@ -151,13 +151,23 @@ CREATE POLICY "Users manage own timeline" ON timeline FOR ALL USING (auth.uid() 
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- user_id coluna removida; apenas id (PK) é necessário
-  INSERT INTO profiles (id, name)
-  VALUES (NEW.id, COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', 'Aluno'));
+  INSERT INTO profiles (id, plan, name, avatar, onboarding_done)
+  VALUES (
+    NEW.id,
+    'free',
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', 'Aluno'),
+    '🧑‍🎓',
+    false
+  )
+  ON CONFLICT (id) DO NOTHING;
 
   INSERT INTO subscriptions (user_id, plan, status)
-  VALUES (NEW.id, 'free', 'active');
+  VALUES (NEW.id, 'free', 'active')
+  ON CONFLICT (user_id) DO NOTHING;
 
+  RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+  RAISE WARNING 'handle_new_user failed for %: %', NEW.id, SQLERRM;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

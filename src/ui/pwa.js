@@ -155,11 +155,11 @@ function requestNotifPermission(){
 let _reminderTimer=null;
 let _streakDangerTimer=null;
 const NOTIF_MESSAGES=[
-  ()=>`Hora de estudar! Mantenha sua sequência de ${window.S.streak} dia${window.S.streak!==1?'s':''}.`,
-  ()=>`Faltam ${window.M.reduce((s,m)=>s+m.lessons.length,0)-Object.keys(window.S.done).length} aulas para completar o currículo!`,
-  ()=>'5 minutos de estudo fazem diferença. Vamos lá?',
-  ()=>`Você está no nível ${window.S.lvl}. Que tal subir mais um hoje?`,
-  ()=>'Consistência é o segredo. Uma aula por dia muda tudo.',
+  ()=>`Que tal estudar um pouco hoje? Voce ja tem ${window.S.streak} dia${window.S.streak!==1?'s':''} de sequencia!`,
+  ()=>`Voce ja completou ${Object.keys(window.S.done).length} aulas. Continue no seu ritmo!`,
+  ()=>'5 minutos de estudo fazem diferenca. Sua jornada te espera!',
+  ()=>`Voce esta no nivel ${window.S.lvl}. Cada aula conta!`,
+  ()=>'Aprender e uma aventura. Que tal explorar algo novo hoje?',
 ];
 function _notifMsg(){return NOTIF_MESSAGES[Math.floor(Math.random()*NOTIF_MESSAGES.length)]()}
 
@@ -194,8 +194,8 @@ function scheduleStudyReminder(){
         _streakDangerTimer=null;
         const todayCheck=new Date().toISOString().slice(0,10);
         if(!(window.S.streakDays&&window.S.streakDays.includes(todayCheck))&&Notification.permission==='granted'){
-          new Notification('Sua sequência está em perigo! \u{1F525}',{
-            body:`Você tem ${window.S.streak} dia${window.S.streak!==1?'s':''} de sequência. Estude antes de meia-noite para não perder!`,
+          new Notification('Voce esta indo bem! \u{1F525}',{
+            body:`Sua sequencia esta em ${window.S.streak} dia${window.S.streak!==1?'s':''}. Que tal estudar um pouco antes de dormir?`,
             icon:'assets/icons/icon-192.png',badge:'assets/icons/favicon.svg',tag:'streak-danger'
           })
         }
