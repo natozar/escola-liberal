@@ -1058,7 +1058,7 @@ body{overscroll-behavior-y:contain}
 .bnav-label{font-size:.68rem;font-weight:600;line-height:1}
 
 /* ========== MOBILE HEADER ========== */
-.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:48px;background:var(--bg-secondary);border-bottom:none;z-index:6500;padding:env(safe-area-inset-top,0px) 12px 0;box-shadow:none;overflow:visible;align-items:center;justify-content:space-between}
+.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:calc(48px + env(safe-area-inset-top,0px));background:var(--bg-secondary);border-bottom:none;z-index:6500;padding:env(safe-area-inset-top,0px) 12px 0;box-shadow:none;overflow:visible;align-items:flex-end;justify-content:space-between;padding-bottom:6px}
 .mh-left{display:flex;align-items:center;gap:6px;min-width:0;flex:1}
 .mh-back{background:none;border:none;color:var(--text-primary);width:44px;height:44px;cursor:pointer;border-radius:10px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;flex-shrink:0;margin-left:-8px}
 .mh-back:active{opacity:.6;background:var(--bg-primary)}
