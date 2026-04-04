@@ -32,7 +32,7 @@ function ui(){
   const qt=Object.keys(window.S.quiz).length,qc=Object.values(window.S.quiz).filter(v=>v).length;
   document.getElementById('sQuiz').textContent=qt?Math.round(qc/qt*100)+'%':'0%';
   const sb=document.getElementById('streakB');
-  sb.textContent=window.S.streak>0?`🔥 ${window.S.streak} dia${window.S.streak>1?'s':''} de sequência!`:'🔥 Comece sua sequência!';
+  sb.textContent=window.S.streak>0?`🔥 ${window.S.streak} dia${window.S.streak>1?'s':''} de estudo!`:'🔥 Comece a aprender!';
   // Streak calendar (7 days)
   try{
     const cal=document.getElementById('streakCalendar');

@@ -44,6 +44,18 @@ _updateTotalOnline();
 // NAVIGATION
 // ============================================================
 function goDebate(){
+  // Lei Felca 15.211/2025 — age gate for debate (skip in DEMO/OFFLINE modes)
+  if(!window.DEMO_MODE&&!window.OFFLINE_MODE){
+    var ageGrp=window.S&&window.S.ageGroup;
+    if(ageGrp==='child'||ageGrp==='teen'){
+      if(typeof window.toast==='function')window.toast('O debate ao vivo e para jovens a partir de 16 anos.','info');
+      return;
+    }
+    if(ageGrp==='blocked'){
+      if(typeof window.toast==='function')window.toast('Voce precisa ter pelo menos 10 anos para usar a plataforma.','info');
+      return;
+    }
+  }
   // Check if debate is disabled by parent
   if(typeof window.isDebateDisabled==='function'&&window.isDebateDisabled()){
     if(typeof window.toast==='function')window.toast('Debate desativado pelo responsavel.','error');

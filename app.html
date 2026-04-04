@@ -177,12 +177,41 @@ if('serviceWorker' in navigator){
 <!-- ONBOARDING (DEMO_MODE: light version — name + avatar only, skip button) -->
 <div class="onboard-overlay" id="onboard">
   <div class="onboard-card">
+    <!-- Step 1: Age verification (Lei Felca 15.211/2025) -->
     <div class="onboard-step active" id="obStep1">
       <div class="onboard-logo">🎓</div>
       <h2>Bem-vindo!</h2>
-      <p>21 disciplinas, 660 aulas interativas. Sem login, sem cadastro.</p>
+      <p>21 disciplinas, 660 aulas interativas.</p>
+      <label for="obBirthDate" style="font-weight:600;margin-bottom:.25rem;display:block">Qual a sua data de nascimento?</label>
+      <input class="onboard-input" id="obBirthDate" type="date" max="" style="margin-bottom:.75rem" autocomplete="bday">
+      <p style="font-size:.72rem;color:var(--text-muted);margin-bottom:.75rem">Usamos apenas o ano para verificar sua faixa etaria. A data completa nao e armazenada (LGPD).</p>
+      <button class="btn btn-sage" onclick="obVerifyAge()" style="width:100%">Continuar</button>
+      <button class="btn btn-ghost" onclick="obSkip()" style="width:100%;margin-top:.5rem;font-size:.82rem">Pular →</button>
+      <div id="obAgeError" style="color:#ef4444;font-size:.85rem;margin-top:.75rem;display:none"></div>
+    </div>
+
+    <!-- Step 2: Parental consent (for ages 10-15) -->
+    <div class="onboard-step" id="obStep2Consent">
+      <div class="onboard-logo">👨‍👩‍👧</div>
+      <h2>Autorizacao do Responsavel</h2>
+      <p style="font-size:.9rem;line-height:1.5;margin-bottom:1rem">Para continuar, um responsavel legal precisa autorizar o uso desta plataforma educacional.</p>
+      <label for="obParentPIN" style="font-weight:600;margin-bottom:.25rem;display:block">Responsavel: crie um PIN de 4 digitos</label>
+      <input class="onboard-input" id="obParentPIN" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="PIN de 4 digitos" style="margin-bottom:.75rem;text-align:center;font-size:1.3rem;letter-spacing:.5rem" autocomplete="off">
+      <label style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:1rem;font-size:.85rem;line-height:1.4;cursor:pointer">
+        <input type="checkbox" id="obParentCheck" style="margin-top:2px;flex-shrink:0">
+        <span>Eu, responsavel legal, autorizo o uso desta plataforma educacional conforme a <strong>Lei 15.211/2025</strong> e a <strong>LGPD Art. 14</strong>.</span>
+      </label>
+      <button class="btn btn-sage" onclick="obConfirmParental()" style="width:100%">Autorizar e Continuar</button>
+      <div id="obConsentError" style="color:#ef4444;font-size:.85rem;margin-top:.75rem;display:none"></div>
+    </div>
+
+    <!-- Step 3: Name + Avatar (original step, now after age gate) -->
+    <div class="onboard-step" id="obStep3Profile">
+      <div class="onboard-logo">🎓</div>
+      <h2>Quase la!</h2>
+      <p>Personalize seu perfil (opcional).</p>
       <label for="obName" style="font-weight:600;margin-bottom:.25rem;display:block">Como podemos te chamar?</label>
-      <input class="onboard-input" id="obName" placeholder="Seu nome (opcional)" maxlength="30" onkeydown="if(event.key==='Enter')obNext(1)" autocomplete="given-name">
+      <input class="onboard-input" id="obName" placeholder="Seu nome (opcional)" maxlength="30" onkeydown="if(event.key==='Enter')obQuickFinish()" autocomplete="given-name">
       <!-- Hidden email field (preserved for compat, not shown in DEMO_MODE) -->
       <input type="hidden" id="obEmail" value="">
       <div class="onboard-avatars" id="obAvatars" style="margin:.75rem 0"></div>
@@ -789,6 +818,8 @@ if('serviceWorker' in navigator){
     <button id="debateTopBtnDesktop" class="debate-btn-top has-activity" onclick="goDebate()"><span class="debate-icon">💬</span><span class="debate-label">Debate</span><span class="live-dot"></span><span class="online-count" id="debateOnlineCountDesktop">0</span></button>
     <span class="avb-divider">·</span>
     <span class="avb-version" id="avbVersion">v--</span>
+    <span class="avb-divider">·</span>
+    <span class="avb-compliance" title="Em conformidade com a Lei 15.211/2025 (ECA Digital)" style="font-size:.65rem;opacity:.7;cursor:help">⚖️ Lei 15.211/2025</span>
     <span class="avb-divider">·</span>
     <span class="avb-status" id="avbStatus">✓ Atualizado</span>
     <button class="avb-check" id="avbCheck" onclick="_checkForUpdates()" title="Verificar atualizações">↻</button>

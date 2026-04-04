@@ -413,6 +413,19 @@ Quando `OFFLINE_MODE = true` (src/boot.js):
 ### Rodapé legal
 - Presente em todas as páginas públicas (8 arquivos)
 
+### Compliance Lei Felca (Lei 15.211/2025) — aplicado 2026-04-04
+- **Verificacao de idade:** Campo data de nascimento no onboarding. Salva apenas birthYear (minimizacao LGPD). Faixas: blocked (<10), child (10-11), teen (12-15), young (16-17), adult (18+).
+- **Consentimento parental:** Obrigatorio para child e teen. PIN de 4 digitos + checkbox legal. Salva parentalConsent + parentalConsentAt.
+- **Debate ao vivo:** Bloqueado para child e teen (< 16 anos). Gate no inicio de goDebate().
+- **Design persuasivo:** Removidas todas as mensagens de urgencia, perda, ansiedade nas notificacoes e streaks.
+- **Gamificacao educacional:** Mantida (XP, badges, missoes, leaderboard) — excepcao legal por conteudo com controle editorial.
+- **AI Tutor:** ageGroup passado corretamente na chamada a Edge Function. Disclaimer LGPD por sessao ja existia.
+- **Termos de uso:** Nova secao 14 sobre Lei 15.211/2025.
+- **Politica de privacidade:** Nova secao 10 sobre Lei 15.211/2025.
+- **Badge de conformidade:** Visivel no version bar desktop.
+- **DEMO_MODE e OFFLINE_MODE:** Age gate e consent pulados (comportamento de demonstracao preservado).
+- **Fiscalizacao:** ANPD. Multa: ate R$50 milhoes ou 10% do faturamento.
+
 ---
 
 ## Regras Invioláveis
@@ -629,6 +642,27 @@ Deploy → SW novo detectado (polling 60s)
 - Bugs corrigidos: 2 (launchConfetti missing, iOS input zoom)
 - Score Lighthouse: Perf 94, A11y 97, BP 100, SEO 100
 
+### Concluido nesta sessao (2026-04-04 — Lei Felca)
+- Adequacao a Lei 15.211/2025 (ECA Digital / Lei Felca)
+- Gate de idade no onboarding: campo data de nascimento, salva apenas birthYear (LGPD minimizacao)
+- Faixas: blocked (<10), child (10-11), teen (12-15), young (16-17), adult (18+)
+- Consentimento parental obrigatorio para child e teen (PIN + checkbox legal)
+- Debate ao vivo bloqueado para child e teen (< 16 anos)
+- Gamificacao revisada: removidas mensagens de urgencia/ansiedade/perda
+  - "Sua sequencia esta em perigo!" → "Voce esta indo bem!"
+  - "Estude antes de meia-noite para nao perder!" → "Que tal estudar um pouco antes de dormir?"
+  - "Mantenha sua sequencia" → "Que tal estudar um pouco hoje?"
+  - "Faltam X aulas" → "Voce ja completou X aulas"
+  - "Estude todos os dias para manter" → "Quanto mais dias voce estuda, mais rapido aprende"
+  - "Comece sua sequencia!" → "Comece a aprender!"
+- AI Tutor: ageGroup passado corretamente (sem fallback '17+')
+- Termos de uso: nova secao 14 (Lei 15.211/2025)
+- Politica de privacidade: nova secao 10 (Lei 15.211/2025)
+- Badge de conformidade no version bar do app
+- DEMO_MODE e OFFLINE_MODE preservados (skip de age gate e consent)
+- Arquivos alterados: onboarding.js, debate.js, chat.js, study-plan.js, dashboard.js, pwa.js, app.js, app.html, termos.html, privacidade.html, sw.js, CLAUDE.md
+- SW v79
+
 ### ⚠️ PENDENTE: FASE 2 do update PWA
 No PROXIMO commit/deploy, executar:
 1. Remover `self.skipWaiting()` do install event no sw.js (deixar apenas no message handler)
@@ -669,22 +703,27 @@ No PROXIMO commit/deploy, executar:
 
 ## Agentes Disponíveis
 
-Sistema de 26 agentes em `.agents/`. Invoque por objetivo:
+Sistema de 31 agentes em `.agents/`. Invoque por objetivo:
 
 | Objetivo | Agentes |
 |----------|---------|
-| Melhorar performance | Frontend + Mobile + QA + DevOps |
+| Melhorar performance | Performance + Frontend + DevOps + QA |
 | Nova feature | Architect + PM → Frontend + Backend + QA |
 | Bug mobile | Mobile + QA |
 | Campanha marketing | Marketing + Copywriter + Social + Traffic |
 | Revisar segurança | Security + LGPD + Backend |
 | Melhorar conversão | UX + Copywriter + Data + Frontend |
-| Adicionar aulas | PM + Backend + Frontend + QA |
+| Adicionar aulas | Content + PM + Frontend + QA |
 | Deploy | DevOps + QA |
 | Integrar AI | AI Integrations + Architect + Backend + Frontend |
 | Revisar legal | Legal + LGPD + Copyright |
 | Pricing | Monetization + Business + Data |
 | SEO | Marketing + Copywriter + Frontend + DevOps |
+| Acessibilidade | a11y + Frontend + QA |
+| Service Worker | PWA + Frontend + Mobile |
+| Traducoes | i18n + Frontend + Content |
+| Revisar conteudo | Content + Legal + Copyright |
+| Onboarding/Retencao | Onboarding + UX + Data + Marketing |
 
 ### Modos de execução
 - **Autônomo** — baixo risco (refactoring, testes, docs)

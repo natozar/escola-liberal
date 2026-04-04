@@ -125,7 +125,7 @@ function renderStudyPlan(){
 
   // Tips
   html+=`<div class="sp-section sp-tips"><h3>💡 Dicas para Você</h3><div class="sp-tips-list">`;
-  if(window.S.streak<3)html+=`<div class="sp-tip">🔥 Estude todos os dias para manter sua sequência. Consistência vale mais que intensidade!</div>`;
+  if(window.S.streak<3)html+=`<div class="sp-tip">🔥 Quanto mais dias voce estuda, mais rapido aprende. Continue no seu ritmo!</div>`;
   if(a.quizPct<60&&a.quizPct>0)html+=`<div class="sp-tip">📖 Revise as aulas antes de refazer os quizzes. Use os Flashcards para memorizar conceitos-chave.</div>`;
   if(a.weakAreas.length)html+=`<div class="sp-tip">🎯 Foque em ${a.weakAreas[0][1].label} — é sua área mais fraca. Prática com IA pode ajudar!</div>`;
   if(a.doneCount>20&&a.doneCount<a.totalL)html+=`<div class="sp-tip">🏆 Você já fez ${Math.round(a.doneCount/a.totalL*100)}% do currículo! Faltam ${a.remaining} aulas. Continue assim!</div>`;
