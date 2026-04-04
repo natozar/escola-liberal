@@ -336,8 +336,8 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 2. **Credenciais hardcoded** em `supabase-client.js` (URL e anon key expostos no client-side). Para SPA é aceitável com RLS, mas auditar RLS policies.
 3. ~~**Google OAuth redirect loop**~~ — **RESOLVIDO v3** (v2 fix: redirect para auth.html com SDK sincrono. v3 fix: trigger `handle_new_user` no Supabase falhava com "Database error saving new user" — reescrita com ON CONFLICT DO NOTHING + EXCEPTION handler. `sync_profile_email` tambem corrigida. auth.html: `initSupabase()` agora executa antes de `checkOAuthError()` return para evitar sbClient null.)
 4. **AI Tutor/Quiz desabilitado** — precisa de créditos na API Anthropic. Disclaimer LGPD e system prompt já implementados.
-5. **Leaderboard migration** — SQL existe mas não foi executado no Supabase.
-6. **Migration pendente** — `supabase/migrations/add_state_to_profiles.sql` precisa ser executado no SQL Editor do Supabase.
+5. ~~**Leaderboard migration**~~ — **RESOLVIDO** — consolidado em `supabase/migrations/EXECUTE-THIS.sql`
+6. ~~**Migration pendente**~~ — **RESOLVIDO** — consolidado em `supabase/migrations/EXECUTE-THIS.sql`. Para executar: copiar conteúdo de `supabase/migrations/EXECUTE-THIS.sql` e colar no SQL Editor do Supabase Dashboard.
 7. ~~**App exigia login para acessar**~~ — **RESOLVIDO**: `DEMO_MODE = true` em boot.js permite acesso total sem auth. Todos os modulos desbloqueados, sem paywall, sem save modal. Login apenas via botao Perfil. Para reativar auth obrigatorio: mudar `DEMO_MODE` para `false`.
 8. ~~**App nao forcava atualizacao do SW**~~ — **RESOLVIDO**: `updateViaCache:'none'` no registro, polling `reg.update()` a cada 60s, `controllerchange` faz reload automatico, `skipWaiting()` + `clients.claim()` no SW.
 9. ~~**App dependia de Supabase para boot**~~ — **RESOLVIDO**: `OFFLINE_MODE = true` desliga Supabase completamente. Zero fetch de rede, zero erros no console. Boot em <2s. Dados demo pre-populados (seedDemoData). Para reconectar: mudar `OFFLINE_MODE` para `false` em src/boot.js.
