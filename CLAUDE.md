@@ -2,7 +2,7 @@
 
 ## Identidade do Projeto
 
-Plataforma PWA educacional para homeschool brasileiro. 21 disciplinas, 66 módulos, 660 aulas interativas. Público: jovens de 10 a 16 anos. Bilíngue PT/EN. Gratuita. Offline-first. Gamificação completa. Compatível com ANED. Criada por Renato Rodrigues (Ribeirão Preto/SP).
+Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 21 disciplinas, 66 módulos, 660 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN. Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
 
 **Domínio:** escolaliberal.com.br
 **Repo:** github.com/natozar/escola-liberal
@@ -414,7 +414,7 @@ Quando `OFFLINE_MODE = true` (src/boot.js):
 - Presente em todas as páginas públicas (8 arquivos)
 
 ### Compliance Lei Felca (Lei 15.211/2025) — aplicado 2026-04-04
-- **Verificacao de idade:** Campo data de nascimento no onboarding. Salva apenas birthYear (minimizacao LGPD). Faixas: blocked (<10), child (10-11), teen (12-15), young (16-17), adult (18+).
+- **Verificacao de idade:** Campo data de nascimento no onboarding. Salva apenas birthYear (minimizacao LGPD). Faixas: blocked (<18), adult (18+).
 - **Consentimento parental:** Obrigatorio para child e teen. PIN de 4 digitos + checkbox legal. Salva parentalConsent + parentalConsentAt.
 - **Debate ao vivo:** Bloqueado para child e teen (< 16 anos). Gate no inicio de goDebate().
 - **Design persuasivo:** Removidas todas as mensagens de urgencia, perda, ansiedade nas notificacoes e streaks.

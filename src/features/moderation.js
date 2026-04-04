@@ -1,6 +1,6 @@
 // ============================================================
 // MODERACAO DE DEBATE — Filtro de conteudo, strikes, LGPD
-// Publico: criancas 10-16 anos + adultos. Seguranca e prioridade.
+// Publico: adultos 18+. Seguranca e prioridade.
 // 100% client-side. Funciona em OFFLINE_MODE.
 // ============================================================
 
@@ -68,7 +68,7 @@ var ROOM_KEYWORDS={
   filosofia:['etica','moral','filosofia','platao','aristoteles','kant','logica','razao','verdade','virtude','justica','bem','mal','liberdade','consciencia','existencia','pensamento','argumento','sabedoria','valor','dilema'],
   historia:['historia','guerra','revolucao','imperio','civilizacao','democracia','ditadura','rei','colonia','independencia','constituicao','republica','monarquia','escravidao','abolicao','medieval','antigo','moderno'],
   politica:['politica','estado','governo','democracia','direita','esquerda','liberal','conservador','lei','constituicao','eleicao','partido','presidente','congresso','senado','voto','cidadao','direito','dever'],
-  educacao:['educacao','escola','homeschool','ensino','professor','aluno','aprendizado','curriculo','pedagogia','didatica','estudo','prova','avaliacao','conhecimento','familia','pai','mae','crianca'],
+  educacao:['educacao','escola','homeschool','ensino','professor','aluno','aprendizado','curriculo','pedagogia','didatica','estudo','prova','avaliacao','conhecimento','familia','pai','mae'],
   tecnologia:['tecnologia','inteligencia artificial','ia','computador','programacao','internet','algoritmo','dados','robo','automacao','software','app','inovacao','digital','futuro','codigo','machine learning'],
   direito:['direito','lei','liberdade','constituicao','justica','tribunal','juiz','advogado','crime','pena','propriedade','contrato','cidadao','processo','norma','regulacao','censura','expressao'],
   midia:['midia','noticia','jornal','imprensa','fake news','informacao','comunicacao','rede social','televisao','radio','internet','jornalista','opiniao','propaganda','publicidade','manipulacao','algoritmo','engajamento'],

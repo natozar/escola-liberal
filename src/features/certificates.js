@@ -60,7 +60,7 @@ function showDiscCert(disc){
   overlay.innerHTML=`<div class="cert-card cert-card-disc">
     <div class="cert-seal" aria-hidden="true">🏆</div>
     <div class="cert-title">Certificado de Disciplina</div>
-    <div class="cert-sub">Escola Liberal — Plataforma Homeschool</div>
+    <div class="cert-sub">Escola Liberal — Plataforma Educacional</div>
     <div class="cert-name">${window.S.name}</div>
     <div class="cert-module">Concluiu a disciplina: ${d.icon} ${d.label}</div>
     <div class="cert-details">${totalModules} módulos · ${totalLessons} aulas · ${totalHours}h · ${quizTotal?Math.round(quizOk/quizTotal*100)+'% quizzes':''}</div>
@@ -96,7 +96,7 @@ function _drawDiscCert(ctx,w,h,disc){
   ctx.font='56px serif';ctx.textAlign='center';ctx.fillStyle='#dba550';ctx.fillText('🏆',w/2,100);
   // Title
   ctx.font='bold 32px Georgia';ctx.fillStyle='#e8e6e1';ctx.fillText('Certificado de Disciplina',w/2,152);
-  ctx.font='15px sans-serif';ctx.fillStyle='#9ba3b5';ctx.fillText('Escola Liberal — Plataforma Homeschool',w/2,180);
+  ctx.font='15px sans-serif';ctx.fillStyle='#9ba3b5';ctx.fillText('Escola Liberal — Plataforma Educacional',w/2,180);
   // Divider
   ctx.beginPath();ctx.moveTo(w*0.15,205);ctx.lineTo(w*0.85,205);ctx.strokeStyle='rgba(219,165,80,.4)';ctx.lineWidth=1;ctx.stroke();
   // Cert text
@@ -189,7 +189,7 @@ function _drawCert(ctx,w,h,mi){
   // Title
   ctx.font='bold 30px Georgia';ctx.fillStyle='#e8e6e1';ctx.fillText('Certificado de Conclusão',w/2,145);
   // Subtitle
-  ctx.font='15px sans-serif';ctx.fillStyle='#9ba3b5';ctx.fillText('Escola Liberal — Plataforma Homeschool',w/2,175);
+  ctx.font='15px sans-serif';ctx.fillStyle='#9ba3b5';ctx.fillText('Escola Liberal — Plataforma Educacional',w/2,175);
   // Divider
   ctx.beginPath();ctx.moveTo(w*0.2,200);ctx.lineTo(w*0.8,200);ctx.strokeStyle='rgba(219,165,80,.3)';ctx.lineWidth=1;ctx.stroke();
   // "Certificamos que"
