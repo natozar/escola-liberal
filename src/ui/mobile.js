@@ -9,6 +9,12 @@ function updateBottomNav(active){
   if(btn)btn.classList.add('active')
 }
 
+function _formatXP(n){
+  if(n>=10000)return(n/1000).toFixed(1).replace(/\.0$/,'')+'k';
+  if(n>=1000)return(n/1000).toFixed(1)+'k';
+  return String(n);
+}
+
 function updateMobileHeader(title,showBack){
   var mh=document.getElementById('mobileHeader');
   if(!mh)return;
@@ -17,11 +23,18 @@ function updateMobileHeader(title,showBack){
   var backEl=document.getElementById('mhBack');
   if(backEl)backEl.style.display=showBack?'flex':'none';
   var xpEl=document.getElementById('mhXP');
-  if(xpEl)xpEl.textContent=(typeof window.totalXP==='function'?window.totalXP():window.S.xp||0)+' XP';
+  var totalXp=typeof window.totalXP==='function'?window.totalXP():window.S.xp||0;
+  if(xpEl)xpEl.textContent='⚡'+_formatXP(totalXp);
   var streakEl=document.getElementById('mhStreak');
   if(streakEl)streakEl.textContent='🔥'+(window.S.streak||0);
   var avatarEl=document.getElementById('mhAvatar');
   if(avatarEl)avatarEl.textContent=window.S.avatar||(window.S.name?window.S.name[0]:'🧑‍🎓');
+  // Update debate dashboard online count
+  var debateDash=document.getElementById('debateDashOnline');
+  if(debateDash&&window.DEBATE_ROOMS){
+    var total=window.DEBATE_ROOMS.reduce(function(s,r){return s+r.online},0);
+    debateDash.textContent=total;
+  }
 }
 
 let _mobileBackFn=null;
