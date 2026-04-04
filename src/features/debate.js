@@ -7,7 +7,7 @@ var DEBATE_ROOMS = [
   { id:'filosofia',  name:'Filosofia & Etica',         icon:'🏛️', color:'#8b5cf6', online:0 },
   { id:'historia',   name:'Historia & Revisionismo',   icon:'📜', color:'#ef4444', online:0 },
   { id:'politica',   name:'Politica & Estado',          icon:'⚖️', color:'#3b82f6', online:0 },
-  { id:'educacao',   name:'Educacao & Homeschool',      icon:'📚', color:'#10b981', online:0 },
+  { id:'educacao',   name:'Educacao & Ensino',           icon:'📚', color:'#10b981', online:0 },
   { id:'tecnologia', name:'IA & Tecnologia',            icon:'🤖', color:'#06b6d4', online:0 },
   { id:'direito',    name:'Direito & Liberdade',        icon:'🔒', color:'#6366f1', online:0 },
   { id:'midia',      name:'Midia & Fake News',          icon:'📡', color:'#ec4899', online:0 },
@@ -316,7 +316,7 @@ var MOCK_MESSAGES={
     {user_name:'Carolina',user_avatar:'👩‍🎓',text:'Singapura tem estado forte em educacao e saude, mas mercado livre no resto.',created_at:new Date(Date.now()-60000).toISOString()},
   ],
   educacao:[
-    {user_name:'Fernanda',user_avatar:'👩‍🎓',text:'Homeschool deveria ser direito garantido por lei?',created_at:new Date(Date.now()-180000).toISOString()},
+    {user_name:'Fernanda',user_avatar:'👩‍🎓',text:'Educação de qualidade deveria ser prioridade nacional?',created_at:new Date(Date.now()-180000).toISOString()},
     {user_name:'Diego',user_avatar:'👨‍🎓',text:'Com certeza. A familia tem prioridade sobre o Estado na educacao.',created_at:new Date(Date.now()-120000).toISOString()},
     {user_name:'Camila',user_avatar:'👩‍💻',text:'Mas precisa de fiscalizacao para garantir qualidade minima.',created_at:new Date(Date.now()-60000).toISOString()},
   ],

@@ -1,0 +1,198 @@
+================================================================
+  ESCOLA LIBERAL — RESUMO DA SESSÃO COWORK — 04/04/2026
+  Para continuidade em outra máquina
+================================================================
+
+PROJETO: Escola Liberal (escolaliberal.com.br)
+REPO: github.com/natozar/escola-liberal
+BRANCH ATUAL: feat/lei-felca-compliance
+OWNER: Renato Cesar Rodrigues (chatsagrado@gmail.com)
+
+================================================================
+1. O QUE FOI FEITO NESTA SESSÃO
+================================================================
+
+1.1 GOOGLE OAUTH FIX (CONCLUÍDO)
+- Causa raiz: trigger handle_new_user no Supabase sem EXCEPTION handler
+- Fix SQL no Supabase: handle_new_user + sync_profile_email com EXCEPTION WHEN OTHERS
+- Fix auth.html: initSupabase() roda ANTES de checkOAuthError() return
+- Testado com chatsagrado@gmail.com → login funciona
+- STATUS: código local ok, NÃO commitado/pushado
+
+1.2 RELATÓRIO INSTITUCIONAL (.docx) (CONCLUÍDO)
+- Arquivo: Escola-Liberal-Relatorio-Institucional.docx
+- Conteúdo: 229 parágrafos, capa, 21 disciplinas, metodologias, Q&A governadores
+- Gerado via docx-js (create-report.js)
+- Validado com sucesso
+
+1.3 VÍDEO INSTITUCIONAL (CONCLUÍDO - 2 VERSÕES)
+- Arquivo v1: Apresentacao-Crise-Silenciosa-na-Educacao.mp4 (65s, música ruim)
+- Arquivo v2: Apresentacao-Crise-Silenciosa-v2.mp4 (91s, música melhor)
+- 7 slides extraídos do vídeo Canva original (2160x3840)
+- Música v2: FM synthesis piano + strings + reverb + stereo
+- Tempos de leitura: 10-18s por slide conforme quantidade de texto
+
+1.4 AUDITORIA COMPLETA DO PROJETO (CONCLUÍDO)
+- Relatório detalhado do estado de todos os componentes
+- 13 arquivos modificados não commitados identificados
+- SW raiz v79 vs dist v78 (desatualizado)
+- FASE 2 PWA já implementada (CLAUDE.md desatualizado)
+
+1.5 PROMPTS PARA CLAUDE CODE (3 PROMPTS CRIADOS)
+- prompts/prompt-pendencias-deploy.md → commit + build + merge + push
+- prompts/prompt-mobile-header-redesign.md → redesign UX do header mobile
+- prompts/prompt-pin-gate.md → PIN 0606 para trancar o site
+
+================================================================
+2. ESTADO ATUAL DO REPOSITÓRIO
+================================================================
+
+BRANCH: feat/lei-felca-compliance (1 commit não pushado para remote)
+COMMIT NÃO PUSHADO: f1a29c5 "legal: adequação à Lei Felca"
+
+13 ARQUIVOS MODIFICADOS NÃO COMMITADOS:
+- auth.html (fix OAuth)
+- CLAUDE.md (atualizações de sessão)
+- supabase-schema.sql (handle_new_user com EXCEPTION)
+- supabase/functions/ai-tutor/index.ts (ageGroup Lei Felca)
+- manifest.json
+- manifest-admin.json
+- assets/icons/admin-icon.svg
+- dist/admin.html
+- dist/assets/build/manifest-AI1UUhgr.json
+- dist/assets/build/manifest-CYiQAU9T.json
+- dist/assets/build/manifest-admin-CWjgl5v4.json
+- dist/assets/icons/admin-icon.svg
+- sobre.txt
+
+UNTRACKED (ignorar):
+- Escola Liberal/ (pasta duplicada)
+- build-output/
+- dist-new/
+- prompt-canva-video-institucional.md
+- prompts/prompt-lei-felca-adequacao.md
+- roteiro-narracao-video.md
+
+================================================================
+3. FLAGS DE CONFIGURAÇÃO
+================================================================
+
+OFFLINE_MODE = false (Supabase ativo)
+DEMO_MODE = true (app abre sem login, paywall desabilitado)
+SW_VERSION = v79 (raiz) / v78 (dist — precisa rebuild)
+
+================================================================
+4. PENDÊNCIAS — EXECUTAR VIA CLAUDE CODE
+================================================================
+
+PRIORIDADE ALTA (usar prompt-pendencias-deploy.md):
+[ ] Atualizar CLAUDE.md (FASE 2 PWA → concluída, métricas atualizadas)
+[ ] Commit dos 13 arquivos modificados
+[ ] npm run build (atualizar dist/ com SW v79)
+[ ] Commit do dist/
+[ ] Merge feat/lei-felca-compliance → main
+[ ] git push origin main
+
+PRIORIDADE ALTA (usar prompt-pin-gate.md):
+[ ] Criar pin-gate.js (PIN 0606, validade 24h)
+[ ] Incluir script em todas as 11 páginas HTML
+[ ] Incrementar SW_VERSION
+[ ] Commit + push
+
+PRIORIDADE MÉDIA (usar prompt-mobile-header-redesign.md):
+[ ] Simplificar header mobile (remover debate, check update)
+[ ] Mover debate para dashboard
+[ ] Ajustar CSS para 320-414px sem transbordar
+[ ] Incrementar SW_VERSION
+[ ] Commit + push
+
+================================================================
+5. PENDÊNCIAS — EXECUTAR MANUALMENTE
+================================================================
+
+SUPABASE SQL EDITOR (executar as 3 migrations):
+[ ] consolidated-ready.sql → tabela debate_messages + RLS + Realtime
+[ ] 20260331_leaderboard.sql → tabela weekly_xp
+[ ] add_state_to_profiles.sql → coluna state em profiles
+
+SUPABASE EDGE FUNCTIONS:
+[ ] supabase functions deploy moderate-debate
+[ ] supabase secrets set ANTHROPIC_API_KEY=sk-ant-xxx
+
+AI TUTOR:
+[ ] Configurar ANTHROPIC_API_KEY nos secrets do Supabase
+[ ] Testar endpoint /functions/v1/ai-tutor
+
+================================================================
+6. QUESTÃO JURÍDICA LEVANTADA
+================================================================
+
+Renato levantou preocupação sobre riscos legais mesmo oferecendo
+serviço gratuito. Principais riscos identificados:
+
+1. LGPD + Menores: consentimento parental via PIN pode ser insuficiente
+2. Homeschooling: zona cinza legal (STF 2018). Posicionar como complementar.
+3. Lei Felca: gamificação pode ser questionada como design persuasivo
+4. Responsabilidade sobre debate ao vivo entre menores
+5. Nome "Escola Liberal" pode atrair atenção ideológica/denúncias
+
+RECOMENDAÇÃO: Consultar advogado especialista em Direito Digital + LGPD.
+Referências: Patricia Peck, Opice Blum, OAB-SP Comissão Direito Digital,
+IAPP Brazil. Consulta inicial: R$500-1.500.
+
+DECISÃO DO RENATO: Trancar o site com PIN 0606 enquanto resolve o jurídico.
+Prompt já criado (prompt-pin-gate.md).
+
+================================================================
+7. ORDEM DE EXECUÇÃO RECOMENDADA
+================================================================
+
+1º → prompt-pin-gate.md (trancar o site PRIMEIRO)
+2º → prompt-pendencias-deploy.md (commit + build + merge + push)
+3º → prompt-mobile-header-redesign.md (melhorar UX)
+4º → Migrations SQL no Supabase (manual)
+5º → Consultar advogado de Direito Digital
+6º → Ativar AI Tutor após aval jurídico
+
+================================================================
+8. ARQUIVOS GERADOS NESTA SESSÃO
+================================================================
+
+Escola-Liberal-Relatorio-Institucional.docx (relatório governadores)
+Apresentacao-Crise-Silenciosa-na-Educacao.mp4 (vídeo v1 — 65s)
+Apresentacao-Crise-Silenciosa-v2.mp4 (vídeo v2 — 91s)
+prompts/prompt-pendencias-deploy.md
+prompts/prompt-mobile-header-redesign.md
+prompts/prompt-pin-gate.md
+Resumo-Sessao-Cowork-2026-04-04.txt (este arquivo)
+
+================================================================
+9. ATUALIZAÇÃO — PIN GATE E PROMPTS JÁ EXECUTADOS
+================================================================
+
+Renato confirmou que os prompts do Claude Code JÁ FORAM EXECUTADOS:
+- [x] PIN gate (0606) implementado e no ar
+- [x] Pendências commitadas e deployadas
+- [x] Mobile header redesign executado
+
+O site está trancado com PIN 0606. Acesso liberado por 24h após digitar.
+
+================================================================
+10. PRÓXIMO PASSO: CONVERSA ESTRATÉGICA
+================================================================
+
+Renato quer continuar discutindo ESTRATÉGIA na próxima sessão.
+Temas em aberto para retomar:
+
+- Posicionamento jurídico (advogado de Direito Digital)
+- Estratégia de PPP com governos (Zema/MG, Tarcísio/SP)
+- Modelo de monetização (B2G licenciamento vs B2C premium)
+- Validação do produto com usuários reais
+- Timing de reabertura do site ao público
+- Preparação de pitch institucional após parecer jurídico
+
+Retomar a conversa de estratégia de onde parou.
+
+================================================================
+FIM DO RESUMO — Atualizado 04/04/2026
+================================================================

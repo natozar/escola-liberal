@@ -7,17 +7,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0f1729">
 <script>
-// Verifica updates do SW no boot — NAO faz auto-skip.
-// O SW novo fica em "waiting" e o banner/botao de update aparece.
-// O usuario decide quando atualizar clicando no botao.
+// Force SW update on page load — runs BEFORE anything else.
+// This ensures devices with old cached SW get the new version.
 if('serviceWorker' in navigator){
   navigator.serviceWorker.getRegistration().then(function(reg){
-    if(!reg)return;
-    reg.update().catch(function(){});
+    if(reg){
+      reg.update().then(function(){
+        // If there's a waiting worker, activate it immediately
+        if(reg.waiting){reg.waiting.postMessage({type:'SKIP_WAITING'})}
+      }).catch(function(){});
+    }
   });
 }
 </script>
-<meta name="description" content="Escola Liberal — A educação que a escola deveria ter dado. 21 disciplinas, 660 aulas gratuitas com gamificação, certificados e tutor IA. Para maiores de 18 anos.">
+<meta name="description" content="Plataforma homeschool Escola Liberal — 21 disciplinas, 660 aulas interativas com gamificação, quizzes e certificados. Bilíngue PT/EN.">
 <meta name="robots" content="index, follow">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -29,7 +32,7 @@ if('serviceWorker' in navigator){
 <link rel="apple-touch-icon" href="/assets/build/icon-192-DytM3zcK.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/build/icon-192-DytM3zcK.png">
 <link rel="apple-touch-startup-image" href="/assets/build/icon-512-D2RgERrO.png">
-<link rel="manifest" href="/assets/build/manifest-DeO_wkCl.json">
+<link rel="manifest" href="/assets/build/manifest-AI1UUhgr.json">
 <title>Escola Liberal — Aprendizado</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,7 +41,7 @@ if('serviceWorker' in navigator){
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
 <script src="cookie-consent.js" defer></script>
-<!-- Critical inline CSS for instant splash + MOBILE LAYOUT FIX -->
+<!-- Critical inline CSS for instant splash -->
 <style>
 .app-splash{position:fixed;inset:0;background:#0f1729;display:flex;align-items:center;justify-content:center;z-index:99999;transition:opacity .3s}
 .app-splash-inner{text-align:center}
@@ -46,26 +49,11 @@ if('serviceWorker' in navigator){
 .app-splash-name{font-family:-apple-system,sans-serif;color:#dba550;font-size:1.1rem;font-weight:600;letter-spacing:.02em}
 .app-splash-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.08);border-top-color:#4a9e7e;border-radius:50%;animation:appSpin .7s linear infinite;margin:1rem auto 0}
 @keyframes appSpin{to{transform:rotate(360deg)}}
-/* === CRITICAL MOBILE LAYOUT — inline to survive CSS cache issues === */
-@media(max-width:900px){
-  .shell{display:block!important;min-height:0!important;height:auto!important}
-  .main{position:fixed!important;top:calc(48px + env(safe-area-inset-top,0px))!important;bottom:calc(64px + env(safe-area-inset-bottom,0px))!important;left:0!important;right:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding:.75rem!important;box-sizing:border-box!important;width:100%!important;max-height:none!important;height:auto!important;overscroll-behavior-y:contain}
-  .side{transform:translateX(-100%);position:fixed!important;z-index:200!important;top:0!important;left:0!important;bottom:0!important;width:300px!important;height:100vh!important;height:100dvh!important}
-  .side.open{transform:translateX(0)!important}
-  .mobile-header{display:flex!important;border-bottom:none!important;box-shadow:none!important;height:calc(48px + env(safe-area-inset-top,0px))!important;justify-content:space-between!important;align-items:flex-end!important;padding-bottom:6px!important}
-  .app-version-bar{display:none!important}
-  .bottom-nav{display:flex!important}
-  .global-progress{display:none!important}
-}
-@media(max-width:600px){
-  .main{padding:.5rem!important}
-}
 </style>
-  <script type="module" crossorigin src="/assets/build/app-C5nkXJCG.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/build/app-DIlzPKoj.css">
+  <script type="module" crossorigin src="/assets/build/app-B4ydDj9d.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/build/app-C0xSsx7L.css">
 </head>
 <body>
-<script src="pin-gate.js"></script>
 <!-- APP SPLASH — appears instantly, removed after boot -->
 <div class="app-splash" id="appSplash">
   <div class="app-splash-inner">
@@ -176,29 +164,16 @@ if('serviceWorker' in navigator){
   <div class="splash-bar"><div class="splash-fill" id="splashFill"></div></div>
 </div>
 
-<!-- ONBOARDING — Age gate 18+ -->
+<!-- ONBOARDING (DEMO_MODE: light version — name + avatar only, skip button) -->
 <div class="onboard-overlay" id="onboard">
   <div class="onboard-card">
-    <!-- Step 1: Age verification (must be 18+) -->
     <div class="onboard-step active" id="obStep1">
       <div class="onboard-logo">🎓</div>
       <h2>Bem-vindo!</h2>
-      <p>A educacao que a escola deveria ter dado.</p>
-      <label for="obBirthDate" style="font-weight:600;margin-bottom:.25rem;display:block">Confirme sua idade para continuar</label>
-      <input class="onboard-input" id="obBirthDate" type="date" max="" style="margin-bottom:.75rem" autocomplete="bday">
-      <p style="font-size:.72rem;color:var(--text-muted);margin-bottom:.75rem">Usamos apenas o ano para verificacao de idade. A data completa nao e armazenada (LGPD).</p>
-      <button class="btn btn-sage" onclick="obVerifyAge()" style="width:100%">Continuar</button>
-      <button class="btn btn-ghost" onclick="obSkip()" style="width:100%;margin-top:.5rem;font-size:.82rem">Pular →</button>
-      <div id="obAgeError" style="color:#ef4444;font-size:.85rem;margin-top:.75rem;display:none"></div>
-    </div>
-
-    <!-- Step 2: Name + Avatar (after age verification) -->
-    <div class="onboard-step" id="obStep3Profile">
-      <div class="onboard-logo">🎓</div>
-      <h2>Quase la!</h2>
-      <p>Personalize seu perfil (opcional).</p>
+      <p>21 disciplinas, 660 aulas interativas. Sem login, sem cadastro.</p>
       <label for="obName" style="font-weight:600;margin-bottom:.25rem;display:block">Como podemos te chamar?</label>
-      <input class="onboard-input" id="obName" placeholder="Seu nome (opcional)" maxlength="30" onkeydown="if(event.key==='Enter')obQuickFinish()" autocomplete="given-name">
+      <input class="onboard-input" id="obName" placeholder="Seu nome (opcional)" maxlength="30" onkeydown="if(event.key==='Enter')obNext(1)" autocomplete="given-name">
+      <!-- Hidden email field (preserved for compat, not shown in DEMO_MODE) -->
       <input type="hidden" id="obEmail" value="">
       <div class="onboard-avatars" id="obAvatars" style="margin:.75rem 0"></div>
       <button class="btn btn-sage" onclick="obQuickFinish()" style="width:100%">Comecar a Aprender 🚀</button>
@@ -224,7 +199,8 @@ if('serviceWorker' in navigator){
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <button class="focus-btn" id="focusBtn" onclick="toggleFocus()" title="Modo Foco" aria-label="Alternar modo foco">⛶</button>
 
-<!-- MOBILE HEADER — Clean layout: [←] Title | 🔥N ⚡N [🔄] [👤] -->
+<!-- MOBILE HEADER -->
+<!-- MOBILE HEADER — Single unified bar -->
 <header class="mobile-header" id="mobileHeader">
   <div class="mh-left">
     <button class="mh-back" id="mhBack" onclick="mobileBack()" aria-label="Voltar" style="display:none">
@@ -232,11 +208,12 @@ if('serviceWorker' in navigator){
     </button>
     <span class="mh-title" id="mhTitle"></span>
   </div>
+  <button id="debateTopBtn" class="debate-btn-top has-activity" onclick="goDebate()"><span class="debate-icon">💬</span><span class="debate-label">Debate</span><span class="live-dot"></span><span class="online-count" id="debateOnlineCount">0</span></button>
   <div class="mh-right">
     <span class="mh-streak" id="mhStreak">🔥0</span>
-    <span class="mh-xp" id="mhXP">⚡0</span>
-    <button class="mh-update-btn" id="mhUpdateBtn" onclick="applyUpdate()" style="display:none" aria-label="Atualizar app">🔄</button>
+    <span class="mh-xp" id="mhXP">0 XP</span>
     <button class="mh-avatar-btn" id="mhAvatar" onclick="handleProfileNav()" aria-label="Perfil">🧑‍🎓</button>
+    <button class="mh-update-btn" id="mhUpdateBtn" onclick="applyUpdate()" style="display:none" aria-label="Atualizar">🔄</button>
   </div>
 </header>
 
@@ -435,14 +412,6 @@ if('serviceWorker' in navigator){
       <!-- ZONA SOCIAL -->
       <div class="dash-section">
         <div class="dash-section-label">Social</div>
-        <div class="debate-dash-card" onclick="goDebate()" role="button" tabindex="0">
-          <div class="debate-dash-icon">💬</div>
-          <div class="debate-dash-text">
-            <div class="debate-dash-title">Debate ao Vivo</div>
-            <div class="debate-dash-sub">15 salas tematicas · <span id="debateDashOnline">0</span> online</div>
-          </div>
-          <span class="debate-dash-arrow">→</span>
-        </div>
         <div class="wa-share-card" onclick="shareWhatsApp()">
           <div class="wa-share-icon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
@@ -695,7 +664,7 @@ if('serviceWorker' in navigator){
   <button class="bnav-item active" id="bn-dash" onclick="goDash()" role="tab" aria-label="Inicio">
     <span class="bnav-icon">🏠</span><span class="bnav-label">Inicio</span>
   </button>
-  <button class="bnav-item" id="bn-aulas" onclick="goAulasTab()" role="tab" aria-label="Aulas">
+  <button class="bnav-item" id="bn-mod" onclick="goAulasTab()" role="tab" aria-label="Aulas">
     <span class="bnav-icon">📚</span><span class="bnav-label">Aulas</span>
   </button>
   <button class="bnav-item bnav-center" id="bn-practice" onclick="togglePracticeMenu()" role="tab" aria-label="Praticar" aria-haspopup="dialog">
@@ -763,7 +732,7 @@ if('serviceWorker' in navigator){
   <div class="cert-card">
     <div class="cert-seal" aria-hidden="true">🏅</div>
     <div class="cert-title">Certificado de Conclusão</div>
-    <div class="cert-sub">Escola Liberal — Plataforma Educacional</div>
+    <div class="cert-sub">Escola Liberal — Plataforma Homeschool</div>
     <div class="cert-name" id="certName"></div>
     <div class="cert-module" id="certModule"></div>
     <div class="cert-details" id="certDetails"></div>
@@ -868,41 +837,33 @@ if('serviceWorker' in navigator){
     if(_pendingWorker){
       _pendingWorker.postMessage({type:'SKIP_WAITING'});
     }
-    // controllerchange → reload (once) — desktop/Android
-    var _reloaded=false;
-    function _doReload(){if(!_reloaded){_reloaded=true;window.location.reload()}}
-    navigator.serviceWorker.addEventListener('controllerchange',_doReload,{once:true});
-    // iOS Safari: controllerchange nem sempre dispara. Fallback curto.
-    setTimeout(_doReload,800);
+    // controllerchange → reload (once)
+    navigator.serviceWorker.addEventListener('controllerchange',function(){
+      window.location.reload();
+    },{once:true});
+    // Fallback 5s for iOS where controllerchange may not fire
+    setTimeout(function(){window.location.reload()},5000);
   };
   // Legacy aliases
   window._doUpdate = window.applyUpdate;
 
   window._checkForUpdates = function(){
     var btn=document.getElementById('avbCheck');
-    var mBtn=document.getElementById('mhCheckBtn');
     if(btn){btn.textContent='...';btn.disabled=true}
-    if(mBtn)mBtn.classList.add('checking');
     _updateBar(null,'🔍 Verificando...','avb-checking');
     if(!_registration){
       _updateBar(null,'⚠ SW nao registrado','avb-offline');
       if(btn){btn.textContent='↻';btn.disabled=false}
-      if(mBtn)mBtn.classList.remove('checking');
       return;
     }
     _registration.update().then(function(){
       setTimeout(function(){
-        if(!_pendingWorker){
-          _updateBar(_swVersion,'✓ Atualizado','avb-ok');
-          if(typeof toast==='function')toast('Versao '+_swVersion+' — ja esta atualizado!','success');
-        }
+        if(!_pendingWorker)_updateBar(_swVersion,'✓ Atualizado','avb-ok');
         if(btn){btn.textContent='↻';btn.disabled=false}
-        if(mBtn)mBtn.classList.remove('checking');
       },2000);
     }).catch(function(){
       _updateBar(null,'⚠ Sem conexao','avb-offline');
       if(btn){btn.textContent='↻';btn.disabled=false}
-      if(mBtn)mBtn.classList.remove('checking');
     });
   };
 
@@ -962,7 +923,14 @@ if('serviceWorker' in navigator){
     }
   });
 
-  // controllerchange so roda via applyUpdate() (com {once:true})
+  // FASE 1 (TEMPORARIO): auto-reload quando novo SW ativa.
+  // Necessario para forcar transicao em devices com PWA instalada.
+  // FASE 2 (proximo deploy): remover este listener e deixar apenas o de applyUpdate().
+  // TODO: Remover este controllerchange no proximo commit.
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    console.log('[SW] Controller mudou — recarregando (FASE 1 transitoria)');
+    window.location.reload();
+  });
 })();
 </script>
 </body>

@@ -30,4 +30,10 @@ Disallow: /SECURITY-AUDIT.md
 # Googlebot específico — permitir crawl de imagens
 User-agent: Googlebot
 Allow: /assets/icons/og-image.png
-Allow: /assets/icons
+Allow: /assets/icons/icon-512.png
+
+# Googlebot-Image
+User-agent: Googlebot-Image
+Allow: /assets/
+
+Sitemap: https://escolaliberal.com.br/sitemap.xml

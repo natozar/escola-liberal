@@ -117,7 +117,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-primary);col
 <script src="cookie-consent.js"></script>
 </head>
 <body>
-<script src="pin-gate.js"></script>
 
 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Alternar tema">🌙</button>
 
@@ -126,7 +125,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-primary);col
   <div class="auth-logo">
     <div class="auth-logo-mark">EL</div>
     <h1>Escola <em>Liberal</em></h1>
-    <p>A educação que a escola deveria ter dado</p>
+    <p>Plataforma homeschool com 21 disciplinas e 660 aulas interativas</p>
   </div>
 
   <div class="auth-card">
@@ -489,21 +488,15 @@ function checkOAuthError() {
 // ========== INIT ==========
 (function init(){
   // 1. Check OAuth error redirect (query params from Supabase)
-  var hadOAuthError = checkOAuthError();
+  if(checkOAuthError()) return;
 
-  // 2. ALWAYS initialize Supabase — even after OAuth error, so user can retry
-  if(typeof initSupabase === 'function') initSupabase();
-
-  // 3. If there was an OAuth error, stop here (error message already shown)
-  if(hadOAuthError) return;
-
-  // 4. Detect recovery flow BEFORE hash is cleaned
+  // 2. Detect recovery flow BEFORE SDK init (hash still intact)
   var isRecovery = window.location.hash.includes('type=recovery');
 
-  // 5. Detect OAuth callback — hash contains access_token from Google redirect
+  // 3. Detect OAuth callback — hash contains access_token from Google redirect
   var isOAuthCallback = window.location.hash.includes('access_token');
 
-  // 6. If OAuth callback, show loading state immediately
+  // 4. If OAuth callback, show loading state immediately (before SDK init)
   if(isOAuthCallback){
     document.querySelector('.auth-card').innerHTML =
       '<div style="text-align:center;padding:2rem 1rem">'
@@ -512,6 +505,10 @@ function checkOAuthError() {
       + '<p style="color:var(--text-muted);font-size:.8rem">Aguarde um momento</p>'
       + '</div>';
   }
+
+  // 5. Initialize Supabase — CRITICAL: must happen BEFORE hash is cleaned
+  //    detectSessionInUrl:true will read the #access_token from the hash
+  if(typeof initSupabase === 'function') initSupabase();
 
   // 6. Recovery flow: show new password form
   if(isRecovery){
