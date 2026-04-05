@@ -44,6 +44,8 @@ _updateTotalOnline();
 // NAVIGATION
 // ============================================================
 function goDebate(){
+  // Age gate enforcement
+  if(typeof window.enforceAgeGate==='function'&&window.enforceAgeGate())return;
   // Check LGPD consent
   if(typeof window.showDebateConsent==='function'&&!window.hasDebateConsent()){
     window.showDebateConsent(function(){goDebate()});

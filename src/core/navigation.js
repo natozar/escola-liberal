@@ -73,6 +73,8 @@ function goMod(i){
   if(!M[i]._loaded)window.loadFullModule(i);
 }
 async function openL(mi,li){
+  // Age gate enforcement — block if unverified or under 18
+  if(typeof window.enforceAgeGate==='function'&&window.enforceAgeGate())return;
   const S=window.S;const M=window.M;
   if(!M[mi]||!M[mi].lessons[li])return;
   // Ensure full module content is loaded before rendering lesson

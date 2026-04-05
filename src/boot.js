@@ -82,6 +82,51 @@ if('serviceWorker' in navigator){
 }
 
 // ============================================================
+// AGE GATE ENFORCEMENT — blocks app if user is under 18 or unverified
+// ============================================================
+function enforceAgeGate(){
+  // Skip in presentation mode (OFFLINE_MODE + DEMO_MODE both true)
+  if(OFFLINE_MODE&&DEMO_MODE)return false;
+  var S=window.S;
+  // Anti-tamper: if birthYear indicates < 18 but ageGroup is 'adult', force blocked
+  if(S.birthYear){
+    var today=new Date();
+    var age=today.getFullYear()-S.birthYear;
+    // Conservative: if born this year, age could be 0 or 1
+    if(age<18){S.ageGroup='blocked';window.save()}
+  }
+  // If blocked → show permanent block screen
+  if(S.ageGroup==='blocked'){
+    _showAgeBlockScreen();
+    return true; // blocked
+  }
+  // If unverified (no ageGroup) and not in DEMO_MODE → force onboarding
+  if(!S.ageGroup&&!DEMO_MODE){
+    return false; // let onboarding handle it
+  }
+  return false; // not blocked
+}
+function _showAgeBlockScreen(){
+  // Prevent duplicate
+  if(document.getElementById('ageBlockScreen'))return;
+  var screen=document.createElement('div');
+  screen.id='ageBlockScreen';
+  screen.style.cssText='position:fixed;inset:0;z-index:99999;background:var(--bg-primary,#0f1729);display:flex;align-items:center;justify-content:center;padding:2rem';
+  screen.innerHTML='<div style="text-align:center;max-width:400px">'
+    +'<div style="font-size:3rem;margin-bottom:1rem">🔒</div>'
+    +'<h1 style="font-size:1.4rem;color:var(--text-primary,#e8e6e1);margin-bottom:.75rem">Acesso Restrito</h1>'
+    +'<p style="color:var(--text-secondary,#9ba3b5);font-size:.95rem;line-height:1.6">Esta plataforma e exclusiva para <strong style="color:var(--sage,#4a9e7e)">maiores de 18 anos</strong>.</p>'
+    +'<p style="color:var(--text-muted,#8892a4);font-size:.82rem;margin-top:1rem">Se voce acredita que isto e um erro, entre em contato: contato@escolaliberal.com.br</p>'
+    +'</div>';
+  document.body.appendChild(screen);
+  // Hide everything else
+  var onboard=document.getElementById('onboard');if(onboard)onboard.style.display='none';
+  var mainC=document.getElementById('mainC');if(mainC)mainC.style.display='none';
+}
+window.enforceAgeGate=enforceAgeGate;
+window._showAgeBlockScreen=_showAgeBlockScreen;
+
+// ============================================================
 // BROWSER BACK/FORWARD
 // ============================================================
 window.addEventListener('popstate',function(e){
@@ -170,6 +215,8 @@ window._loginPromptGoogle=_loginPromptGoogle;
 // ============================================================
 async function initAfterAuth(user){
   console.log('[Auth] initAfterAuth:',user?.email);
+  // Re-check age gate after login (user might have logged in without verification)
+  if(enforceAgeGate())return;
   if(typeof window.updateAuthUI==='function')window.updateAuthUI();
   if(typeof window.ui==='function')window.ui();
 }
@@ -194,10 +241,20 @@ export async function boot(){
   window.buildSidebar();
   if(typeof window.updateLangToggle==='function')window.updateLangToggle();
   window.streak();
+
+  // AGE GATE — check BEFORE rendering any content
+  if(enforceAgeGate()){
+    // User is blocked — stop boot, show block screen only
+    var sp=document.getElementById('appSplash');if(sp)sp.remove();
+    var sp2=document.getElementById('splash');if(sp2)sp2.style.display='none';
+    return;
+  }
+
   window.initOnboard();
 
   // Go straight to dashboard — no auth wait
-  if(window.DEMO_MODE || window.S.name!=='Aluno'){
+  // DEMO_MODE (without OFFLINE_MODE) still requires age verification for new users
+  if((window.DEMO_MODE && window.OFFLINE_MODE) || (window.DEMO_MODE && window.S.ageGroup==='adult') || window.S.name!=='Aluno'){
     document.getElementById('onboard').style.display='none';
     window.goDash();
   }
@@ -229,11 +286,11 @@ export async function boot(){
     update();setInterval(update,30000);
   })();
 
-  // Remove ALL overlays (splash, onboard) — guarantee nothing blocks content
+  // Remove splash overlays — but NOT onboard (age gate must persist)
   setTimeout(function(){
     var sp=document.getElementById('appSplash');if(sp){sp.style.opacity='0';setTimeout(function(){sp.remove()},300)}
     var sp2=document.getElementById('splash');if(sp2){sp2.style.opacity='0';sp2.style.pointerEvents='none';setTimeout(function(){sp2.style.display='none'},500)}
-    var ob=document.getElementById('onboard');if(ob&&ob.style.display!=='none'){ob.style.display='none'}
+    // Do NOT remove onboard here — it's the age gate for unverified users
   },600);
 
   // Hash navigation

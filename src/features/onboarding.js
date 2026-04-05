@@ -8,24 +8,43 @@ const AVATARS=['🧑‍🎓','👨‍💼','👩‍💼','🦊','🦁','🐺','�
 let obAvatar='🧑‍🎓';
 
 function initOnboard(){
-  // Skip if user already has age verified (returning user)
-  if(window.S.name!=='Aluno'&&window.S.ageVerifiedAt){
+  // Presentation mode: skip everything
+  if(window.OFFLINE_MODE&&window.DEMO_MODE){
     document.getElementById('onboard').style.display='none';
     return;
   }
-  // Skip if user already has a name but no age verification (legacy user — grandfather in)
-  if(window.S.name!=='Aluno'){
+  // Already blocked → enforceAgeGate handles this in boot.js
+  if(window.S.ageGroup==='blocked'){
     document.getElementById('onboard').style.display='none';
     return;
   }
-  // DEMO_MODE or OFFLINE_MODE: auto-skip onboarding
-  if(window.DEMO_MODE||window.OFFLINE_MODE){
+  // Anti-tamper: re-verify birthYear on every boot
+  if(window.S.birthYear){
+    var today=new Date();
+    var age=today.getFullYear()-window.S.birthYear;
+    if(age<18){
+      window.S.ageGroup='blocked';window.save();
+      if(typeof window._showAgeBlockScreen==='function')window._showAgeBlockScreen();
+      document.getElementById('onboard').style.display='none';
+      return;
+    }
+  }
+  // Verified adult returning user → skip onboarding
+  if(window.S.ageGroup==='adult'&&window.S.ageVerifiedAt){
     document.getElementById('onboard').style.display='none';
     return;
   }
+  // Legacy user with name but no age verification → grandfather in as adult
+  if(window.S.name!=='Aluno'&&window.S.ageGroup==='adult'){
+    document.getElementById('onboard').style.display='none';
+    return;
+  }
+  // New user or unverified → show onboarding (age gate required)
   // Set max date on birth input (today)
   var bd=document.getElementById('obBirthDate');
   if(bd)bd.max=new Date().toISOString().slice(0,10);
+  // Show onboarding overlay
+  document.getElementById('onboard').style.display='';
 }
 
 // Step 1 → verify age from date of birth (must be 18+)
@@ -47,10 +66,11 @@ function obVerifyAge(){
   window.S.ageVerifiedAt=Date.now();
 
   if(age<18){
-    // Block: under 18
+    // Block: under 18 — permanent
     window.S.ageGroup='blocked';
     window.save();
-    if(errEl){errEl.innerHTML='<strong>Acesso restrito.</strong> Esta plataforma e exclusiva para maiores de 18 anos.';errEl.style.display='block'}
+    if(typeof window._showAgeBlockScreen==='function')window._showAgeBlockScreen();
+    document.getElementById('onboard').style.display='none';
     return;
   }
 
@@ -100,13 +120,22 @@ function obQuickFinish(){
   }catch(e){console.error('[obQuickFinish]',e.message);_hideOnboard()}
 }
 
-// Skip — use defaults and go straight to dashboard
+// Skip — only allowed if already age-verified or in presentation mode
 function obSkip(){
-  window.S.name='Aluno';
-  window.S.avatar='🧑‍🎓';
-  window.S.ageGroup=window.S.ageGroup||'adult';
-  window.save();
-  _hideOnboard();
+  // Presentation mode: skip freely
+  if(window.OFFLINE_MODE&&window.DEMO_MODE){
+    window.S.name='Aluno';window.S.avatar='🧑‍🎓';window.S.ageGroup='adult';
+    window.save();_hideOnboard();return;
+  }
+  // If age not yet verified, skip is NOT allowed — show error
+  if(!window.S.ageGroup||window.S.ageGroup!=='adult'){
+    var errEl=document.getElementById('obAgeError');
+    if(errEl){errEl.textContent='Por favor, confirme sua idade para continuar.';errEl.style.display='block'}
+    return;
+  }
+  // Age verified, skipping profile step
+  window.S.name='Aluno';window.S.avatar='🧑‍🎓';
+  window.save();_hideOnboard();
 }
 
 function _hideOnboard(){
