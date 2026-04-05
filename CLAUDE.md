@@ -19,7 +19,7 @@ Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a ed
 | Backend | Supabase (auth, database, realtime sync) |
 | Pagamentos | Stripe (checkout via Edge Functions) |
 | IA | API Anthropic (Claude) — tutor + quiz generator |
-| PWA | Service Worker v79 (network-first + stale-while-revalidate + cache-first) |
+| PWA | Service Worker v88 (network-first + stale-while-revalidate + cache-first) |
 | Testes | Playwright + html-validate + Lighthouse + Axe |
 | CI/CD | GitHub Actions → GitHub Pages |
 
@@ -40,7 +40,7 @@ Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a ed
 ├── stripe-billing.js   → Integração Stripe (plans, checkout, verificação)
 ├── i18n.js             → Internacionalização PT/EN
 ├── cookie-consent.js   → Banner de cookies
-├── sw.js               → Service Worker v37
+├── sw.js               → Service Worker v88
 ├── manifest.json       → PWA manifest
 ├── vite.config.js      → Config Vite + plugin minifyLegacyJS
 ├── package.json        → Deps: vite, terser, playwright, html-validate, lighthouse, axe
@@ -312,21 +312,24 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 
 ---
 
-## Service Worker (sw.js v35)
+## Service Worker (sw.js v88)
 
 ### Estratégia de Cache
-- **Install:** pré-cache CORE_ASSETS (HTML, CSS, JS, ícones, index.json) + `self.skipWaiting()` forçado
+- **Install:** pré-cache CORE_ASSETS (HTML, JS, ícones, index.json, manifest.json) — SEM skipWaiting (SW fica em waiting)
 - **Navigation:** Network-first com fallback para cache, offline.html como último recurso
 - **Assets estáticos:** Stale-while-revalidate
 - **Fontes:** Cache-first (nunca expira)
 - **Lessons:** Lazy-loaded, cached no primeiro acesso (66 módulos)
 - **Google Auth URLs:** Skip (sem cache para evitar poluição)
 
-### Atualização
-- `skipWaiting()` forçado no install (ativa imediatamente sem esperar mensagem)
+### Atualização (Política Permanente)
+- `skipWaiting()` APENAS no message handler (quando user clica "Atualizar")
 - `clients.claim()` no activate
 - Limpa caches antigos automaticamente (prefixo `escola-`)
-- Admin panel detecta updates e mostra banner "Atualizar Agora"
+- Banner de update aparece quando novo SW está em waiting
+- Botão 🔄 no top bar pulsa quando há update disponível
+- Polling `reg.update()` a cada 60s detecta novas versões
+- Pull-to-refresh bloqueado (overscroll-behavior-y: contain)
 
 ---
 
@@ -344,7 +347,7 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 10. **Debate implementado** — 15 salas tematicas com presenca online, botao destaque verde, grid responsivo, chat com bolhas. Auth requerido para enviar.
 11. ~~**Barra dupla mobile**~~ — **RESOLVIDO**: `appVersionBar` escondido no mobile (`display:none!important`), safe-area removido do body (aplicado apenas no header e bottom nav), mobile header simplificado para flat single-row (← | 💬 Debate [N] | 🔥streak XP 👤).
 12. **Moderacao de debate — 2 camadas**: filtro local (palavroes, dados pessoais, rate limit) + API Claude Haiku via Edge Function `moderate-debate`. Custo ~$0.001/msg. Timeout 5s com fallback permissivo. Reacoes curtas pulam IA. OFFLINE_MODE usa so filtro local. Deploy: `supabase functions deploy moderate-debate` + configurar `ANTHROPIC_API_KEY` nos secrets.
-13. **Moderacao de debate implementada (detalhes)** — Filtro 3 camadas (palavras proibidas, relevancia ao tema, rate limit). Filtro LGPD bloqueia dados pessoais (regex telefone, CPF, email, redes sociais). Sistema de strikes com suspensao progressiva (aviso → 24h → 72h → 7d → ban). Consent LGPD obrigatorio no primeiro acesso. Banner de regras em cada sala. Painel dos pais: historico de infracoes, mensagens enviadas, resetar strikes, desativar/reativar debate. Tudo client-side, funciona offline. SW v48.
+13. **Moderacao de debate implementada (detalhes)** — Filtro 3 camadas (palavras proibidas, relevancia ao tema, rate limit). Filtro LGPD bloqueia dados pessoais (regex telefone, CPF, email, redes sociais). Sistema de strikes com suspensao progressiva (aviso → 24h → 72h → 7d → ban). Consent LGPD obrigatorio no primeiro acesso. Banner de regras em cada sala. Painel dos pais: historico de infracoes, mensagens enviadas, resetar strikes, desativar/reativar debate. Tudo client-side, funciona offline. SW v88.
 
 ---
 
@@ -685,7 +688,7 @@ Deploy → SW novo detectado (polling 60s)
 - skipWaiting() removido do install event (só no message handler)
 - controllerchange condicionado a _userRequestedUpdate
 - Política de atualização permanente aplicada
-- SW v79
+- SW v88 (atual)
 
 ---
 
