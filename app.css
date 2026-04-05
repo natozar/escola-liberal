@@ -753,6 +753,10 @@ body.focus-mode .mobile-bar{display:none !important}
 .pin-setup-input{display:flex;justify-content:center;gap:.5rem;margin-bottom:1rem}
 @keyframes pinShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 
+/* ========== CERTIFICATES GALLERY ========== */
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin-top:1rem}
+.certs-progress{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--bg-card);border-radius:var(--r-md);border:1px solid var(--border)}
+
 /* ========== ACHIEVEMENTS PAGE ========== */
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin-top:1rem}
 .badge-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;text-align:center;transition:all .3s var(--ease);position:relative;overflow:hidden}

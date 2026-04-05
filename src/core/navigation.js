@@ -165,6 +165,7 @@ function hideAllViews(){
   document.getElementById('vMarathon').classList.remove('on');
   document.getElementById('vParent').classList.remove('on');
   document.getElementById('vBadges').classList.remove('on');
+  document.getElementById('vCertificates').classList.remove('on');
   document.getElementById('vExam').classList.remove('on');
   document.getElementById('vTimeline').classList.remove('on');
   document.getElementById('vSpaced').classList.remove('on');

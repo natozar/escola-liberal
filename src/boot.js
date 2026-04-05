@@ -148,6 +148,7 @@ window.addEventListener('popstate',function(e){
     case'flashcards':if(typeof window.goFlashcards==='function')window.goFlashcards();else window.goDash();break;
     case'perf':if(typeof window.goPerf==='function')window.goPerf();else window.goDash();break;
     case'badges':if(typeof window.goBadges==='function')window.goBadges();else window.goDash();break;
+    case'certificates':if(typeof window.goCertificates==='function')window.goCertificates();else window.goDash();break;
     case'studyplan':if(typeof window.goStudyPlan==='function')window.goStudyPlan();else window.goDash();break;
     case'game':if(typeof window.goGame==='function')window.goGame();else window.goDash();break;
     case'leaderboard':if(typeof window.goLeaderboard==='function')window.goLeaderboard();else window.goDash();break;

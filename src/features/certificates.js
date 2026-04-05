@@ -331,6 +331,45 @@ function exportCertPDF(mi){
   window.toast('Certificado PDF salvo!')
 }
 
+// ============================================================
+// CERTIFICATE GALLERY — grid of all modules (locked/unlocked)
+// ============================================================
+function goCertificates(){
+  window.hideAllViews();window.setNav('nCerts');
+  document.getElementById('vCertificates').classList.add('on');
+  window.renderBackLink('vCertificates','Voltar');
+  var M=window.M;var S=window.S;
+  // Count completed modules
+  var completed=0;
+  M.forEach(function(m,mi){
+    var allDone=m.lessons.every(function(_,li){return S.done[mi+'-'+li]});
+    if(allDone)completed++;
+  });
+  var pct=M.length?Math.round(completed/M.length*100):0;
+  document.getElementById('certsProgress').innerHTML='<div class="bp-num">'+completed+'/'+M.length+'</div><div class="bp-info"><div class="bp-label">'+pct+'% dos certificados conquistados</div><div class="bp-bar"><div class="bp-fill" style="width:'+pct+'%"></div></div></div>';
+  var html='';
+  M.forEach(function(m,mi){
+    var allDone=m.lessons.every(function(_,li){return S.done[mi+'-'+li]});
+    var disc=window.DISCIPLINES[m.discipline||'economia']||{label:'Economia',icon:'📚'};
+    if(allDone){
+      html+='<div class="badge-card unlocked" onclick="showCert('+mi+')" style="cursor:pointer;border-color:var(--honey)">'
+        +'<span class="badge-icon">'+m.icon+'</span>'
+        +'<div class="badge-name">'+m.title+'</div>'
+        +'<div class="badge-desc">'+disc.icon+' '+disc.label+'</div>'
+        +'<div class="badge-check">📜</div>'
+        +'</div>';
+    }else{
+      var done=m.lessons.filter(function(_,li){return S.done[mi+'-'+li]}).length;
+      html+='<div class="badge-card locked" style="cursor:default">'
+        +'<span class="badge-icon">🔒</span>'
+        +'<div class="badge-name">'+m.title+'</div>'
+        +'<div class="badge-desc">'+done+'/'+m.lessons.length+' aulas</div>'
+        +'</div>';
+    }
+  });
+  document.getElementById('certsGrid').innerHTML=html;
+}
+
 // Attach to window for HTML onclick compatibility
 window.showCert=showCert;
 window._certId=_certId;
@@ -344,5 +383,6 @@ window.closeCert=closeCert;
 window._drawCert=_drawCert;
 window.exportCertImage=exportCertImage;
 window.exportCertPDF=exportCertPDF;
+window.goCertificates=goCertificates;
 
-export {showCert,_certId,_discCertId,checkDiscCompletion,showDiscCert,_drawDiscCert,exportDiscCertImage,exportDiscCertPDF,closeCert,_drawCert,exportCertImage,exportCertPDF};
+export {showCert,_certId,_discCertId,checkDiscCompletion,showDiscCert,_drawDiscCert,exportDiscCertImage,exportDiscCertPDF,closeCert,_drawCert,exportCertImage,exportCertPDF,goCertificates};

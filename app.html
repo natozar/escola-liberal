@@ -338,6 +338,10 @@ if('serviceWorker' in navigator){
       <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">🏅</div>
       <div><div class="ni-txt">Conquistas</div><div class="ni-sub">Suas medalhas</div></div>
     </div>
+    <div class="ni" onclick="goCertificates()" id="nCerts" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goCertificates()">
+      <div class="ni-icon" style="background:var(--honey-muted);color:var(--honey)">📜</div>
+      <div><div class="ni-txt">Certificados</div><div class="ni-sub">Seus diplomas</div></div>
+    </div>
     <div class="ni" onclick="goErrorReview()" id="nErrorReview" role="button" tabindex="0" onkeydown="if(event.key==='Enter')goErrorReview()">
       <div class="ni-icon" style="background:var(--coral-muted);color:var(--coral)">❌</div>
       <div><div class="ni-txt">Revisão de Erros</div><div class="ni-sub">Refaça questões erradas</div></div>
@@ -596,6 +600,16 @@ if('serviceWorker' in navigator){
       </div>
       <div class="badges-progress" id="badgesProgress"></div>
       <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+
+    <!-- CERTIFICATES GALLERY VIEW -->
+    <div class="xview" id="vCertificates">
+      <div class="xview-head">
+        <button class="btn btn-ghost" onclick="mobileBack()">← Voltar</button>
+        <div><h2>📜 Certificados</h2></div>
+      </div>
+      <div class="certs-progress" id="certsProgress"></div>
+      <div class="certs-grid" id="certsGrid"></div>
     </div>
 
     <!-- EXAM/SIMULADO VIEW -->
