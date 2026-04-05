@@ -13,7 +13,7 @@ const { AxeBuilder } = require('@axe-core/playwright');
     await page.goto(p.url, { waitUntil: 'networkidle', timeout: 30000 });
     if (p.name === 'app.html') {
       await page.evaluate(() => {
-        localStorage.setItem('escola_v2', JSON.stringify({name:'Audit',avatar:'A',xp:0,lvl:1,streak:0,streakDays:[],done:{},quiz:{},ageGroup:'13-16'}));
+        localStorage.setItem('escola_v2', JSON.stringify({name:'Audit',avatar:'A',xp:0,lvl:1,streak:0,streakDays:[],done:{},quiz:{},ageGroup:'adult'}));
         localStorage.setItem('escola_last_version','99.0.0');
         localStorage.setItem('escolalib_install_v2','1');
         localStorage.setItem('escolalib_cookie_consent','all');

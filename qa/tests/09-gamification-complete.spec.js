@@ -13,7 +13,7 @@ test.describe('Gamificação Completa', () => {
     await page.evaluate(() => {
       localStorage.setItem('escola_v2', JSON.stringify({
         name: 'TestUser', avatar: '🧑‍🎓', xp: 50, lvl: 1, streak: 0,
-        streakDays: [], last: null, done: {}, quiz: {}, ageGroup: '13-16',
+        streakDays: [], last: null, done: {}, quiz: {}, ageGroup: 'adult',
         cMod: null, cLes: null
       }));
       // Suppress What's New and PWA modals
@@ -79,7 +79,7 @@ test.describe('Gamificação Completa', () => {
       localStorage.setItem('escola_v2', JSON.stringify({
         name: 'StreakTest', avatar: '🧑‍🎓', xp: 0, lvl: 1, streak: 5,
         streakDays: [yesterday.toISOString().slice(0, 10)],
-        last: yesterday.toDateString(), done: {}, quiz: {}, ageGroup: '13-16',
+        last: yesterday.toDateString(), done: {}, quiz: {}, ageGroup: 'adult',
         cMod: null, cLes: null
       }));
     });
@@ -109,7 +109,7 @@ test.describe('Gamificação Completa', () => {
         streakDays: [], last: new Date().toDateString(),
         done: { '0-0': true, '0-1': true, '0-2': true, '0-3': true, '0-4': true },
         quiz: { '0-0': true, '0-1': true, '0-2': false },
-        ageGroup: '13-16', cMod: null, cLes: null
+        ageGroup: 'adult', cMod: null, cLes: null
       }));
     });
 
@@ -183,7 +183,7 @@ test.describe('Gamificação Completa', () => {
       localStorage.setItem('escola_v2', JSON.stringify({
         name: 'MissionTest', avatar: '🧑‍🎓', xp: 100, lvl: 2, streak: 3,
         streakDays: [], last: new Date().toDateString(), done: doneObj,
-        quiz: {}, ageGroup: '13-16', cMod: null, cLes: null
+        quiz: {}, ageGroup: 'adult', cMod: null, cLes: null
       }));
       // Clear mission state to force regeneration
       localStorage.removeItem('escola_missions');
@@ -252,7 +252,7 @@ test.describe('Gamificação Completa', () => {
       localStorage.setItem('escola_v2', JSON.stringify({
         name: 'LevelTest', avatar: '🧑‍🎓', xp: 95, lvl: 1, streak: 1,
         streakDays: [], last: new Date().toDateString(), done: {},
-        quiz: {}, ageGroup: '13-16', cMod: null, cLes: null
+        quiz: {}, ageGroup: 'adult', cMod: null, cLes: null
       }));
     });
 

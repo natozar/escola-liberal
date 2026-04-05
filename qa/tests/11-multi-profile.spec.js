@@ -14,7 +14,7 @@ test.describe('Multi-Perfil', () => {
         name: 'PaiMae', avatar: '👨‍👩‍👧', xp: 200, lvl: 3, streak: 5,
         streakDays: [], last: new Date().toDateString(),
         done: { '0-0': true, '0-1': true, '0-2': true },
-        quiz: { '0-0': true, '0-1': false }, ageGroup: 'parent',
+        quiz: { '0-0': true, '0-1': false }, ageGroup: 'adult',
         cMod: null, cLes: null
       }));
       localStorage.removeItem('escola_profiles');
@@ -85,11 +85,11 @@ test.describe('Multi-Perfil', () => {
     await page.evaluate(() => {
       localStorage.setItem('escola_v2', JSON.stringify({
         name: 'Perfil1', avatar: '🦊', xp: 300, lvl: 4, streak: 10,
-        done: { '0-0': true }, quiz: {}, ageGroup: 'parent', cMod: null, cLes: null
+        done: { '0-0': true }, quiz: {}, ageGroup: 'adult', cMod: null, cLes: null
       }));
       localStorage.setItem('escola_v2_p_child', JSON.stringify({
         name: 'Filho1', avatar: '🦁', xp: 50, lvl: 1, streak: 2,
-        done: {}, quiz: {}, ageGroup: '8-12', cMod: null, cLes: null
+        done: {}, quiz: {}, ageGroup: 'adult', cMod: null, cLes: null
       }));
       localStorage.setItem('escola_profiles', JSON.stringify({
         default: { name: 'Perfil1' },
@@ -124,11 +124,11 @@ test.describe('Multi-Perfil', () => {
     await page.evaluate(() => {
       localStorage.setItem('escola_v2', JSON.stringify({
         name: 'Parent', xp: 500, lvl: 5, done: { '0-0': true, '0-1': true, '1-0': true },
-        quiz: { '0-0': true }, ageGroup: 'parent', cMod: null, cLes: null
+        quiz: { '0-0': true }, ageGroup: 'adult', cMod: null, cLes: null
       }));
       localStorage.setItem('escola_v2_p_kid', JSON.stringify({
         name: 'Kid', xp: 10, lvl: 1, done: {},
-        quiz: {}, ageGroup: '8-12', cMod: null, cLes: null
+        quiz: {}, ageGroup: 'adult', cMod: null, cLes: null
       }));
       localStorage.setItem('escola_profiles', JSON.stringify({
         default: { name: 'Parent' }, p_kid: { name: 'Kid' }
@@ -224,7 +224,7 @@ test.describe('Multi-Perfil', () => {
       localStorage.setItem('escola_v2', JSON.stringify({
         name: 'Mae', avatar: '👩', xp: 100, lvl: 2, streak: 3,
         streakDays: [new Date().toISOString().slice(0, 10)],
-        done: { '0-0': true }, quiz: { '0-0': true }, ageGroup: 'parent',
+        done: { '0-0': true }, quiz: { '0-0': true }, ageGroup: 'adult',
         cMod: null, cLes: null
       }));
       localStorage.setItem('escola_profiles', JSON.stringify({

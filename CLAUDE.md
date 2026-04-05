@@ -415,8 +415,8 @@ Quando `OFFLINE_MODE = true` (src/boot.js):
 
 ### Compliance Lei Felca (Lei 15.211/2025) — aplicado 2026-04-04
 - **Verificacao de idade:** Campo data de nascimento no onboarding. Salva apenas birthYear (minimizacao LGPD). Faixas: blocked (<18), adult (18+).
-- **Consentimento parental:** Obrigatorio para child e teen. PIN de 4 digitos + checkbox legal. Salva parentalConsent + parentalConsentAt.
-- **Debate ao vivo:** Bloqueado para child e teen (< 16 anos). Gate no inicio de goDebate().
+- **Consentimento parental:** Removido (plataforma exclusiva 18+).
+- **Debate ao vivo:** Aberto para todos os usuarios verificados (18+).
 - **Design persuasivo:** Removidas todas as mensagens de urgencia, perda, ansiedade nas notificacoes e streaks.
 - **Gamificacao educacional:** Mantida (XP, badges, missoes, leaderboard) — excepcao legal por conteudo com controle editorial.
 - **AI Tutor:** ageGroup passado corretamente na chamada a Edge Function. Disclaimer LGPD por sessao ja existia.
@@ -645,9 +645,9 @@ Deploy → SW novo detectado (polling 60s)
 ### Concluido nesta sessao (2026-04-04 — Lei Felca)
 - Adequacao a Lei 15.211/2025 (ECA Digital / Lei Felca)
 - Gate de idade no onboarding: campo data de nascimento, salva apenas birthYear (LGPD minimizacao)
-- Faixas: blocked (<10), child (10-11), teen (12-15), young (16-17), adult (18+)
-- Consentimento parental obrigatorio para child e teen (PIN + checkbox legal)
-- Debate ao vivo bloqueado para child e teen (< 16 anos)
+- Faixas: blocked (<18), adult (18+)
+- Plataforma exclusiva para adultos 18+ (sem consentimento parental)
+- Debate ao vivo aberto para todos os usuarios verificados (18+)
 - Gamificacao revisada: removidas mensagens de urgencia/ansiedade/perda
   - "Sua sequencia esta em perigo!" → "Voce esta indo bem!"
   - "Estude antes de meia-noite para nao perder!" → "Que tal estudar um pouco antes de dormir?"
