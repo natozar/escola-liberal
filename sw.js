@@ -1,4 +1,4 @@
-// Escola Liberal PWA — Service Worker v73
+// Escola Liberal PWA — Service Worker v89
 // Estratégia: Network-first (navigation + Vite bundles) + Stale-While-Revalidate (other assets) + Cache-first (fonts)
 const SW_VERSION = 'v89';
 const CACHE_NAME = 'escola-liberal-v89';
