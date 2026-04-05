@@ -348,6 +348,7 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 11. ~~**Barra dupla mobile**~~ — **RESOLVIDO**: `appVersionBar` escondido no mobile (`display:none!important`), safe-area removido do body (aplicado apenas no header e bottom nav), mobile header simplificado para flat single-row (← | 💬 Debate [N] | 🔥streak XP 👤).
 12. **Moderacao de debate — 2 camadas**: filtro local (palavroes, dados pessoais, rate limit) + API Claude Haiku via Edge Function `moderate-debate`. Custo ~$0.001/msg. Timeout 5s com fallback permissivo. Reacoes curtas pulam IA. OFFLINE_MODE usa so filtro local. Deploy: `supabase functions deploy moderate-debate` + configurar `ANTHROPIC_API_KEY` nos secrets.
 13. **Moderacao de debate implementada (detalhes)** — Filtro 3 camadas (palavras proibidas, relevancia ao tema, rate limit). Filtro LGPD bloqueia dados pessoais (regex telefone, CPF, email, redes sociais). Sistema de strikes com suspensao progressiva (aviso → 24h → 72h → 7d → ban). Consent LGPD obrigatorio no primeiro acesso. Banner de regras em cada sala. Painel dos pais: historico de infracoes, mensagens enviadas, resetar strikes, desativar/reativar debate. Tudo client-side, funciona offline. SW v89.
+14. **Age gate 18+ — 5 camadas**: client (enforceAgeGate + anti-tamper + block screen z-index 99999), server (RLS 6 tabelas + trigger validate_age_gate), Edge Functions (ai-tutor e create-checkout retornam 403 se blocked), sync (mergeLocalToCloud envia birth_year/age_group/age_verified_at). COMPLETO. SW v94.
 
 ---
 
@@ -445,6 +446,7 @@ Quando `OFFLINE_MODE = true` (src/boot.js):
 9. **Quebrar compatibilidade iOS Safari** — testar private mode, safe areas
 10. **Usar `document.getElementById` sem considerar** o Safe DOM Proxy (linha 6)
 11. **Atualizar o app sem consentimento do user** — sempre via banner + botao (ver Politica de Atualizacao PWA)
+12. **Permitir acesso a menores de 18** — age gate e obrigatorio em todas as camadas (client + server + Edge Functions)
 
 ### SEMPRE fazer:
 1. **Ler os arquivos relevantes** antes de qualquer alteração
@@ -683,6 +685,15 @@ Deploy → SW novo detectado (polling 60s)
 - Branch feat/lei-felca-compliance mergeada na main
 - Deploy via GitHub Pages
 - 31 agentes IA (.agents/) — 6 novos: performance, content, i18n, pwa, a11y, onboarding
+
+### Concluido nesta sessao (2026-04-04 — Age Gate Backend Enforcement)
+- **Client-side (SW v93):** enforceAgeGate() em boot.js com anti-tamper (birthYear vs ageGroup). _showAgeBlockScreen() corrigido para usar window._origById (Safe DOM Proxy retornava truthy). Checkpoints em: boot, login (initAfterAuth), openL() (navigation.js), goDebate() (debate.js). Onboarding step 1 sem botao Pular (age gate obrigatorio). 7 locais corrigidos de document.getElementById → window._origById para existence checks.
+- **Server-side (Supabase):** 3 colunas em profiles (birth_year INTEGER, age_verified_at TIMESTAMPTZ, age_group TEXT). Trigger validate_age_gate(): forca blocked se birthYear < 18, impede mudanca blocked→adult se ainda menor. 6 RLS policies bloqueiam acesso a dados: profiles, progress, notes, favorites, timeline, weekly_xp.
+- **Edge Functions:** ai-tutor e create-checkout retornam 403 se age_group='blocked'. Deploy executado via `npx supabase functions deploy`.
+- **Sync (supabase-client.js):** mergeLocalToCloud() envia birth_year, age_group, age_verified_at para profiles.
+- **SQL:** Secao 9 adicionada em EXECUTE-THIS.sql (ALTER TABLE, trigger, 6 policies).
+- **Arquivos alterados:** src/boot.js, src/features/onboarding.js, src/features/debate.js, src/core/navigation.js, app.html, supabase-client.js, supabase/functions/ai-tutor/index.ts, supabase/functions/create-checkout/index.ts, supabase/migrations/EXECUTE-THIS.sql, sw.js
+- SW v94
 
 ### ✅ CONCLUÍDO: FASE 2 do update PWA
 - skipWaiting() removido do install event (só no message handler)
