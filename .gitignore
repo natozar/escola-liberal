@@ -24,6 +24,12 @@ desktop.ini
 *.log
 npm-debug.log*
 
+# Environment
+.env
+
+# Blog drafts (only approved articles go to repo)
+blog/drafts/
+
 # Build / temporários
 dist/
 dist-new/

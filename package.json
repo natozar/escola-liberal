@@ -8,7 +8,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "cd qa && npx playwright test",
-    "validate": "npx html-validate index.html app.html auth.html perfil.html contato.html"
+    "validate": "npx html-validate index.html app.html auth.html perfil.html contato.html",
+    "blog:generate": "node scripts/generate-blog.js",
+    "blog:generate:5": "node scripts/generate-blog.js --count=5",
+    "blog:generate:10": "node scripts/generate-blog.js --count=10",
+    "blog:generate:dry": "node scripts/generate-blog.js --count=1 --dry-run",
+    "blog:publish": "node scripts/publish-blog.js",
+    "blog:status": "node -e \"const d=require('./blog/keywords.json');const s=k=>d.keywords.filter(x=>x.status===k).length;console.log('Keywords:',d.keywords.length,'| Pendentes:',s('pending'),'| Rascunhos:',s('drafted'),'| Publicados:',s('published'))\""
   },
   "repository": {
     "type": "git",

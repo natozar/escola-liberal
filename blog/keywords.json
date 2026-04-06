@@ -1,0 +1,2138 @@
+{
+  "meta": {
+    "version": "1.0",
+    "totalKeywords": 106,
+    "clusters": [
+      "financas",
+      "economia",
+      "empreendedorismo",
+      "marketing",
+      "desenvolvimento",
+      "direito",
+      "educacao"
+    ],
+    "lastGenerated": null
+  },
+  "keywords": [
+    {
+      "slug": "como-sair-das-dividas",
+      "title": "Como Sair das Dívidas: Guia Prático Passo a Passo",
+      "keyword": "como sair das dívidas",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Guia prático para sair das dívidas em 2026: método bola de neve, negociação com credores e mudança de hábitos financeiros.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "educacao-financeira-adultos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-fazer-orcamento-pessoal",
+      "title": "Como Fazer Orçamento Pessoal: Método Simples que Funciona",
+      "keyword": "como fazer orçamento pessoal",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Aprenda a criar e manter um orçamento pessoal eficiente com métodos práticos e ferramentas gratuitas.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "como-sair-das-dividas"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-juros-compostos",
+      "title": "O que São Juros Compostos: A Fórmula que Cria Milionários",
+      "keyword": "o que é juros compostos",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Entenda juros compostos na prática: fórmula, exemplos com R$ e como usar a seu favor em investimentos.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-investir-pouco-dinheiro",
+        "renda-passiva-para-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-economizar-dinheiro",
+      "title": "Como Economizar Dinheiro: 15 Estratégias Práticas",
+      "keyword": "como economizar dinheiro",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "15 estratégias testadas para economizar dinheiro no dia a dia sem cortar o que importa.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "como-fazer-orcamento-pessoal"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "tesouro-direto-para-iniciantes",
+      "title": "Tesouro Direto para Iniciantes: Guia Completo 2026",
+      "keyword": "tesouro direto para iniciantes",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Como investir no Tesouro Direto com pouco dinheiro: Selic, IPCA+, prefixado explicados passo a passo.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-investir-pouco-dinheiro",
+        "o-que-e-juros-compostos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-calcular-juros-emprestimo",
+      "title": "Como Calcular Juros de Empréstimo: Fórmulas e Exemplos",
+      "keyword": "como calcular juros de empréstimo",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Aprenda a calcular juros simples e compostos em empréstimos para não ser enganado por bancos.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "o-que-e-juros-compostos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "reserva-emergencia-quanto-guardar",
+      "title": "Reserva de Emergência: Quanto Guardar e Onde Investir",
+      "keyword": "reserva de emergência quanto guardar",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Descubra o valor ideal da reserva de emergência e os melhores investimentos para proteger seu dinheiro.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "tesouro-direto-para-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-negociar-dividas-banco",
+      "title": "Como Negociar Dívidas com o Banco: 7 Táticas que Funcionam",
+      "keyword": "como negociar dívidas com banco",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Táticas práticas para negociar dívidas com bancos: quando ligar, o que pedir e como conseguir desconto.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-sair-das-dividas",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-cdi-como-funciona",
+      "title": "O que é CDI e Como Funciona: Guia para Investidores",
+      "keyword": "o que é CDI e como funciona",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Entenda o CDI de forma simples: o que é, como afeta seus investimentos e por que todo CDB referencia ele.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "tesouro-direto-para-iniciantes",
+        "como-investir-pouco-dinheiro"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "diferenca-poupanca-cdb-tesouro",
+      "title": "Poupança vs CDB vs Tesouro Direto: Qual Rende Mais em 2026?",
+      "keyword": "diferença poupança CDB e tesouro direto",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Comparação detalhada entre poupança, CDB e Tesouro Direto com simulações de rendimento real em 2026.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "tesouro-direto-para-iniciantes",
+        "o-que-e-cdi-como-funciona"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-organizar-financas-casal",
+      "title": "Como Organizar Finanças do Casal: 5 Modelos que Funcionam",
+      "keyword": "como organizar finanças do casal",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "5 modelos de gestão financeira para casais: conta conjunta, proporcional, independente e híbrido.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-fazer-orcamento-pessoal",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-taxa-selic",
+      "title": "O que é Taxa Selic e Como Afeta Seu Dinheiro",
+      "keyword": "o que é taxa Selic e como afeta você",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Entenda a taxa Selic de forma simples: o que é, quem define e como impacta seus investimentos e dívidas.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "o-que-e-cdi-como-funciona",
+        "tesouro-direto-para-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-funciona-financiamento-imovel",
+      "title": "Como Funciona Financiamento de Imóvel: Guia Completo",
+      "keyword": "como funciona financiamento de imóvel",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Tudo sobre financiamento imobiliário: entrada, taxas, Price vs SAC, FGTS e simulações práticas.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1800,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "como-calcular-juros-emprestimo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "score-credito-como-aumentar",
+      "title": "Score de Crédito: Como Funciona e Como Aumentar o Seu",
+      "keyword": "score de crédito como aumentar",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Entenda o score de crédito: como é calculado, por que importa e 8 dicas práticas para aumentar.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-sair-das-dividas",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-declarar-imposto-renda",
+      "title": "Como Declarar Imposto de Renda Simplificado: Passo a Passo",
+      "keyword": "como declarar imposto de renda simplificado",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Guia passo a passo para declarar IR em 2026: quem precisa, deduções, prazo e erros comuns.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "educacao-financeira-adultos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "planejamento-financeiro-familiar",
+      "title": "Planejamento Financeiro Familiar: Passo a Passo Prático",
+      "keyword": "planejamento financeiro familiar passo a passo",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Como criar um planejamento financeiro familiar que funciona: orçamento, metas, reserva e investimentos.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-fazer-orcamento-pessoal",
+        "como-organizar-financas-casal"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-ganhar-dinheiro-extra",
+      "title": "Como Ganhar Dinheiro Extra em 2026: 12 Ideias Realistas",
+      "keyword": "como ganhar dinheiro extra em 2026",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "12 formas comprovadas de gerar renda extra em 2026: freelance, venda online, serviços e infoprodutos.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "empreendedorismo-digital-iniciantes",
+        "como-abrir-mei-passo-a-passo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-renda-fixa-variavel",
+      "title": "O que é Renda Fixa e Renda Variável: Diferenças Práticas",
+      "keyword": "o que é renda fixa e variável",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Entenda as diferenças entre renda fixa e variável: riscos, retornos e como montar sua carteira.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-investir-pouco-dinheiro",
+        "tesouro-direto-para-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-funciona-fgts",
+      "title": "Como Funciona o FGTS: Guia Completo do Trabalhador",
+      "keyword": "como funciona o FGTS",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Tudo sobre FGTS: como é calculado, quando sacar, saque-aniversário e como usar na compra de imóvel.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "direitos-trabalhistas-clt-basico",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "consorcio-vale-a-pena",
+      "title": "Consórcio Vale a Pena? Análise Completa com Números",
+      "keyword": "consórcio vale a pena",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Análise imparcial de consórcio: como funciona, custos reais, quando vale e quando é armadilha.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "low",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-funciona-financiamento-imovel",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-calcular-aposentadoria",
+      "title": "Como Calcular sua Aposentadoria pelo INSS em 2026",
+      "keyword": "como calcular aposentadoria",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Aprenda a calcular quanto vai receber de aposentadoria pelo INSS: regras atuais, transição e simulação.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-funciona-fgts",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "educacao-financeira-pratica",
+      "title": "Educação Financeira na Prática: 7 Hábitos para Começar Hoje",
+      "keyword": "educação financeira na prática",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "7 hábitos de educação financeira que você pode começar hoje: sem teoria complicada, só ação.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "educacao-financeira-adultos",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-fazer-dinheiro-render",
+      "title": "Como Fazer seu Dinheiro Render Mais: 10 Estratégias",
+      "keyword": "como fazer dinheiro render",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "10 estratégias práticas para fazer seu dinheiro render mais em 2026: da poupança aos investimentos.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-investir-pouco-dinheiro",
+        "tesouro-direto-para-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "cdb-ou-tesouro-selic",
+      "title": "CDB ou Tesouro Selic: Qual Escolher em 2026?",
+      "keyword": "CDB ou Tesouro Selic qual melhor",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Comparação detalhada entre CDB e Tesouro Selic: liquidez, rendimento, risco e quando usar cada um.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "tesouro-direto-para-iniciantes",
+        "o-que-e-cdi-como-funciona"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-sair-cheque-especial",
+      "title": "Como Sair do Cheque Especial: Passo a Passo de Emergência",
+      "keyword": "como sair do cheque especial",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Estratégia de emergência para sair do cheque especial: portabilidade, negociação e prevenção.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-sair-das-dividas",
+        "como-negociar-dividas-banco"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-controlar-gastos-cartao",
+      "title": "Como Controlar Gastos com Cartão de Crédito: 8 Regras",
+      "keyword": "como controlar gastos com cartão",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "8 regras práticas para usar cartão de crédito sem se endividar: limite, fatura, cashback inteligente.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "como-fazer-orcamento-pessoal"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-investir-100-reais",
+      "title": "Como Investir com R$100: Primeiros Passos Práticos",
+      "keyword": "como investir com 100 reais",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Guia prático para começar a investir com apenas R$100: Tesouro Direto, CDB, ETFs e apps.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1400,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-investir-pouco-dinheiro",
+        "tesouro-direto-para-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "divida-boa-divida-ruim",
+      "title": "Dívida Boa vs Dívida Ruim: Como Diferenciar e Agir",
+      "keyword": "diferença entre dívida boa e dívida ruim",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Nem toda dívida é ruim: aprenda a diferenciar dívidas que constroem patrimônio das que destroem.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-sair-das-dividas",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "tabela-price-sac-qual-escolher",
+      "title": "Tabela Price vs SAC: Qual Sistema Escolher no Financiamento?",
+      "keyword": "tabela Price vs SAC qual escolher",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Comparação prática entre Price e SAC com simulações reais: parcelas, juros totais e quando cada um vale.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-funciona-financiamento-imovel",
+        "como-calcular-juros-emprestimo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-funciona-consignado",
+      "title": "Como Funciona o Empréstimo Consignado: Vantagens e Riscos",
+      "keyword": "como funciona o consignado",
+      "cluster": "financas",
+      "tag": "Finanças",
+      "description150": "Tudo sobre crédito consignado: quem pode, taxas, margem, vantagens e armadilhas a evitar.",
+      "discipline": "Educação Financeira",
+      "targetWordCount": 1400,
+      "priority": "low",
+      "status": "pending",
+      "relatedSlugs": [
+        "financas-pessoais-iniciantes",
+        "como-calcular-juros-emprestimo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-liberalismo-economico",
+      "title": "O que é Liberalismo Econômico: Explicação Simples e Direta",
+      "keyword": "o que é liberalismo econômico explicação simples",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Entenda o liberalismo econômico de forma clara: princípios, história e como funciona na prática.",
+      "discipline": "Economia",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "o-que-e-escola-austriaca-economia",
+        "como-aprender-economia-do-zero"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "lei-oferta-demanda-exemplos",
+      "title": "Lei da Oferta e Demanda: Exemplos Práticos do Dia a Dia",
+      "keyword": "lei da oferta e demanda exemplos práticos",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "A lei da oferta e demanda explicada com exemplos reais: preço da gasolina, uber e mercado imobiliário.",
+      "discipline": "Economia",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aprender-economia-do-zero",
+        "o-que-e-liberalismo-economico"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-capitalismo-livre-mercado",
+      "title": "O que é Capitalismo de Livre Mercado: Guia para Iniciantes",
+      "keyword": "o que é capitalismo de livre mercado",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Capitalismo de livre mercado explicado: como funciona, diferenças do capitalismo de estado e exemplos.",
+      "discipline": "Economia",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "o-que-e-liberalismo-economico",
+        "o-que-e-escola-austriaca-economia"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "diferenca-socialismo-capitalismo",
+      "title": "Diferença entre Socialismo e Capitalismo: Explicação Clara",
+      "keyword": "diferença entre socialismo e capitalismo",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Socialismo vs capitalismo: princípios, história, exemplos práticos e qual sistema gera mais prosperidade.",
+      "discipline": "Economia",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "o-que-e-capitalismo-livre-mercado",
+        "o-que-e-liberalismo-economico"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-funciona-livre-mercado",
+      "title": "Como Funciona o Livre Mercado: Mecanismos e Exemplos",
+      "keyword": "como funciona o livre mercado",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Como o livre mercado coordena milhões de decisões sem planejamento central: a mão invisível na prática.",
+      "discipline": "Economia",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "lei-oferta-demanda-exemplos",
+        "o-que-e-capitalismo-livre-mercado"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-pib",
+      "title": "O que é PIB e Como é Calculado: Guia Simples",
+      "keyword": "o que é PIB e como é calculado",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "PIB explicado de forma simples: o que mede, como é calculado e por que importa para sua vida.",
+      "discipline": "Economia",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aprender-economia-do-zero",
+        "inflacao-o-que-e-como-funciona"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-causa-inflacao-brasil",
+      "title": "O que Causa a Inflação no Brasil: Explicação Completa",
+      "keyword": "o que causa a inflação no Brasil",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "As causas reais da inflação no Brasil: emissão de moeda, gastos públicos, câmbio e expectativas.",
+      "discipline": "Economia",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "inflacao-o-que-e-como-funciona",
+        "o-que-e-pib"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "politica-monetaria-banco-central",
+      "title": "O que é Política Monetária do Banco Central: Guia Prático",
+      "keyword": "o que é política monetária do Banco Central",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Como o Banco Central controla a economia via taxa de juros e oferta de moeda — e como isso afeta você.",
+      "discipline": "Economia",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "o-que-causa-inflacao-brasil",
+        "o-que-e-taxa-selic"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "banco-central-o-que-faz",
+      "title": "Banco Central: O que Faz e Para que Serve no Brasil",
+      "keyword": "Banco Central o que faz e para que serve",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Funções do Banco Central do Brasil explicadas: política monetária, regulação bancária e câmbio.",
+      "discipline": "Economia",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "politica-monetaria-banco-central",
+        "como-aprender-economia-do-zero"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-deficit-publico",
+      "title": "O que é Déficit Público: Por que o Governo Gasta Mais que Arrecada",
+      "keyword": "o que é déficit público",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Déficit público explicado: o que é, por que acontece, consequências e como afeta seu bolso.",
+      "discipline": "Economia",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aprender-economia-do-zero",
+        "o-que-e-pib"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-preparar-crise-economica",
+      "title": "Como se Preparar para uma Crise Econômica: Guia Prático",
+      "keyword": "como se preparar para crise econômica",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "10 ações práticas para proteger seu dinheiro e sua família durante crises econômicas.",
+      "discipline": "Economia",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "reserva-emergencia-quanto-guardar",
+        "financas-pessoais-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "quem-foi-ludwig-von-mises",
+      "title": "Quem Foi Ludwig von Mises: Vida e Ideias do Pai da Escola Austríaca",
+      "keyword": "quem foi Ludwig von Mises resumo",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Biografia e ideias principais de Ludwig von Mises: ação humana, cálculo econômico e liberdade individual.",
+      "discipline": "Economia",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "o-que-e-escola-austriaca-economia",
+        "o-que-e-liberalismo-economico"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "quem-foi-friedrich-hayek",
+      "title": "Quem Foi Friedrich Hayek e Por que Importa Hoje",
+      "keyword": "quem foi Friedrich Hayek e por que importa",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Hayek explicado: conhecimento disperso, ordem espontânea, O Caminho da Servidão e relevância atual.",
+      "discipline": "Economia",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "quem-foi-ludwig-von-mises",
+        "o-que-e-escola-austriaca-economia"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "austriaca-vs-keynesianismo",
+      "title": "Escola Austríaca vs Keynesianismo: 7 Diferenças Fundamentais",
+      "keyword": "escola austríaca vs keynesianismo diferenças",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Comparação clara entre Escola Austríaca e Keynesianismo: papel do governo, juros, ciclos e moeda.",
+      "discipline": "Economia",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "o-que-e-escola-austriaca-economia",
+        "como-aprender-economia-do-zero"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-custo-oportunidade",
+      "title": "O que é Custo de Oportunidade: Conceito que Muda Decisões",
+      "keyword": "o que é custo de oportunidade",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Custo de oportunidade explicado com exemplos do dia a dia: cada escolha tem um preço invisível.",
+      "discipline": "Economia",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aprender-economia-do-zero",
+        "lei-oferta-demanda-exemplos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "hiperinflacao-exemplos-historicos",
+      "title": "O que é Hiperinflação: Exemplos Históricos e Lições",
+      "keyword": "o que é hiperinflação exemplos históricos",
+      "cluster": "economia",
+      "tag": "Economia",
+      "description150": "Hiperinflação explicada: Venezuela, Zimbabwe, Alemanha de Weimar e o Plano Real brasileiro.",
+      "discipline": "Economia",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "inflacao-o-que-e-como-funciona",
+        "o-que-causa-inflacao-brasil"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-comecar-negocio-pouco-dinheiro",
+      "title": "Como Começar um Negócio com Pouco Dinheiro em 2026",
+      "keyword": "como começar um negócio do zero com pouco dinheiro",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Passo a passo para abrir um negócio com menos de R$1.000: validação, MEI, primeiros clientes e escala.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-abrir-mei-passo-a-passo",
+        "empreendedorismo-digital-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-validar-ideia-negocio",
+      "title": "Como Validar uma Ideia de Negócio Antes de Investir",
+      "keyword": "como validar ideia de negócio antes de investir",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "5 métodos para testar se sua ideia de negócio tem demanda real antes de gastar dinheiro.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-comecar-negocio-pouco-dinheiro",
+        "empreendedorismo-digital-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-precificar-servico",
+      "title": "Como Precificar Serviço Corretamente: Guia do Prestador",
+      "keyword": "como precificar serviço corretamente",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Fórmulas e métodos para calcular o preço justo do seu serviço: hora técnica, valor percebido e concorrência.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "precificacao-como-definir-preco",
+        "como-abrir-mei-passo-a-passo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-fazer-plano-negocios-simples",
+      "title": "Como Fazer Plano de Negócios Simples: Template Prático",
+      "keyword": "como fazer plano de negócios simples",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Template prático de plano de negócios em 1 página: Canvas, proposta de valor e projeção financeira.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-comecar-negocio-pouco-dinheiro",
+        "como-validar-ideia-negocio"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-vender-whatsapp",
+      "title": "Como Vender pelo WhatsApp: Guia Profissional Completo",
+      "keyword": "como vender pelo WhatsApp profissionalmente",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Estratégias para vender pelo WhatsApp: catálogo, automação, funil de conversão e etiqueta profissional.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "marketing-digital-pequenos-negocios",
+        "empreendedorismo-digital-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-montar-loja-virtual",
+      "title": "Como Montar Loja Virtual Gratuita: Passo a Passo",
+      "keyword": "como montar loja virtual gratuita",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Como criar uma loja virtual sem gastar nada: Shopee, Mercado Livre, Instagram Shopping e WooCommerce.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "empreendedorismo-digital-iniciantes",
+        "marketing-digital-pequenos-negocios"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-emitir-nota-fiscal-mei",
+      "title": "Como Emitir Nota Fiscal MEI: Passo a Passo Atualizado",
+      "keyword": "como emitir nota fiscal MEI",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Guia atualizado para emitir NFS-e pelo MEI: portal nacional, app e quando é obrigatório.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-abrir-mei-passo-a-passo",
+        "como-precificar-servico"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "diferenca-mei-me-epp",
+      "title": "MEI, ME e EPP: Diferenças e Quando Migrar",
+      "keyword": "diferença entre MEI ME e EPP",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Entenda as diferenças entre MEI, Microempresa e EPP: limites, impostos e quando migrar de regime.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-abrir-mei-passo-a-passo",
+        "como-comecar-negocio-pouco-dinheiro"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-conseguir-primeiro-cliente",
+      "title": "Como Conseguir o Primeiro Cliente: 10 Estratégias Práticas",
+      "keyword": "como conseguir o primeiro cliente",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "10 estratégias testadas para conquistar seus primeiros clientes quando está começando do zero.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-comecar-negocio-pouco-dinheiro",
+        "marketing-digital-pequenos-negocios"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "negocios-pouco-investimento-2026",
+      "title": "15 Negócios com Pouco Investimento para 2026",
+      "keyword": "negócios com pouco investimento 2026",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "15 ideias de negócio com investimento menor que R$2.000 para começar em 2026.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-comecar-negocio-pouco-dinheiro",
+        "como-abrir-mei-passo-a-passo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-escalar-pequeno-negocio",
+      "title": "Como Escalar um Pequeno Negócio: Do 1 ao 100",
+      "keyword": "como escalar um pequeno negócio",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Estratégias práticas para crescer seu negócio: processos, delegação, automação e novos canais.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-comecar-negocio-pouco-dinheiro",
+        "empreendedorismo-digital-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-calcular-lucro-margem",
+      "title": "Como Calcular Lucro e Margem de Contribuição: Guia Prático",
+      "keyword": "como calcular lucro e margem de contribuição",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Fórmulas simples para calcular lucro bruto, líquido e margem de contribuição do seu negócio.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "precificacao-como-definir-preco",
+        "como-precificar-servico"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-atender-bem-cliente",
+      "title": "Como Atender Bem o Cliente: 10 Regras de Ouro",
+      "keyword": "como atender bem o cliente",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "10 regras práticas de atendimento ao cliente que geram fidelização e indicações.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-vender-whatsapp",
+        "como-conseguir-primeiro-cliente"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-criar-marca-pequeno-negocio",
+      "title": "Como Criar uma Marca para Pequeno Negócio",
+      "keyword": "como criar marca para pequeno negócio",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Guia prático de branding para pequenos negócios: nome, identidade visual, posicionamento e presença online.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "marketing-digital-pequenos-negocios",
+        "empreendedorismo-digital-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-trabalhar-freelancer",
+      "title": "Como Trabalhar como Freelancer: Guia Completo 2026",
+      "keyword": "como trabalhar como freelancer",
+      "cluster": "empreendedorismo",
+      "tag": "Empreendedorismo",
+      "description150": "Tudo sobre freelancing: plataformas, precificação, contratos, impostos e como conseguir clientes.",
+      "discipline": "Empreendedorismo",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-abrir-mei-passo-a-passo",
+        "empreendedorismo-digital-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "o-que-e-funil-vendas",
+      "title": "O que é Funil de Vendas: Explicação Simples e Prática",
+      "keyword": "o que é funil de vendas explicação simples",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Funil de vendas explicado: consciência, interesse, decisão e ação com exemplos reais.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "marketing-digital-pequenos-negocios",
+        "empreendedorismo-digital-iniciantes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-aparecer-google-gratis",
+      "title": "Como Aparecer no Google de Graça: SEO para Iniciantes",
+      "keyword": "como aparecer no Google de graça",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Guia de SEO para iniciantes: Google Meu Negócio, palavras-chave, conteúdo e avaliações.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "marketing-digital-pequenos-negocios",
+        "como-criar-marca-pequeno-negocio"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "seo-o-que-e-como-funciona",
+      "title": "SEO: O que É e Como Funciona para Iniciantes",
+      "keyword": "SEO o que é e como funciona para iniciantes",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "SEO explicado sem jargão: como funciona o Google, palavras-chave, conteúdo e link building.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aparecer-google-gratis",
+        "marketing-digital-pequenos-negocios"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-criar-pagina-vendas",
+      "title": "Como Criar Página de Vendas que Converte: Guia Prático",
+      "keyword": "como criar página de vendas que converte",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Estrutura de página de vendas que converte: headline, benefícios, prova social, CTA e objeções.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "o-que-e-funil-vendas",
+        "copywriting-o-que-e"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "copywriting-o-que-e",
+      "title": "Copywriting: O que É e Como Aprender a Escrever para Vender",
+      "keyword": "copywriting o que é e como aprender",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Copywriting explicado: o que é, fórmula AIDA, gatilhos mentais e como escrever textos que vendem.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-criar-pagina-vendas",
+        "o-que-e-funil-vendas"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-fazer-email-marketing",
+      "title": "Como Fazer Email Marketing Gratuito: Guia para Iniciantes",
+      "keyword": "como fazer email marketing gratuito",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Email marketing passo a passo: lista, automação, conteúdo e ferramentas gratuitas como Mailchimp.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "marketing-digital-pequenos-negocios",
+        "o-que-e-funil-vendas"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "trafego-organico-vs-pago",
+      "title": "Tráfego Orgânico vs Tráfego Pago: Quando Usar Cada Um",
+      "keyword": "tráfego orgânico vs tráfego pago diferenças",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Comparação prática: orgânico (SEO, conteúdo) vs pago (Google Ads, Meta). Custo, tempo e quando usar.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "seo-o-que-e-como-funciona",
+        "marketing-digital-pequenos-negocios"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-criar-conteudo-que-vende",
+      "title": "Como Criar Conteúdo que Vende: Estratégia de Marketing",
+      "keyword": "como criar conteúdo que vende",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Estratégia de marketing de conteúdo para vender mais: formatos, frequência e funil de conteúdo.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "copywriting-o-que-e",
+        "como-aparecer-google-gratis"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "google-meu-negocio-como-cadastrar",
+      "title": "Google Meu Negócio: Como Cadastrar e Otimizar em 2026",
+      "keyword": "Google Meu Negócio como cadastrar e otimizar",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Passo a passo para cadastrar seu negócio no Google Maps e aparecer nas buscas locais gratuitamente.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1400,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aparecer-google-gratis",
+        "marketing-digital-pequenos-negocios"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "storytelling-marketing-como-usar",
+      "title": "Storytelling no Marketing: Como Contar Histórias que Vendem",
+      "keyword": "storytelling no marketing como usar",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Como usar storytelling para vender: estrutura StoryBrand, exemplos práticos e aplicação no digital.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "copywriting-o-que-e",
+        "como-criar-conteudo-que-vende"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "gatilhos-mentais-vendas",
+      "title": "Gatilhos Mentais em Vendas: Os 7 Mais Poderosos",
+      "keyword": "gatilhos mentais em vendas quais são",
+      "cluster": "marketing",
+      "tag": "Marketing",
+      "description150": "Os 7 gatilhos mentais mais eficazes em vendas: escassez, reciprocidade, prova social e mais.",
+      "discipline": "Marketing Digital",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "copywriting-o-que-e",
+        "o-que-e-funil-vendas"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-ter-mais-disciplina",
+      "title": "Como Ter Mais Disciplina para Estudar e Trabalhar",
+      "keyword": "como ter mais disciplina para estudar",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Técnicas práticas para desenvolver disciplina: rotina, ambiente, micro-hábitos e accountability.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aprender-mais-rapido",
+        "como-estudar-sozinho-autodidata"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-vencer-procrastinacao",
+      "title": "Como Vencer a Procrastinação de Verdade: 7 Técnicas",
+      "keyword": "como vencer a procrastinação de verdade",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "7 técnicas baseadas em psicologia para vencer a procrastinação e ser mais produtivo.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-ter-mais-disciplina",
+        "como-aprender-mais-rapido"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-desenvolver-inteligencia-emocional",
+      "title": "Como Desenvolver Inteligência Emocional na Prática",
+      "keyword": "como desenvolver inteligência emocional na prática",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Exercícios práticos para desenvolver os 5 pilares da inteligência emocional no dia a dia.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "inteligencia-emocional-no-trabalho",
+        "como-falar-em-publico"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-lidar-ansiedade-trabalho",
+      "title": "Como Lidar com Ansiedade no Trabalho: Guia Prático",
+      "keyword": "como lidar com ansiedade no trabalho",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Estratégias práticas para gerenciar ansiedade profissional: respiração, limites, organização e quando buscar ajuda.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-desenvolver-inteligencia-emocional",
+        "inteligencia-emocional-no-trabalho"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-ser-mais-produtivo",
+      "title": "Como Ser Mais Produtivo no Dia a Dia: 10 Estratégias Reais",
+      "keyword": "como ser mais produtivo no dia a dia",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "10 estratégias de produtividade que funcionam na vida real: Pomodoro, batching, deep work e mais.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-vencer-procrastinacao",
+        "como-ter-mais-disciplina"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "tecnica-pomodoro-como-funciona",
+      "title": "Técnica Pomodoro: Como Funciona na Prática e Por que Usar",
+      "keyword": "técnica Pomodoro como funciona na prática",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Guia completo da técnica Pomodoro: como usar, apps gratuitos, variações e quando funciona melhor.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-ser-mais-produtivo",
+        "como-aprender-mais-rapido"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-melhorar-comunicacao",
+      "title": "Como Melhorar a Comunicação Interpessoal: 8 Dicas Práticas",
+      "keyword": "como melhorar a comunicação interpessoal",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "8 dicas para se comunicar melhor no trabalho e na vida: escuta ativa, assertividade e empatia.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-falar-em-publico",
+        "como-desenvolver-inteligencia-emocional"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "growth-mindset-o-que-e",
+      "title": "Growth Mindset: O que É e Como Desenvolver Mentalidade de Crescimento",
+      "keyword": "growth mindset o que é e como desenvolver",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Mentalidade de crescimento explicada: pesquisa de Carol Dweck, exemplos práticos e como mudar.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aprender-mais-rapido",
+        "como-vencer-procrastinacao"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-criar-habitos",
+      "title": "Como Criar Hábitos que Duram: Baseado em Ciência",
+      "keyword": "como criar hábitos que duram",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "A ciência dos hábitos: gatilho-rotina-recompensa, 21 vs 66 dias, habit stacking e como não desistir.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-ter-mais-disciplina",
+        "como-ser-mais-produtivo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-definir-metas-smart",
+      "title": "Como Definir Metas SMART: Passo a Passo com Exemplos",
+      "keyword": "como definir metas SMART passo a passo",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Método SMART explicado com exemplos reais: específicas, mensuráveis, alcançáveis, relevantes e temporais.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-ser-mais-produtivo",
+        "como-criar-habitos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "estoicismo-pratica-como-aplicar",
+      "title": "Estoicismo na Prática: Como Aplicar no Dia a Dia",
+      "keyword": "estoicismo na prática como aplicar",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Exercícios estoicos para o dia a dia: dicotomia do controle, journaling e visualização negativa.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "filosofia-pratica-para-vida",
+        "pensamento-critico-o-que-e"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-lidar-pessoas-dificeis",
+      "title": "Como Lidar com Pessoas Difíceis no Trabalho: 6 Estratégias",
+      "keyword": "como lidar com pessoas difíceis no trabalho",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "6 estratégias para lidar com colegas difíceis: comunicação assertiva, limites e gestão de conflitos.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "inteligencia-emocional-no-trabalho",
+        "como-melhorar-comunicacao"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "sindrome-impostor-como-superar",
+      "title": "Síndrome do Impostor: O que É e Como Superar",
+      "keyword": "síndrome do impostor o que é e como superar",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Síndrome do impostor explicada: sinais, causas e 5 estratégias práticas para superar.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-desenvolver-inteligencia-emocional",
+        "growth-mindset-o-que-e"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-aprender-dizer-nao",
+      "title": "Como Aprender a Dizer Não: Guia de Assertividade",
+      "keyword": "como aprender a dizer não",
+      "cluster": "desenvolvimento",
+      "tag": "Desenvolvimento",
+      "description150": "Como dizer não sem culpa: técnicas de assertividade para proteger seu tempo e energia.",
+      "discipline": "Desenvolvimento Pessoal",
+      "targetWordCount": 1300,
+      "priority": "low",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-melhorar-comunicacao",
+        "como-desenvolver-inteligencia-emocional"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "direitos-consumidor-ninguem-conta",
+      "title": "Direitos do Consumidor que Ninguém Te Conta: 10 Dicas",
+      "keyword": "direitos do consumidor que ninguém te conta",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "10 direitos do consumidor pouco conhecidos: troca, arrependimento, cobrança indevida e mais.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "direitos-trabalhistas-clt-basico",
+        "educacao-financeira-adultos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-funciona-clt-trabalhador",
+      "title": "Como Funciona a CLT para o Trabalhador: Guia Atualizado",
+      "keyword": "como funciona a CLT para o trabalhador",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "CLT explicada para o trabalhador: jornada, salário, férias, FGTS, demissão e reforma trabalhista.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1800,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "direitos-trabalhistas-clt-basico",
+        "como-funciona-fgts"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-calcular-rescisao",
+      "title": "Como Calcular Rescisão Trabalhista: Simulação Passo a Passo",
+      "keyword": "como calcular rescisão trabalhista",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "Aprenda a calcular sua rescisão: justa causa, sem justa causa, pedido de demissão e acordo.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-funciona-clt-trabalhador",
+        "direitos-trabalhistas-clt-basico"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "direitos-trabalhador-informal",
+      "title": "Direitos do Trabalhador Informal: O que a Lei Garante",
+      "keyword": "direitos do trabalhador informal",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "Direitos do trabalhador sem carteira: INSS, acidente de trabalho, maternidade e como se proteger.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-funciona-clt-trabalhador",
+        "como-abrir-mei-passo-a-passo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-reclamar-procon",
+      "title": "Como Reclamar no Procon: Passo a Passo Completo",
+      "keyword": "como reclamar no Procon passo a passo",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "Guia para abrir reclamação no Procon: quando usar, documentos, prazos e dicas para resolver.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "direitos-consumidor-ninguem-conta",
+        "educacao-financeira-adultos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "codigo-defesa-consumidor-resumo",
+      "title": "Código de Defesa do Consumidor: Resumo Prático dos Principais Direitos",
+      "keyword": "código de defesa do consumidor resumo prático",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "Os direitos mais importantes do CDC resumidos de forma prática: garantia, troca, propaganda enganosa.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "direitos-consumidor-ninguem-conta",
+        "como-reclamar-procon"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-funciona-aposentadoria-inss",
+      "title": "Como Funciona a Aposentadoria pelo INSS em 2026",
+      "keyword": "como funciona aposentadoria pelo INSS",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "Regras atuais de aposentadoria pelo INSS: idade, tempo de contribuição, transição e cálculo.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-calcular-aposentadoria",
+        "como-funciona-fgts"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "direitos-demissao-sem-justa-causa",
+      "title": "Direitos na Demissão sem Justa Causa: Lista Completa",
+      "keyword": "direitos na demissão sem justa causa",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "Todos os seus direitos na demissão sem justa causa: verbas, prazos, FGTS, seguro-desemprego e aviso prévio.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-calcular-rescisao",
+        "como-funciona-clt-trabalhador"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-funciona-seguro-desemprego",
+      "title": "Como Funciona o Seguro-Desemprego: Quem Tem Direito e Como Pedir",
+      "keyword": "como funciona o seguro desemprego",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "Guia completo do seguro-desemprego: quem pode, quantas parcelas, valor, como solicitar e prazos.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "direitos-demissao-sem-justa-causa",
+        "como-funciona-clt-trabalhador"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "assedio-moral-trabalho-como-provar",
+      "title": "O que é Assédio Moral no Trabalho e Como Provar",
+      "keyword": "o que é assédio moral no trabalho e como provar",
+      "cluster": "direito",
+      "tag": "Direito",
+      "description150": "Assédio moral no trabalho: o que é, exemplos, como documentar, onde denunciar e seus direitos.",
+      "discipline": "Direito e Cidadania",
+      "targetWordCount": 1600,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-funciona-clt-trabalhador",
+        "direitos-trabalhistas-clt-basico"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-voltar-estudar-depois-30",
+      "title": "Como Voltar a Estudar Depois dos 30: Guia Prático",
+      "keyword": "como voltar a estudar depois dos 30",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "Guia para adultos que querem recomeçar os estudos: neuroplasticidade, recursos gratuitos e motivação.",
+      "discipline": "Educação",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "educacao-para-adultos-voltar-estudar",
+        "como-estudar-sozinho-autodidata"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "metodos-estudo-mais-eficientes",
+      "title": "Os Métodos de Estudo Mais Eficientes Segundo a Ciência",
+      "keyword": "métodos de estudo mais eficientes",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "Os 7 métodos de estudo comprovados pela ciência: recall ativo, espaçamento, interleaving e mais.",
+      "discipline": "Educação",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-aprender-mais-rapido",
+        "como-estudar-sozinho-autodidata"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-fazer-resumo-estudar",
+      "title": "Como Fazer Resumo para Estudar: Técnica Eficiente",
+      "keyword": "como fazer resumo para estudar",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "Técnica de resumo eficiente: Cornell, mapas mentais, fichas e o erro comum de copiar texto.",
+      "discipline": "Educação",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "metodos-estudo-mais-eficientes",
+        "como-aprender-mais-rapido"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "flashcards-como-usar",
+      "title": "Flashcards: Como Usar para Memorizar Qualquer Coisa",
+      "keyword": "flashcards como usar para memorizar",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "Guia completo de flashcards: como criar, apps gratuitos (Anki), repetição espaçada e dicas de uso.",
+      "discipline": "Educação",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "metodos-estudo-mais-eficientes",
+        "como-aprender-mais-rapido"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "repeticao-espacada-como-funciona",
+      "title": "Repetição Espaçada: Como Funciona e Por que é Tão Eficiente",
+      "keyword": "repetição espaçada como funciona na prática",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "A ciência da repetição espaçada: curva do esquecimento, algoritmo Leitner e apps para praticar.",
+      "discipline": "Educação",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "flashcards-como-usar",
+        "metodos-estudo-mais-eficientes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-estudar-trabalhando",
+      "title": "Como Estudar Trabalhando Tempo Integral: 7 Estratégias",
+      "keyword": "como estudar trabalhando tempo integral",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "7 estratégias para estudar com rotina de trabalho: micro-sessões, áudio, madrugada e weekends.",
+      "discipline": "Educação",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-estudar-sozinho-autodidata",
+        "como-ser-mais-produtivo"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-aprender-matematica-sozinho",
+      "title": "Como Aprender Matemática Sozinho do Zero: Passo a Passo",
+      "keyword": "como aprender matemática sozinho do zero",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "Roteiro para aprender matemática por conta própria: do básico ao intermediário, com recursos gratuitos.",
+      "discipline": "Educação",
+      "targetWordCount": 1600,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-estudar-sozinho-autodidata",
+        "metodos-estudo-mais-eficientes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "melhores-apps-estudar-gratis",
+      "title": "Melhores Apps para Estudar Grátis em 2026",
+      "keyword": "melhores apps para estudar grátis 2026",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "15 aplicativos gratuitos para estudar: Anki, Khan Academy, Duolingo, Escola Liberal e mais.",
+      "discipline": "Educação",
+      "targetWordCount": 1500,
+      "priority": "high",
+      "status": "pending",
+      "relatedSlugs": [
+        "curso-gratuito-online-2026",
+        "como-estudar-sozinho-autodidata"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "como-manter-motivacao-estudar",
+      "title": "Como Manter a Motivação para Estudar: 6 Estratégias Reais",
+      "keyword": "como manter motivação para estudar",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "6 estratégias baseadas em psicologia para manter a motivação nos estudos a longo prazo.",
+      "discipline": "Educação",
+      "targetWordCount": 1400,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-estudar-trabalhando",
+        "como-criar-habitos"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    },
+    {
+      "slug": "autodidatismo-como-organizar",
+      "title": "Autodidatismo: Como se Organizar para Aprender Sozinho",
+      "keyword": "autodidatismo como se organizar",
+      "cluster": "educacao",
+      "tag": "Educação",
+      "description150": "Guia do autodidata: como criar currículo próprio, manter disciplina e medir progresso.",
+      "discipline": "Educação",
+      "targetWordCount": 1500,
+      "priority": "medium",
+      "status": "pending",
+      "relatedSlugs": [
+        "como-estudar-sozinho-autodidata",
+        "metodos-estudo-mais-eficientes"
+      ],
+      "draftedAt": null,
+      "reviewScore": null,
+      "reviewNotes": null,
+      "publishedAt": null
+    }
+  ]
+}

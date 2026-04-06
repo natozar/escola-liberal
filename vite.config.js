@@ -5,7 +5,7 @@ import { execSync } from 'child_process';
 import { minify } from 'terser';
 
 // Collect HTML entry points (exclude admin panels from public deploy)
-const EXCLUDE_HTML = ['admin-stripe.html', 'admin-stripe-MSI.html'];
+const EXCLUDE_HTML = ['admin-stripe.html', 'admin-stripe-MSI.html', 'admin-blog.html'];
 const htmlFiles = readdirSync('.').filter(f => f.endsWith('.html') && !EXCLUDE_HTML.includes(f));
 const input = {};
 htmlFiles.forEach(f => { input[f.replace('.html', '')] = resolve(__dirname, f); });

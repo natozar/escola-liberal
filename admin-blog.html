@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Blog SEO Engine — Escola Liberal</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0f1729;--card:#1a2540;--text:#e8e6e1;--muted:#9ba3b5;--dim:#6b7488;--sage:#4a9e7e;--sage-light:#5fbf96;--border:rgba(255,255,255,.06);--r-md:12px;--r-lg:16px}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:1.5rem;max-width:900px;margin:0 auto}
+h1{font-size:1.4rem;margin-bottom:.5rem}
+.stats{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-md);padding:.75rem 1rem;text-align:center;min-width:100px}
+.stat-val{font-size:1.3rem;font-weight:700}
+.stat-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase}
+.filters{display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap}
+.filters select{background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:var(--r-md);padding:.4rem .75rem;font-size:.8rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem;margin-bottom:.75rem}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.card-title{font-weight:700;font-size:.95rem}
+.badge{padding:.15rem .5rem;border-radius:99px;font-size:.7rem;font-weight:700}
+.badge-green{background:rgba(74,158,126,.2);color:#5fbf96}
+.badge-yellow{background:rgba(219,165,80,.2);color:#dba550}
+.badge-red{background:rgba(224,116,96,.2);color:#e07460}
+.badge-gray{background:rgba(155,163,181,.15);color:#9ba3b5}
+.card-meta{font-size:.75rem;color:var(--dim);margin-bottom:.5rem}
+.card-review{font-size:.8rem;color:var(--muted);margin-bottom:.5rem}
+.card-actions{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn{padding:.35rem .75rem;border:1px solid var(--border);border-radius:var(--r-md);background:var(--card);color:var(--text);cursor:pointer;font-size:.75rem;transition:all .15s}
+.btn:hover{border-color:var(--sage);color:var(--sage-light)}
+.btn-approve{border-color:rgba(74,158,126,.4);color:#5fbf96}
+.btn-reject{border-color:rgba(224,116,96,.3);color:#e07460}
+.approved-section{margin-top:2rem;padding:1rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg)}
+.approved-section h3{font-size:.9rem;margin-bottom:.75rem}
+.approved-item{font-size:.8rem;color:var(--muted);padding:.25rem 0}
+.cmd-box{background:#111;border:1px solid var(--border);border-radius:var(--r-md);padding:.75rem;font-family:monospace;font-size:.75rem;color:#5fbf96;margin-top:.75rem;word-break:break-all;position:relative}
+.cmd-copy{position:absolute;top:.5rem;right:.5rem;background:var(--sage);color:#fff;border:none;border-radius:var(--r-md);padding:.25rem .5rem;cursor:pointer;font-size:.65rem}
+#preview{display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.8);padding:1rem}
+#preview iframe{width:100%;height:100%;border:none;border-radius:var(--r-lg)}
+#preview .close{position:absolute;top:.5rem;right:1rem;background:var(--card);color:var(--text);border:1px solid var(--border);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+</style>
+</head>
+<body>
+<h1>Blog SEO Engine</h1>
+<div class="stats" id="stats"></div>
+<div class="filters">
+  <select id="fCluster" onchange="render()"><option value="">Todos os clusters</option></select>
+  <select id="fScore" onchange="render()"><option value="">Todas as notas</option><option value="7">Nota >= 7</option><option value="low">Nota < 7</option></select>
+  <select id="fStatus" onchange="render()"><option value="drafted">Rascunhos</option><option value="published">Publicados</option><option value="">Todos</option></select>
+</div>
+<div id="list"></div>
+<div class="approved-section" id="approvedSection" style="display:none">
+  <h3>Aprovados para publicar</h3>
+  <div id="approvedList"></div>
+  <div class="cmd-box" id="cmdBox"></div>
+</div>
+<div id="preview"><button class="close" onclick="closePreview()">X</button><iframe id="previewFrame"></iframe></div>
+
+<script>
+let keywords=[], manifest=[], approved=JSON.parse(localStorage.getItem('escola_blog_approved')||'[]');
+
+async function init(){
+  try{
+    const [kwRes, mfRes]=await Promise.all([fetch('blog/keywords.json'),fetch('blog/drafts/manifest.json')]);
+    if(kwRes.ok) keywords=(await kwRes.json()).keywords||[];
+    if(mfRes.ok) manifest=(await mfRes.json()).articles||[];
+  }catch(e){console.warn('Load error:',e)}
+  // Populate cluster filter
+  const clusters=[...new Set(keywords.map(k=>k.cluster))];
+  const sel=document.getElementById('fCluster');
+  clusters.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o)});
+  renderStats();render();
+}
+
+function renderStats(){
+  const total=keywords.length, pending=keywords.filter(k=>k.status==='pending').length;
+  const drafted=keywords.filter(k=>k.status==='drafted').length, pub=keywords.filter(k=>k.status==='published').length;
+  document.getElementById('stats').innerHTML=
+    `<div class="stat"><div class="stat-val">${total}</div><div class="stat-lbl">Keywords</div></div>`+
+    `<div class="stat"><div class="stat-val">${pending}</div><div class="stat-lbl">Pendentes</div></div>`+
+    `<div class="stat"><div class="stat-val">${drafted}</div><div class="stat-lbl">Rascunhos</div></div>`+
+    `<div class="stat"><div class="stat-val">${pub}</div><div class="stat-lbl">Publicados</div></div>`;
+}
+
+function render(){
+  const fc=document.getElementById('fCluster').value;
+  const fs=document.getElementById('fScore').value;
+  const fst=document.getElementById('fStatus').value;
+  let items=keywords;
+  if(fst)items=items.filter(k=>k.status===fst);
+  if(fc)items=items.filter(k=>k.cluster===fc);
+  if(fs==='7')items=items.filter(k=>k.reviewScore>=7);
+  if(fs==='low')items=items.filter(k=>k.reviewScore!==null&&k.reviewScore<7);
+
+  document.getElementById('list').innerHTML=items.map(k=>{
+    const score=k.reviewScore;
+    const bc=score===null?'badge-gray':score>=7?'badge-green':score>=5?'badge-yellow':'badge-red';
+    const isApproved=approved.includes(k.slug);
+    return `<div class="card">
+      <div class="card-head"><div class="card-title">${k.title}</div><span class="badge ${bc}">${score!==null?score+'/10':'—'}</span></div>
+      <div class="card-meta">${k.tag} · ${k.cluster} · ${k.keyword}</div>
+      ${k.reviewNotes?`<div class="card-review">${k.reviewNotes}</div>`:''}
+      <div class="card-actions">
+        ${k.status==='drafted'?`<button class="btn" onclick="preview('${k.slug}')">Visualizar</button>`:''}
+        ${k.status==='drafted'&&!isApproved?`<button class="btn btn-approve" onclick="approve('${k.slug}')">Aprovar</button>`:''}
+        ${isApproved?'<span style="color:#5fbf96;font-size:.75rem">Aprovado</span>':''}
+      </div>
+    </div>`;
+  }).join('');
+
+  // Approved section
+  const sec=document.getElementById('approvedSection');
+  if(approved.length){
+    sec.style.display='';
+    document.getElementById('approvedList').innerHTML=approved.map(s=>`<div class="approved-item">${s}</div>`).join('');
+    const cmd=`node scripts/publish-blog.js --slugs=${approved.join(',')}`;
+    document.getElementById('cmdBox').innerHTML=cmd+`<button class="cmd-copy" onclick="navigator.clipboard.writeText('${cmd}')">Copiar</button>`;
+  }else{sec.style.display='none'}
+}
+
+function approve(slug){
+  if(!approved.includes(slug))approved.push(slug);
+  localStorage.setItem('escola_blog_approved',JSON.stringify(approved));
+  render();
+}
+
+function preview(slug){
+  document.getElementById('previewFrame').src='blog/drafts/'+slug+'.html';
+  document.getElementById('preview').style.display='block';
+}
+function closePreview(){document.getElementById('preview').style.display='none';document.getElementById('previewFrame').src='';}
+
+init();
+</script>
+</body>
+</html>

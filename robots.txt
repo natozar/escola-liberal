@@ -1,4 +1,4 @@
-# Escola Liberal — Plataforma Homeschool
+# Escola Liberal — Plataforma Educacional para Adultos 18+
 # https://escolaliberal.com.br
 
 User-agent: *
@@ -26,6 +26,8 @@ Disallow: /lessons.json
 Disallow: /supabase/
 Disallow: /CLAUDE.md
 Disallow: /SECURITY-AUDIT.md
+Disallow: /admin-blog.html
+Disallow: /blog/drafts/
 
 # Googlebot específico — permitir crawl de imagens
 User-agent: Googlebot
