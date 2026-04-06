@@ -1,7 +1,7 @@
 {
   "name": "Escola Liberal — A Educação que Faltou",
   "short_name": "Escola Liberal",
-  "description": "A educação que a escola deveria ter dado. 21 disciplinas, 660 aulas gratuitas para adultos: Economia, Filosofia, Finanças, Oratória, Programação e mais.",
+  "description": "A educação que a escola deveria ter dado. 26 disciplinas, 800 aulas gratuitas para adultos: Economia, Filosofia, Finanças, Oratória, Programação e mais.",
   "start_url": "./app.html",
   "scope": "./",
   "id": "escola-liberal-pwa",
