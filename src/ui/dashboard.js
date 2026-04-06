@@ -405,3 +405,86 @@ function launchConfetti(){
   setTimeout(function(){c.remove()},4000);
 }
 window.launchConfetti=launchConfetti;
+
+// ============================================================
+// DASHBOARD: Global Progress Summary
+// ============================================================
+function renderGlobalProgress(){
+  var el=document.getElementById('globalProgressSection');
+  if(!el)return;
+  var done=Object.keys(window.S.done).length;
+  var total=window.M.reduce(function(s,m){return s+m.lessons.length},0);
+  var pct=total?Math.round(done/total*100):0;
+  var discCount=0;var seen={};
+  window.M.forEach(function(m){var d=m.discipline||'economia';if(!seen[d]){seen[d]=1;discCount++}});
+  el.innerHTML='<div class="gp-card">'
+    +'<div class="gp-stats">'
+    +'<div class="gp-stat"><div class="gp-stat-val">'+done+'</div><div class="gp-stat-lbl">Aulas</div></div>'
+    +'<div class="gp-stat"><div class="gp-stat-val">'+pct+'%</div><div class="gp-stat-lbl">Completo</div></div>'
+    +'<div class="gp-stat"><div class="gp-stat-val">'+window.totalXP()+'</div><div class="gp-stat-lbl">XP Total</div></div>'
+    +'</div>'
+    +'<div class="gp-bar-track"><div class="gp-bar-fill" style="width:'+pct+'%"></div></div>'
+    +'<div class="gp-meta">'+done+' de '+total+' aulas · '+discCount+' disciplinas · '+window.M.length+' módulos</div>'
+    +'</div>';
+}
+window.renderGlobalProgress=renderGlobalProgress;
+
+// ============================================================
+// DASHBOARD: Active Disciplines (max 4 + 1 new suggestion)
+// ============================================================
+function renderActiveDiscs(){
+  var el=document.getElementById('activeDiscSection');
+  if(!el)return;
+  var discProgress={};
+  window.M.forEach(function(m,i){
+    var disc=m.discipline||'economia';
+    if(!discProgress[disc])discProgress[disc]={done:0,total:0,lastActivity:0};
+    m.lessons.forEach(function(_,li){
+      discProgress[disc].total++;
+      if(window.S.done[i+'-'+li]){
+        discProgress[disc].done++;
+        discProgress[disc].lastActivity=Math.max(discProgress[disc].lastActivity,1);
+      }
+    });
+  });
+  var active=[];var notStarted=[];
+  Object.keys(discProgress).forEach(function(disc){
+    var v=discProgress[disc];
+    if(v.done>0&&v.done<v.total)active.push([disc,v]);
+    else if(v.done===0)notStarted.push([disc,v]);
+  });
+  active.sort(function(a,b){return b[1].done-a[1].done});
+  active=active.slice(0,4);
+  notStarted=notStarted.slice(0,1);
+  if(active.length===0&&notStarted.length===0){el.innerHTML='';return}
+  var html='<div class="ad-grid">';
+  active.forEach(function(entry){
+    var disc=entry[0],prog=entry[1];
+    var d=window.DISCIPLINES[disc]||{label:disc,icon:'📚'};
+    var pct=Math.round(prog.done/prog.total*100);
+    var mods=window.M.map(function(m,i){return{mod:m,idx:i}}).filter(function(x){return x.mod.discipline===disc});
+    var color=mods[0]?mods[0].mod.color||'sage':'sage';
+    var clr=window.getModColor(color);
+    var onclick=mods.length===1?'goMod('+mods[0].idx+')':'toggleDiscMobile(\''+disc+'\')';
+    html+='<div class="ad-card" onclick="'+onclick+'">'
+      +'<div class="ad-icon">'+d.icon+'</div>'
+      +'<div class="ad-info">'
+      +'<div class="ad-name">'+d.label+'</div>'
+      +'<div class="ad-meta">'+prog.done+'/'+prog.total+' aulas · '+pct+'%</div>'
+      +'<div class="ad-bar"><div class="ad-bar-fill" style="width:'+pct+'%;background:'+clr+'"></div></div>'
+      +'</div></div>';
+  });
+  notStarted.forEach(function(entry){
+    var disc=entry[0];
+    var d=window.DISCIPLINES[disc]||{label:disc,icon:'📚'};
+    var mods=window.M.map(function(m,i){return{mod:m,idx:i}}).filter(function(x){return x.mod.discipline===disc});
+    var onclick=mods.length===1?'goMod('+mods[0].idx+')':'toggleDiscMobile(\''+disc+'\')';
+    html+='<div class="ad-card ad-new" onclick="'+onclick+'">'
+      +'<div class="ad-icon">'+d.icon+'</div>'
+      +'<div class="ad-info"><div class="ad-name">'+d.label+'</div>'
+      +'<div class="ad-meta">Nova disciplina! Comece agora</div></div></div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+window.renderActiveDiscs=renderActiveDiscs;

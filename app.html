@@ -233,6 +233,7 @@ if('serviceWorker' in navigator){
     <span class="mh-title" id="mhTitle"></span>
   </div>
   <div class="mh-right">
+    <button class="mh-debate-btn" id="mhDebateBtn" onclick="goDebate()" aria-label="Debate ao Vivo">💬<span class="mh-debate-count" id="mhDebateCount"></span></button>
     <span class="mh-streak" id="mhStreak">🔥0</span>
     <span class="mh-xp" id="mhXP">⚡0</span>
     <button class="mh-update-btn" id="mhUpdateBtn" onclick="applyUpdate()" style="display:none" aria-label="Atualizar app">🔄</button>
@@ -416,15 +417,28 @@ if('serviceWorker' in navigator){
       <div id="continueSection"></div>
       <div id="dailyGoalSection"></div>
 
-      <!-- ZONA APRENDIZADO -->
+      <!-- ZONA PROGRESSO -->
       <div class="dash-section">
-        <div class="dash-section-label">Suas Disciplinas</div>
-        <div class="search-wrap">
+        <div class="dash-section-label">Seu Progresso</div>
+        <div class="search-wrap" style="margin-bottom:.75rem">
           <span class="search-icon">🔍</span>
           <input class="search-box" id="searchBox" placeholder="Buscar em todas as aulas..." oninput="doSearch(this.value)" aria-label="Buscar em todas as aulas">
-        <div class="search-results" id="searchResults"></div>
+          <div class="search-results" id="searchResults"></div>
+        </div>
+        <div id="globalProgressSection"></div>
+        <div id="activeDiscSection"></div>
+        <button class="btn btn-ghost" onclick="goAulasTab()" style="width:100%;margin-top:.75rem;text-align:center">📚 Ver Todas as Disciplinas →</button>
       </div>
-      <div class="mcards" id="mcards"></div>
+      <div class="mcards" id="mcards" style="display:none" aria-hidden="true"></div>
+
+      <!-- DEBATE CARD -->
+      <div class="debate-dash-card" onclick="goDebate()" role="button" tabindex="0">
+        <div class="debate-dash-icon">💬</div>
+        <div class="debate-dash-text">
+          <div class="debate-dash-title">Debate ao Vivo</div>
+          <div class="debate-dash-sub">15 salas tematicas · <span id="debateDashOnline2">0</span> online</div>
+        </div>
+        <span class="debate-dash-arrow">→</span>
       </div>
 
       <!-- ZONA ENGAJAMENTO -->

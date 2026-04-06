@@ -757,6 +757,34 @@ body.focus-mode .mobile-bar{display:none !important}
 .certs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin-top:1rem}
 .certs-progress{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--bg-card);border-radius:var(--r-md);border:1px solid var(--border)}
 
+/* ========== DASHBOARD: Global Progress ========== */
+.gp-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1rem}
+.gp-stats{display:flex;justify-content:space-around;margin-bottom:.75rem}
+.gp-stat{text-align:center}
+.gp-stat-val{font-size:1.4rem;font-weight:700;color:var(--text-primary);font-family:'DM Serif Display',Georgia,serif}
+.gp-stat-lbl{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:.1rem}
+.gp-bar-track{height:6px;background:var(--bg-elevated);border-radius:var(--r-full);overflow:hidden}
+.gp-bar-fill{height:100%;background:linear-gradient(90deg,var(--sage),var(--sage-light));border-radius:var(--r-full);transition:width .6s var(--ease)}
+.gp-meta{font-size:.7rem;color:var(--text-muted);text-align:center;margin-top:.5rem}
+/* ========== DASHBOARD: Active Disciplines ========== */
+.ad-grid{display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem}
+.ad-card{display:flex;align-items:center;gap:.75rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-md);padding:.75rem;cursor:pointer;transition:border-color .2s var(--ease)}
+.ad-card:hover{border-color:var(--border-hover)}
+.ad-card.ad-new{border-style:dashed;opacity:.7}
+.ad-card.ad-new:hover{opacity:1}
+.ad-icon{font-size:1.5rem;flex-shrink:0;width:2.5rem;text-align:center}
+.ad-info{flex:1;min-width:0}
+.ad-name{font-size:.85rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ad-meta{font-size:.7rem;color:var(--text-muted);margin-top:.15rem}
+.ad-bar{height:4px;background:var(--bg-elevated);border-radius:var(--r-full);overflow:hidden;margin-top:.35rem}
+.ad-bar-fill{height:100%;border-radius:var(--r-full);transition:width .6s var(--ease)}
+/* ========== MOBILE: Debate Button ========== */
+.mh-debate-btn{position:relative;background:none;border:none;cursor:pointer;font-size:1.15rem;padding:4px 8px;color:var(--sage-light);border-radius:var(--r-full);transition:background .2s var(--ease)}
+.mh-debate-btn:hover,.mh-debate-btn:active{background:var(--sage-muted)}
+.mh-debate-count{position:absolute;top:-2px;right:-2px;background:var(--sage);color:#fff;font-size:.55rem;font-weight:700;min-width:14px;height:14px;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;padding:0 3px;font-family:'DM Sans',sans-serif}
+.mh-debate-count:empty{display:none}
+@media(min-width:769px){.mh-debate-btn{display:none}}
+
 /* ========== ACHIEVEMENTS PAGE ========== */
 .badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:1rem;margin-top:1rem}
 .badge-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;text-align:center;transition:all .3s var(--ease);position:relative;overflow:hidden}

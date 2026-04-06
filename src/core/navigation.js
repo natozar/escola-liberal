@@ -42,6 +42,8 @@ function goDash(){
   try{window.updateGlobalProgress()}catch(e){console.warn('[goDash] updateGlobalProgress:',e.message)}
   try{window.renderWeeklySummary()}catch(e){console.warn('[goDash] renderWeeklySummary:',e.message)}
   try{window.renderDailyGoal()}catch(e){console.warn('[goDash] renderDailyGoal:',e.message)}
+  try{window.renderGlobalProgress()}catch(e){console.warn('[goDash] renderGlobalProgress:',e.message)}
+  try{window.renderActiveDiscs()}catch(e){console.warn('[goDash] renderActiveDiscs:',e.message)}
   // Hide empty sections for new users
   try{
     const doneCount=Object.keys(S.done).length;
