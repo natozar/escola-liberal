@@ -1476,3 +1476,43 @@ body{overscroll-behavior-y:contain}
 .avb-check:disabled{opacity:.4;cursor:wait;animation:avbSpin 1s linear infinite}
 @keyframes avbPulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes avbSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* ========== WhatsApp Share Card ========== */
+.wa-share-card{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:linear-gradient(135deg,rgba(37,211,102,.12),rgba(37,211,102,.05));border:1px solid rgba(37,211,102,.25);border-radius:var(--r-lg);cursor:pointer;transition:all .2s var(--ease);-webkit-tap-highlight-color:transparent;margin-top:.5rem}
+.wa-share-card:hover{background:rgba(37,211,102,.18);border-color:rgba(37,211,102,.4);transform:translateY(-1px);box-shadow:0 4px 12px rgba(37,211,102,.1)}
+.wa-share-card:active{transform:scale(.98)}
+.wa-share-icon{width:40px;height:40px;background:#25D366;border-radius:var(--r-full);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wa-share-icon svg{width:22px;height:22px}
+.wa-share-text{flex:1;min-width:0}
+.wa-share-title{font-size:.85rem;font-weight:700;color:var(--text-primary)}
+.wa-share-sub{font-size:.7rem;color:var(--text-muted);margin-top:.1rem}
+.wa-share-arrow{font-size:.9rem;color:#25D366;flex-shrink:0}
+
+/* ========== Aulas: Tools Section ========== */
+.aulas-tools-section{margin-top:.5rem}
+.tools-title{font-size:.85rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem;padding:0 .25rem}
+
+/* ========== Tools Grid Items ========== */
+.tools-grid-item{display:flex;flex-direction:column;align-items:center;gap:.35rem;padding:.85rem .5rem;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);cursor:pointer;transition:all .15s var(--ease);-webkit-tap-highlight-color:transparent}
+.tools-grid-item:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08);border-color:var(--border-hover)}
+.tools-grid-item:active{transform:scale(.96)}
+.tools-grid-item .tg-icon{font-size:1.5rem}
+.tools-grid-item .tg-label{font-size:.72rem;font-weight:600;color:var(--text-secondary);text-align:center;line-height:1.2}
+
+/* ========== Audio Player (TTS) ========== */
+.tts-active{background:var(--sage-muted)!important;border-left:3px solid var(--sage)!important;padding-left:1rem;border-radius:var(--r-sm);transition:background .3s,border .3s}
+.audio-player{position:fixed;bottom:-80px;left:0;right:0;z-index:400;background:var(--bg-secondary);border-top:1px solid var(--border);padding:.5rem 1rem calc(.5rem + env(safe-area-inset-bottom));transition:bottom .3s var(--ease);box-shadow:0 -4px 20px rgba(0,0,0,.2)}
+.audio-player.show{bottom:0}
+
+/* ========== Disc Grid Card Colors ========== */
+.disc-grid-card[data-color="sage"]{border-color:var(--sage-muted)}.disc-grid-card[data-color="sage"]:hover{border-color:var(--sage)}
+.disc-grid-card[data-color="sky"]{border-color:var(--sky-muted)}.disc-grid-card[data-color="sky"]:hover{border-color:var(--sky)}
+.disc-grid-card[data-color="honey"]{border-color:var(--honey-muted)}.disc-grid-card[data-color="honey"]:hover{border-color:var(--honey)}
+.disc-grid-card[data-color="coral"]{border-color:var(--coral-muted)}.disc-grid-card[data-color="coral"]:hover{border-color:var(--coral)}
+.disc-grid-card[data-color="lavender"]{border-color:var(--lavender-muted)}.disc-grid-card[data-color="lavender"]:hover{border-color:var(--lavender)}
+.disc-grid-card[data-color="mint"]{border-color:rgba(91,213,155,.15)}.disc-grid-card[data-color="mint"]:hover{border-color:#5bd59b}
+
+/* ========== Disc/Tools Grid Responsive ========== */
+@media(min-width:600px){.disc-grid{grid-template-columns:repeat(3,1fr);gap:1rem}.tools-grid{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1024px){.aulas-view{padding:0 1rem}.aulas-title{font-size:1.8rem}.aulas-subtitle{font-size:.9rem}.disc-grid{grid-template-columns:repeat(4,1fr);gap:1.25rem}.disc-grid-card{min-height:155px;padding:1.5rem 1rem}.disc-grid-card .dg-icon{font-size:2.8rem}.disc-grid-card .dg-name{font-size:1rem}.disc-grid-card .dg-meta{font-size:.78rem}.tools-grid{grid-template-columns:repeat(5,1fr);gap:.85rem}.tools-grid-item{padding:1rem .75rem}.tools-grid-item .tg-icon{font-size:1.8rem}.tools-grid-item .tg-label{font-size:.78rem}}
+@media(max-width:359px){.disc-grid{grid-template-columns:repeat(2,1fr);gap:.5rem}.disc-grid-card{min-height:100px;padding:.75rem .5rem}.disc-grid-card .dg-icon{font-size:1.6rem}.disc-grid-card .dg-name{font-size:.75rem}.tools-grid{grid-template-columns:repeat(3,1fr);gap:.4rem}}
