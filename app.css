@@ -1623,7 +1623,7 @@ body{overscroll-behavior-y:contain}
   .gp-meta{font-size:.6rem!important;margin-top:.2rem!important}
   /* V3: Hide activeDisc + Social on mobile */
   #activeDiscSection{display:none!important}
-  #dashSocial{display:none!important}
+  
   /* V3: Daily goal compact */
   .daily-goal{padding:.4rem .6rem!important;margin-bottom:.2rem!important}
   .daily-goal h3{font-size:.75rem!important;margin-bottom:.2rem!important}
