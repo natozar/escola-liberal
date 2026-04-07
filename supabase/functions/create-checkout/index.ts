@@ -17,8 +17,7 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 const ALLOWED_ORIGINS = [
   'https://natozar.github.io',
-  'http://localhost:3000',
-  'http://127.0.0.1:5500',
+  'https://escolaliberal.com.br',
 ]
 
 function getCorsHeaders(req: Request) {
@@ -68,7 +67,6 @@ serve(async (req) => {
     const { priceId, successUrl, cancelUrl } = await req.json()
 
     // Validate redirect URLs to prevent open redirect attacks
-    const ALLOWED_ORIGINS = ['https://natozar.github.io', 'https://escolaliberal.com.br', 'http://localhost:3000', 'http://127.0.0.1:5500']
     const DEFAULT_SUCCESS = 'https://natozar.github.io/escola-liberal/app.html?checkout=success'
     const DEFAULT_CANCEL = 'https://natozar.github.io/escola-liberal/app.html?checkout=cancel'
     function isAllowedUrl(url: string | undefined): boolean {

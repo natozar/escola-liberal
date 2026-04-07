@@ -1,6 +1,6 @@
 (function(){
-  var K='escola_pin_ts',E=86400000;
-  try{var t=parseInt(localStorage.getItem(K)||'0',10);if(Date.now()-t<E)return}catch(e){}
+  var K='escola_pin_ts',E=3600000;
+  try{var t=parseInt(sessionStorage.getItem(K)||'0',10);if(Date.now()-t<E)return}catch(e){}
   // Block scroll
   document.documentElement.style.overflow='hidden';
   // Inject overlay
@@ -52,7 +52,7 @@
   function check(){
     var d=fields.map(function(f){return f.value});
     if(d[0]+d[1]+d[2]+d[3]===''+String.fromCharCode(48)+String.fromCharCode(54)+String.fromCharCode(48)+String.fromCharCode(54)){
-      try{localStorage.setItem(K,String(Date.now()))}catch(e){}
+      try{sessionStorage.setItem(K,String(Date.now()))}catch(e){}
       o.classList.add('fade');
       document.documentElement.style.overflow='';
       setTimeout(function(){o.remove()},350);

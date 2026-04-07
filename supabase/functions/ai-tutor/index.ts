@@ -17,8 +17,6 @@ const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const ALLOWED_ORIGINS = [
   'https://natozar.github.io',
   'https://escolaliberal.com.br',
-  'http://localhost:3000',
-  'http://127.0.0.1:5500',
 ]
 
 function getCorsHeaders(req: Request) {

@@ -22,8 +22,6 @@ const SERPRO_SECRET = Deno.env.get('SERPRO_CONSUMER_SECRET') || ''
 const ALLOWED_ORIGINS = [
   'https://escolaliberal.com.br',
   'https://natozar.github.io',
-  'http://localhost:3000',
-  'http://localhost:4173',
 ]
 
 function cors(req: Request) {

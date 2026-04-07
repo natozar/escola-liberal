@@ -4,8 +4,6 @@ const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY")!;
 const ALLOWED_ORIGINS = [
   "https://escolaliberal.com.br",
   "https://natozar.github.io",
-  "http://localhost:3000",
-  "http://localhost:4173",
 ];
 
 function cors(req: Request) {
