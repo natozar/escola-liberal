@@ -21,6 +21,8 @@ import './ui/glossary.js';      // GLOSSARY, doSearch, goGlossary, flashcards â†
 import './ui/dashboard.js';     // ui, renderCards, renderAch, renderXPEvent, etc. â†’ window
 
 // Phase 4: Features
+import './features/timeline.js';    // logActivity, loadTimeline, goTimeline
+import './features/performance.js'; // goPerf
 import './features/notes.js';
 import './features/chat.js';
 import './features/favorites.js';

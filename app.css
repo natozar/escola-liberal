@@ -364,7 +364,7 @@ a.profile-row:hover{background:var(--bg-hover)}
 .notes-toggle.open .notes-arrow{transform:rotate(90deg)}
 .notes-area{display:none;margin-top:.5rem}
 .notes-area.open{display:block}
-.notes-textarea{width:100%;min-height:100px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-md);padding:.75rem 1rem;color:var(--text-primary);font-size:.84rem;font-family:'DM Sans',sans-serif;line-height:1.65;resize:vertical;outline:none;transition:border-color .15s}
+.notes-textarea{width:100%;min-height:100px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--r-md);padding:.75rem 1rem;color:var(--text-primary);font-size:1rem;font-family:'DM Sans',sans-serif;line-height:1.65;resize:vertical;outline:none;transition:border-color .15s}
 .notes-textarea::placeholder{color:var(--text-muted)}
 .notes-textarea:focus{border-color:var(--sage)}
 .notes-saved{font-size:.7rem;color:var(--sage-light);margin-top:.35rem;opacity:0;transition:opacity .3s}
@@ -1516,3 +1516,5 @@ body{overscroll-behavior-y:contain}
 @media(min-width:600px){.disc-grid{grid-template-columns:repeat(3,1fr);gap:1rem}.tools-grid{grid-template-columns:repeat(4,1fr)}}
 @media(min-width:1024px){.aulas-view{padding:0 1rem}.aulas-title{font-size:1.8rem}.aulas-subtitle{font-size:.9rem}.disc-grid{grid-template-columns:repeat(4,1fr);gap:1.25rem}.disc-grid-card{min-height:155px;padding:1.5rem 1rem}.disc-grid-card .dg-icon{font-size:2.8rem}.disc-grid-card .dg-name{font-size:1rem}.disc-grid-card .dg-meta{font-size:.78rem}.tools-grid{grid-template-columns:repeat(5,1fr);gap:.85rem}.tools-grid-item{padding:1rem .75rem}.tools-grid-item .tg-icon{font-size:1.8rem}.tools-grid-item .tg-label{font-size:.78rem}}
 @media(max-width:359px){.disc-grid{grid-template-columns:repeat(2,1fr);gap:.5rem}.disc-grid-card{min-height:100px;padding:.75rem .5rem}.disc-grid-card .dg-icon{font-size:1.6rem}.disc-grid-card .dg-name{font-size:.75rem}.tools-grid{grid-template-columns:repeat(3,1fr);gap:.4rem}}
+/* iOS zoom prevention — inputs must be >= 16px */
+@supports (-webkit-touch-callout: none) { input, textarea, select { font-size: max(1rem, 16px) !important; } }
