@@ -57,15 +57,17 @@ function goMod(i){
   try{history.pushState({view:'mod',mod:i},'')}catch(e){}
   S.cMod=i;const m=M[i];
   window.setDiscAccent(m.discipline||'economia');
-  document.getElementById('mvT').textContent=m.icon+' '+m.title;
-  document.getElementById('mvS').textContent=m.desc;
+  const _lf=window.getLocalizedField;
+  document.getElementById('mvT').textContent=m.icon+' '+(_lf?_lf(m,'title'):m.title);
+  document.getElementById('mvS').textContent=_lf?_lf(m,'desc'):m.desc;
   const allDone=m.lessons.every((_,li)=>S.done[`${i}-${li}`]);
   // Reading time needs content — estimate from XP if not loaded yet
   document.getElementById('lsnList').innerHTML=m.lessons.map((l,li)=>{
     const k=`${i}-${li}`,d=S.done[k];
     const readMin=l.content?window.calcReadTime(l.content):Math.max(2,Math.round(l.xp/8));
+    const _lf2=window.getLocalizedField;
     return`<div class="lsn ${d?'done':'cur'}" onclick="openL(${i},${li})">`+
-      `<div class="lsn-n">${d?'✓':li+1}</div><div class="lsn-info"><h4>${l.title}</h4><p>${l.sub}</p></div><div class="lsn-meta"><div class="reading-time">⏱ ~${readMin} min</div><div class="lsn-xp">+${l.xp} XP</div></div></div>`
+      `<div class="lsn-n">${d?'✓':li+1}</div><div class="lsn-info"><h4>${_lf2?_lf2(l,'title'):l.title}</h4><p>${_lf2?_lf2(l,'sub'):l.sub}</p></div><div class="lsn-meta"><div class="reading-time">⏱ ~${readMin} ${typeof t==='function'?t('reading_time'):'min'}</div><div class="lsn-xp">+${l.xp} XP</div></div></div>`
   }).join('')+(allDone?`<div style="text-align:center;margin-top:1.25rem"><button class="btn btn-sage" onclick="showCert(${i})">🏅 Ver Certificado</button></div>`:'');
   window.hideAllViews();
   const vm=document.getElementById('vMod');vm.classList.add('on','view-enter');
@@ -87,11 +89,13 @@ async function openL(mi,li){
   try{history.pushState({view:'lesson',mod:mi,les:li},'')}catch(e){}
   S.cMod=mi;S.cLes=li;const m=M[mi],l=m.lessons[li];
   if(typeof gtag==='function')gtag('event','lesson_open',{module:m.title,lesson:l.title,module_index:mi,lesson_index:li});
-  document.getElementById('lvProg').textContent=`Aula ${li+1}/${m.lessons.length}`;
-  let h=l.content;
+  document.getElementById('lvProg').textContent=`${typeof t==='function'?t('lesson'):'Aula'} ${li+1}/${m.lessons.length}`;
+  const _lf=window.getLocalizedField;
+  let h=_lf?_lf(l,'content'):l.content;
   if(l.quiz){
-    h+=`<div class="qz"><h3>Quiz</h3><div class="qz-q">${l.quiz.q}</div><div class="qz-opts">`;
-    l.quiz.o.forEach((o,oi)=>{h+=`<button class="qz-o" tabindex="0" role="button" aria-label="Opção de resposta: ${o}" onclick="ans(${mi},${li},${oi})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ans(${mi},${li},${oi})}" id="qo${oi}">${o}</button>`});
+    const qDisplay=(_lf?_lf(l,'quiz'):null)||l.quiz;
+    h+=`<div class="qz"><h3>Quiz</h3><div class="qz-q">${qDisplay.q}</div><div class="qz-opts">`;
+    qDisplay.o.forEach((o,oi)=>{h+=`<button class="qz-o" tabindex="0" role="button" aria-label="${o}" onclick="ans(${mi},${li},${oi})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();ans(${mi},${li},${oi})}" id="qo${oi}">${o}</button>`});
     h+=`</div><div class="qz-fb" id="qfb"></div></div>`
   }
   document.getElementById('lvBody').innerHTML=h;
@@ -101,7 +105,7 @@ async function openL(mi,li){
     const fb=document.getElementById('qfb');fb.className='qz-fb show '+(S.quiz[qk]?'fb-ok':'fb-no');fb.textContent=l.quiz.exp
   }
   document.getElementById('bPrev').disabled=li===0;
-  document.getElementById('bNext').textContent=li===m.lessons.length-1?'Concluir ✓':'Próxima →';
+  document.getElementById('bNext').textContent=li===m.lessons.length-1?(typeof t==='function'?t('btn_complete'):'Concluir ✓'):(typeof t==='function'?t('btn_next'):'Próxima →');
   window.hideAllViews();
   const vl=document.getElementById('vLes');vl.classList.add('on','view-enter');
   setTimeout(()=>vl.classList.remove('view-enter'),350);
@@ -118,11 +122,12 @@ function ans(mi,li,a){
   if(S.quiz[qk]!==undefined)return;
   S.quiz[qk]=ok;
   document.querySelectorAll('.qz-o').forEach((b,i)=>{b.classList.add('off');if(i===l.quiz.c){b.classList.add('ok');b.classList.add('quiz-pulse')}if(i===a&&!ok){b.classList.add('no');b.classList.add('quiz-shake')}});
-  const fb=document.getElementById('qfb');fb.className='qz-fb show '+(ok?'fb-ok':'fb-no');fb.textContent=(ok?'✓ ':'✗ ')+l.quiz.exp;
+  const _lfq=window.getLocalizedField;const qDisp=(_lfq?_lfq(l,'quiz'):null)||l.quiz;
+  const fb=document.getElementById('qfb');fb.className='qz-fb show '+(ok?'fb-ok':'fb-no');fb.textContent=(ok?'✓ ':'✗ ')+qDisp.exp;
   if(ok){window.addXP(15);window.toast('+15 XP');window.playSfx('success');window.logActivity('quiz',`Quiz: ${M[mi].lessons[li].title} — Acertou!`)}
   else{window.playSfx('error');window.logActivity('quiz',`Quiz: ${M[mi].lessons[li].title} — Errou`)}
   const lk=`${mi}-${li}`;
-  if(!S.done[lk]){S.done[lk]=true;window.addXP(l.xp);window.toast(`+${l.xp} XP — Aula Concluída`);window.logActivity('lesson',`Aula: ${M[mi].lessons[li].title}`)}
+  if(!S.done[lk]){S.done[lk]=true;window.addXP(l.xp);window.toast(`+${l.xp} XP — ${typeof t==='function'?t('toast_lesson_complete'):'Aula Concluída'}`);window.logActivity('lesson',`Aula: ${M[mi].lessons[li].title}`)}
   window.save();
   // Show AI Practice button after answering
   const qzEl=document.querySelector('.qz');

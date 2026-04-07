@@ -96,7 +96,7 @@ function dismissInstall(){
 // ============================================================
 // VERSIONING + WHAT'S NEW
 // ============================================================
-const APP_VERSION='4.0.0';
+const APP_VERSION='4.2.0';
 window.APP_VERSION_NUM=APP_VERSION.replace(/[^0-9.]/g,'');
 const CHANGELOG=[
   {emoji:'🔒',text:'<strong>Verificação de Idade</strong> — CPF validado pela Receita Federal (Lei Felca)'},
