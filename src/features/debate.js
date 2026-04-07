@@ -33,7 +33,7 @@ DEBATE_ROOMS.forEach(function(r){ r.online = 1 + Math.floor(Math.random()*12) })
 // ============================================================
 function _updateTotalOnline(){
   var total = DEBATE_ROOMS.reduce(function(s,r){return s+r.online},0);
-  ['debateOnlineCount','debateOnlineCountDesktop','mhDebateCount','debateDashOnline','debateDashOnline2'].forEach(function(id){
+  ['debateOnlineCount','debateOnlineCountDesktop','mhDebateCount','debateDashOnline'].forEach(function(id){
     var el=window._origById?window._origById(id):document.getElementById(id);
     if(el) el.textContent=total;
   });

@@ -67,7 +67,7 @@ function ui(){
     const bar=progEl.querySelector('.ni-prog-bar');
     if(bar)bar.style.cssText=`width:${pct}%;background:${clr}`
   });
-  window.renderCards();window.renderAch();window.renderLeaderboardWidget();window.renderXPEvent();
+  window.renderCards();window.renderAch();if(typeof window.renderAchMini==='function')window.renderAchMini();window.renderLeaderboardWidget();window.renderXPEvent();
   if(typeof window.renderChallenges==='function')window.renderChallenges()
 }
 
@@ -405,6 +405,20 @@ function launchConfetti(){
   setTimeout(function(){c.remove()},4000);
 }
 window.launchConfetti=launchConfetti;
+
+function renderAchMini(){
+  var el=document.getElementById('achMini');if(!el)return;
+  var done=Object.keys(window.S.done).length;
+  var unlocked=0,total=0;
+  [1,5,10,25,50].forEach(function(n){total++;if(done>=n)unlocked++});
+  window.M.forEach(function(m,i){total++;if(m.lessons.every(function(_,li){return window.S.done[i+'-'+li]}))unlocked++});
+  if(window.S.streak>=7){total++;unlocked++}
+  var icons=[];if(done>=1)icons.push('🎯');if(done>=5)icons.push('💡');if(done>=10)icons.push('📚');
+  window.M.forEach(function(m,i){if(m.lessons.every(function(_,li){return window.S.done[i+'-'+li]}))icons.push(m.icon)});
+  var preview=icons.slice(-3).join(' ')||'🏅';
+  el.innerHTML='<div class="ach-mini-row"><span class="ach-mini-icons">'+preview+'</span><span class="ach-mini-text">'+unlocked+'/'+total+' conquistas</span><span class="ach-mini-arrow">→</span></div>';
+}
+window.renderAchMini=renderAchMini;
 
 // ============================================================
 // DASHBOARD: Global Progress Summary

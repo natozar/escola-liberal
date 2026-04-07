@@ -1532,3 +1532,24 @@ body{overscroll-behavior-y:contain}
 .lang-flag{font-size:1.2rem;line-height:1}
 .lang-code{font-family:'DM Sans',sans-serif;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px}
 @media(max-width:768px){.lang-flag-btn{padding:3px 6px}.lang-code{display:none}}
+
+/* === DASHBOARD SLIM: mobile === */
+@media(max-width:768px){
+  #mcards{display:none!important}
+  #challengeBanner{display:none!important}
+  .hide-mobile{display:none!important}
+  .dash-section{padding:.75rem!important;margin-bottom:.75rem!important}
+  .dash-section-label{font-size:.75rem!important;margin-bottom:.5rem!important}
+  .weekly-summary{padding:.75rem!important}
+  .weekly-summary h3{font-size:.85rem!important;margin-bottom:.5rem!important}
+  .daily-goal{padding:.75rem!important}
+  .welcome{padding:.75rem!important}
+  .welcome h2{font-size:1.1rem!important}
+  .welcome p{font-size:.8rem!important;margin-bottom:.5rem!important}
+  .search-wrap{margin-bottom:.5rem!important}
+  .ach-mini-row{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);transition:transform .15s}
+  .ach-mini-row:active{transform:scale(.98)}
+  .ach-mini-icons{font-size:1.2rem}
+  .ach-mini-text{flex:1;font-size:.85rem;font-weight:600;color:var(--text-primary)}
+  .ach-mini-arrow{color:var(--text-muted);font-size:1rem}
+}
