@@ -153,7 +153,7 @@ a.profile-row:hover{background:var(--bg-hover)}
 .side-bottom{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)}
 
 /* ========== MAIN ========== */
-.main{padding:calc(2rem + 40px) 2rem 2rem;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;max-height:100vh;max-height:100dvh;box-sizing:border-box;overscroll-behavior-y:contain}
+.main{padding:calc(2rem + 40px) 2rem 2rem;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;max-height:100vh;max-height:100dvh;box-sizing:border-box;overscroll-behavior-y:auto}
 .mobile-bar{display:none;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
 @media(max-width:900px){.mobile-bar{display:flex}}
 .menu-btn{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text-secondary);padding:.45rem .75rem;cursor:pointer;font-size:.85rem;font-family:'DM Sans',sans-serif}
@@ -1295,7 +1295,7 @@ body{overscroll-behavior-y:contain}
   /* Toast below mobile header */
   .toast{top:calc(54px + env(safe-area-inset-top,0px))!important;z-index:7000!important}
   /* Adjust content for fixed header + bottom nav — FIXED POSITION scroll container */
-  .main{position:fixed!important;top:calc(48px + env(safe-area-inset-top,0px))!important;bottom:calc(64px + env(safe-area-inset-bottom,0px))!important;left:0!important;right:0!important;overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;padding:.75rem!important;box-sizing:border-box;width:100%;max-height:none!important;height:auto!important;overscroll-behavior-y:contain}
+  .main{padding:calc(2rem + 40px) 2rem 2rem;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;touch-action:pan-y;max-height:100vh;max-height:100dvh;box-sizing:border-box;overscroll-behavior-y:auto}
   /* Hamburger in header replaces sidebar toggle */
   .side{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
   .side.open{top:0;padding-top:calc(56px + env(safe-area-inset-top))}
