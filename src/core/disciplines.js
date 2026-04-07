@@ -27,7 +27,8 @@ const DISCIPLINES={
   tributario:{label:'Educação Tributária',icon:'🧾',order:22},
   trabalhista:{label:'Direito Trabalhista',icon:'👷',order:23},
   marketing:{label:'Marketing Digital',icon:'📱',order:24},
-  sustentabilidade:{label:'Sustentabilidade',icon:'🌱',order:25}
+  sustentabilidade:{label:'Sustentabilidade',icon:'🌱',order:25},
+  espanol:{label:'Espanhol',icon:'🇪🇸',order:26}
 };
 const COLOR_MAP={
   sage:'var(--sage)',sky:'var(--sky)',honey:'var(--honey)',
@@ -47,7 +48,8 @@ const DISC_ACCENT={
   history:'sky',financas:'honey',ingles:'sky',geografia:'mint',
   ia:'lavender',midia:'coral',direito:'sage',saude:'mint',artes:'honey',logica:'lavender',
   programacao:'sky',oratoria:'honey',civica:'sage',
-  empreendedorismo:'coral',tributario:'sage',trabalhista:'honey',marketing:'sky',sustentabilidade:'mint'
+  empreendedorismo:'coral',tributario:'sage',trabalhista:'honey',marketing:'sky',sustentabilidade:'mint',
+  espanol:'coral'
 };
 function setDiscAccent(disc){
   const color=DISC_ACCENT[disc]||'sage';

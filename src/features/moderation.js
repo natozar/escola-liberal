@@ -65,10 +65,10 @@ function _hasPersonalData(text){
 // ============================================================
 var ROOM_KEYWORDS={
   economia:['mercado','economia','capitalismo','socialismo','livre mercado','inflacao','preco','oferta','demanda','imposto','estado','governo','empresa','lucro','trabalho','salario','pobreza','riqueza','desigualdade','pib','moeda','banco','investimento','comercio'],
-  filosofia:['etica','moral','filosofia','platao','aristoteles','kant','logica','razao','verdade','virtude','justica','bem','mal','liberdade','consciencia','existencia','pensamento','argumento','sabedoria','valor','dilema'],
+  filosofia:['etica','moral','filosofia','platao','aristoteles','kant','lógica','razao','verdade','virtude','justica','bem','mal','liberdade','consciencia','existencia','pensamento','argumento','sabedoria','valor','dilema'],
   historia:['historia','guerra','revolucao','imperio','civilizacao','democracia','ditadura','rei','colonia','independencia','constituicao','republica','monarquia','escravidao','abolicao','medieval','antigo','moderno'],
   politica:['politica','estado','governo','democracia','direita','esquerda','liberal','conservador','lei','constituicao','eleicao','partido','presidente','congresso','senado','voto','cidadao','direito','dever'],
-  educacao:['educacao','escola','ensino','professor','aluno','aprendizado','curriculo','pedagogia','didatica','estudo','prova','avaliacao','conhecimento','adulto','autodidata'],
+  educacao:['educação','escola','ensino','professor','aluno','aprendizado','currículo','pedagogia','didática','estudo','prova','avaliação','conhecimento','adulto','autodidata'],
   tecnologia:['tecnologia','inteligencia artificial','ia','computador','programacao','internet','algoritmo','dados','robo','automacao','software','app','inovacao','digital','futuro','codigo','machine learning'],
   direito:['direito','lei','liberdade','constituicao','justica','tribunal','juiz','advogado','crime','pena','propriedade','contrato','cidadao','processo','norma','regulacao','censura','expressao'],
   midia:['midia','noticia','jornal','imprensa','fake news','informacao','comunicacao','rede social','televisao','radio','internet','jornalista','opiniao','propaganda','publicidade','manipulacao','algoritmo','engajamento'],
@@ -78,7 +78,7 @@ var ROOM_KEYWORDS={
   empreender:['empreendedorismo','negocio','startup','empresa','produto','cliente','mercado','venda','marketing','lucro','inovacao','risco','investidor','plano de negocios','modelo','receita','escala','mvp'],
   cultura:['cultura','arte','musica','literatura','cinema','teatro','sociedade','tradicao','identidade','diversidade','religiao','costume','valor','patrimonio','folclore','expressao cultural'],
   saude:['saude','exercicio','alimentacao','nutricao','sono','bem-estar','doenca','prevencao','vacina','higiene','mental','fisica','esporte','corpo','medicina','habito saudavel','dieta'],
-  logica:['logica','argumento','falacia','premissa','conclusao','deducao','inducao','raciocinio','debate','retorica','silogismo','paradoxo','evidencia','prova','pensamento critico','vies','sofisma']
+  logica:['lógica','argumento','falácia','premissa','conclusão','dedução','indução','raciocínio','debate','retórica','silogismo','paradoxo','evidência','prova','pensamento crítico','vies','sofisma']
 };
 
 // Short reactions and questions are always allowed

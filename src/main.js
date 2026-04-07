@@ -21,6 +21,7 @@ import './ui/glossary.js';      // GLOSSARY, doSearch, goGlossary, flashcards �
 import './ui/dashboard.js';     // ui, renderCards, renderAch, renderXPEvent, etc. → window
 
 // Phase 4: Features
+import './core/i18n-content.js';    // getLocalizedField → window
 import './features/timeline.js';    // logActivity, loadTimeline, goTimeline
 import './features/performance.js'; // goPerf
 import './features/notes.js';

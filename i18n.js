@@ -321,6 +321,25 @@ const I18N = {
     lemonade_stand: 'Lemonade Stand',
     export_import: 'Export / Import',
     progress_image: 'Progress image',
+  },
+  es: {
+    nav_dashboard:'Panel',nav_modules:'Módulos',nav_profile:'Perfil',nav_settings:'Configuración',nav_glossary:'Glosario',nav_flashcards:'Tarjetas',nav_review:'Revisión',nav_performance:'Rendimiento',nav_marathon:'Maratón',nav_exam:'Examen',nav_badges:'Logros',nav_timeline:'Historial',nav_spaced:'Repaso Espaciado',nav_error_review:'Revisión de Errores',nav_game:'Mini-Juego',nav_backup:'Respaldo',nav_share:'Compartir',nav_language:'Idioma',
+    sub_dashboard:'Vista general',sub_glossary:'Términos económicos',sub_flashcards:'Memorización activa',sub_review:'Incorrectos',sub_performance:'Tus estadísticas',sub_marathon:'Cuestionario cronometrado',sub_exam:'Prueba formal',sub_badges:'Tus medallas',sub_timeline:'Cronología',sub_spaced:'Método Leitner',sub_error_review:'Rehaz las incorrectas',sub_game:'Puesto de Limonada',sub_backup:'Exportar / Importar',sub_share:'Progreso en imagen',
+    dash_welcome:'Bienvenido/a, {{name}}',dash_welcome_back:'¡Bienvenido/a de vuelta!',dash_streak:'racha',dash_level:'Nivel {{level}}',dash_xp:'{{xp}} XP',dash_daily_goal:'Meta diaria',dash_continue:'Continuar estudiando',dash_modules:'Módulos',dash_lessons_done:'{{count}} lecciones completadas',dash_progress:'Progreso',dash_explore:'Explorar módulos',
+    module:'Módulo',lesson:'Lección',lessons:'lecciones',lessons_count:'{{count}} lecciones',level:'Nivel',reading_time:'min de lectura',
+    btn_next:'Siguiente →',btn_complete:'Completar ✓',btn_previous:'Anterior',btn_start:'Empezar',btn_continue:'Continuar',btn_review:'Revisar',btn_retry:'Reintentar',btn_close:'Cerrar',btn_save:'Guardar',btn_cancel:'Cancelar',btn_confirm:'Confirmar',btn_share:'Compartir',btn_install:'Instalar',btn_update:'Actualizar',
+    quiz_correct:'✓ ¡Correcto!',quiz_wrong:'✗ ¡Incorrecto!',quiz_explanation:'Explicación',quiz_score:'Puntuación: {{score}}%',quiz_perfect:'¡Puntuación perfecta!',quiz_try_again:'Intentar de nuevo',
+    xp:'XP',streak:'Racha',streak_days:'{{count}} días',achievement:'Logro',badge:'Insignia',progress:'Progreso',lessons_completed:'Lecciones completadas',daily_challenge:'Desafío Diario',weekly_missions:'Misiones Semanales',leaderboard:'Clasificación',league:'Liga',
+    sign_in:'Iniciar Sesión',sign_out:'Cerrar Sesión',sign_up:'Registrarse',student:'Alumno',email:'Correo electrónico',password:'Contraseña',forgot_password:'¿Olvidó su contraseña?',google_signin:'Continuar con Google',or_divider:'o',
+    profile_title:'Tu Perfil',profile_edit:'Editar Perfil',profile_avatar:'Avatar',profile_name:'Nombre',profile_plan:'Plan',profile_free:'Gratuito',profile_premium:'Premium',profile_since:'Desde {{date}}',
+    toast_xp_gain:'+{{xp}} XP',toast_level_up:'¡Nivel {{level}}!',toast_badge_unlock:'🏅 Insignia: {{badge}}',toast_lesson_complete:'✓ Lección completada',toast_streak:'🔥 ¡{{count}} días!',toast_saved:'Guardado',toast_error:'Error',
+    notes_title:'Tus Notas',notes_placeholder:'Escribe aquí...',notes_saved:'Guardadas',
+    chat_title:'Tutor IA',chat_placeholder:'Escribe tu pregunta...',chat_send:'Enviar',chat_thinking:'Pensando...',
+    onboarding_welcome:'¡Bienvenido/a!',onboarding_name:'¿Cómo te llamas?',onboarding_avatar:'Elige un avatar',onboarding_skip:'Omitir',onboarding_start:'Comenzar',onboarding_age:'Fecha de nacimiento',
+    pwa_install_title:'Instalar App',pwa_install_desc:'Estudia sin conexión',pwa_install_btn:'Instalar',pwa_update_title:'¡Nueva versión!',pwa_update_btn:'Actualizar',pwa_offline:'Sin conexión',
+    debate_title:'Debate en Vivo',debate_rooms:'Salas',debate_send:'Enviar',debate_login_required:'Inicia sesión para participar',debate_placeholder:'Escribe...',
+    error_title:'Algo salió mal',error_message:'Error inesperado. Datos guardados. Recarga la página.',error_unlock:'Completa el anterior',error_lessons_loading:'No se cargaron las lecciones',
+    of_text:'de',back_button:'←',focus_mode:'Modo Enfoque',terms:'Términos',tools_label:'Herramientas',navigation_label:'Navegación',
   }
 };
 
@@ -335,12 +354,13 @@ let CURRENT_LANG = 'pt';
  */
 function getLang() {
   const stored = localStorage.getItem('escola_lang');
-  if (stored && (stored === 'pt' || stored === 'en')) {
+  if (stored && ['pt','en','es'].includes(stored)) {
     return stored;
   }
   // Auto-detect from browser
   const browserLang = navigator.language || navigator.userLanguage || '';
-  return browserLang.toLowerCase().startsWith('pt') ? 'pt' : 'en';
+  const bl = browserLang.toLowerCase();
+  return bl.startsWith('pt') ? 'pt' : bl.startsWith('es') ? 'es' : 'en';
 }
 
 /**
@@ -434,14 +454,18 @@ function updatePageTranslations() {
  * Returns HTML string that can be inserted into DOM
  */
 function createLanguageToggle() {
-  const lang = CURRENT_LANG;
-  const otherLang = lang === 'pt' ? 'en' : 'pt';
-  const label = lang === 'pt' ? 'English' : 'Português';
-
-  return `<button class="lang-toggle" onclick="setLang('${otherLang}')" title="Switch language / Trocar idioma" aria-label="Language toggle">
-    <span class="lang-toggle-flag">${otherLang === 'pt' ? '🇧🇷' : '🇺🇸'}</span>
-    <span class="lang-toggle-text">${label}</span>
-  </button>`;
+  const flags = { pt: '🇧🇷', en: '🇺🇸', es: '🇪🇸' };
+  const names = { pt: 'Português', en: 'English', es: 'Español' };
+  let html = '<div class="lang-selector">';
+  ['pt', 'en', 'es'].forEach(function(lang) {
+    const active = lang === CURRENT_LANG ? ' active' : '';
+    html += '<button class="lang-flag-btn' + active + '" onclick="setLang(\'' + lang + '\')" title="' + names[lang] + '">';
+    html += '<span class="lang-flag">' + flags[lang] + '</span>';
+    html += '<span class="lang-code">' + lang.toUpperCase() + '</span>';
+    html += '</button>';
+  });
+  html += '</div>';
+  return html;
 }
 
 // ============================================================

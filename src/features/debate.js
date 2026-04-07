@@ -7,7 +7,7 @@ var DEBATE_ROOMS = [
   { id:'filosofia',  name:'Filosofia & Etica',         icon:'🏛️', color:'#8b5cf6', online:0 },
   { id:'historia',   name:'Historia & Revisionismo',   icon:'📜', color:'#ef4444', online:0 },
   { id:'politica',   name:'Politica & Estado',          icon:'⚖️', color:'#3b82f6', online:0 },
-  { id:'educacao',   name:'Educacao & Ensino',           icon:'📚', color:'#10b981', online:0 },
+  { id:'educacao',   name:'Educação & Ensino',           icon:'📚', color:'#10b981', online:0 },
   { id:'tecnologia', name:'IA & Tecnologia',            icon:'🤖', color:'#06b6d4', online:0 },
   { id:'direito',    name:'Direito & Liberdade',        icon:'🔒', color:'#6366f1', online:0 },
   { id:'midia',      name:'Midia & Fake News',          icon:'📡', color:'#ec4899', online:0 },
@@ -315,11 +315,11 @@ var MOCK_MESSAGES={
   politica:[
     {user_name:'Isabela',user_avatar:'👩‍💻',text:'Estado minimo e viavel num pais com tanta desigualdade?',created_at:new Date(Date.now()-180000).toISOString()},
     {user_name:'Mateus',user_avatar:'👨‍🎓',text:'A desigualdade e efeito do excesso de Estado, nao da falta.',created_at:new Date(Date.now()-120000).toISOString()},
-    {user_name:'Carolina',user_avatar:'👩‍🎓',text:'Singapura tem estado forte em educacao e saude, mas mercado livre no resto.',created_at:new Date(Date.now()-60000).toISOString()},
+    {user_name:'Carolina',user_avatar:'👩‍🎓',text:'Singapura tem estado forte em educação e saúde, mas mercado livre no resto.',created_at:new Date(Date.now()-60000).toISOString()},
   ],
   educacao:[
     {user_name:'Fernanda',user_avatar:'👩‍🎓',text:'Educação de qualidade deveria ser prioridade nacional?',created_at:new Date(Date.now()-180000).toISOString()},
-    {user_name:'Diego',user_avatar:'👨‍🎓',text:'Com certeza. A familia tem prioridade sobre o Estado na educacao.',created_at:new Date(Date.now()-120000).toISOString()},
+    {user_name:'Diego',user_avatar:'👨‍🎓',text:'Com certeza. A familia tem prioridade sobre o Estado na educação.',created_at:new Date(Date.now()-120000).toISOString()},
     {user_name:'Camila',user_avatar:'👩‍💻',text:'Mas precisa de fiscalizacao para garantir qualidade minima.',created_at:new Date(Date.now()-60000).toISOString()},
   ],
   tecnologia:[
@@ -360,7 +360,7 @@ var MOCK_MESSAGES={
   cultura:[
     {user_name:'Marcos',user_avatar:'👨‍🎓',text:'Cultura pop influencia mais valores que a escola formal?',created_at:new Date(Date.now()-180000).toISOString()},
     {user_name:'Bianca',user_avatar:'👩‍🎓',text:'Com certeza. Series e musica formam a visao de mundo.',created_at:new Date(Date.now()-120000).toISOString()},
-    {user_name:'Caio',user_avatar:'🧑‍🔬',text:'Por isso educacao precisa incluir pensamento critico sobre midia.',created_at:new Date(Date.now()-60000).toISOString()},
+    {user_name:'Caio',user_avatar:'🧑‍🔬',text:'Por isso educação precisa incluir pensamento crítico sobre mídia.',created_at:new Date(Date.now()-60000).toISOString()},
   ],
   saude:[
     {user_name:'Priscila',user_avatar:'👩‍💻',text:'Saude mental deveria ser disciplina obrigatoria na escola?',created_at:new Date(Date.now()-180000).toISOString()},

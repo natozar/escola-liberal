@@ -1518,3 +1518,12 @@ body{overscroll-behavior-y:contain}
 @media(max-width:359px){.disc-grid{grid-template-columns:repeat(2,1fr);gap:.5rem}.disc-grid-card{min-height:100px;padding:.75rem .5rem}.disc-grid-card .dg-icon{font-size:1.6rem}.disc-grid-card .dg-name{font-size:.75rem}.tools-grid{grid-template-columns:repeat(3,1fr);gap:.4rem}}
 /* iOS zoom prevention — inputs must be >= 16px */
 @supports (-webkit-touch-callout: none) { input, textarea, select { font-size: max(1rem, 16px) !important; } }
+
+/* ===== Language Selector ===== */
+.lang-selector{display:flex;gap:4px;align-items:center}
+.lang-flag-btn{display:flex;align-items:center;gap:4px;padding:4px 8px;border:1.5px solid var(--border);border-radius:var(--r-md);background:var(--bg-card);cursor:pointer;transition:all .2s;font-size:.8rem;color:var(--text-muted)}
+.lang-flag-btn.active{border-color:var(--sage);background:rgba(74,158,126,.1);color:var(--text-primary);font-weight:600}
+.lang-flag-btn:hover{border-color:var(--sage);transform:scale(1.05)}
+.lang-flag{font-size:1.2rem;line-height:1}
+.lang-code{font-family:'DM Sans',sans-serif;font-size:.7rem;text-transform:uppercase;letter-spacing:.5px}
+@media(max-width:768px){.lang-flag-btn{padding:3px 6px}.lang-code{display:none}}

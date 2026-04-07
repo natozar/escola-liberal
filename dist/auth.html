@@ -61,12 +61,12 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-primary);col
 .auth-form.active{display:block}
 .auth-field{margin-bottom:1rem}
 .auth-field label{display:block;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);margin-bottom:.4rem}
-.auth-field input{width:100%;padding:.75rem 1rem;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text-primary);font-family:inherit;font-size:.9rem;outline:none;transition:border-color .2s}
+.auth-field input{width:100%;padding:.75rem 1rem;background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--r-md);color:var(--text-primary);font-family:inherit;font-size:1rem;outline:none;transition:border-color .2s}
 .auth-field input:focus{border-color:var(--sage)}
 .auth-field input::placeholder{color:var(--text-muted)}
 
 /* Buttons */
-.auth-btn{width:100%;padding:.8rem;border:none;border-radius:var(--r-md);font-family:inherit;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:.5rem}
+.auth-btn{width:100%;padding:.8rem;border:none;border-radius:var(--r-md);font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s var(--ease);display:flex;align-items:center;justify-content:center;gap:.5rem}
 .auth-btn-primary{background:linear-gradient(135deg,#347a62,#4a9e7e);color:#fff;margin-bottom:.75rem}
 .auth-btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(74,158,126,.3)}
 .auth-btn-primary:active{transform:translateY(0)}
@@ -570,7 +570,7 @@ function checkOAuthError() {
             '<div style="text-align:center;padding:2rem 1rem">'
             +'<p style="color:var(--coral);font-size:1rem;margin-bottom:1rem">Tempo esgotado ao conectar.</p>'
             +'<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:1.5rem">Isso pode acontecer por instabilidade na rede.</p>'
-            +'<button onclick="location.href=\'auth.html\'" style="padding:.6rem 1.5rem;background:var(--sage);color:#fff;border:none;border-radius:8px;font-size:.9rem;cursor:pointer">Tentar novamente</button>'
+            +'<button onclick="location.href=\'auth.html\'" style="padding:.6rem 1.5rem;background:var(--sage);color:#fff;border:none;border-radius:8px;font-size:1rem;cursor:pointer">Tentar novamente</button>'
             +'</div>';
           return;
         }
