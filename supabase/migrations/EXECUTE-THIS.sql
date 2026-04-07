@@ -510,3 +510,74 @@ SELECT table_name FROM information_schema.tables
   WHERE table_schema = 'public'
   AND table_name IN ('moderation_log', 'certificates')
   ORDER BY table_name;
+
+-- ============================================================
+-- 13. ADMIN ACCESS: is_admin flag + RLS policies for admin reads
+-- ============================================================
+
+-- Add is_admin flag
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT false;
+
+-- Helper function: check if current user is admin
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS BOOLEAN AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM profiles WHERE id = auth.uid() AND is_admin = true
+  );
+$$ LANGUAGE sql SECURITY DEFINER STABLE;
+
+-- Profiles: admin can read all
+DROP POLICY IF EXISTS "profiles_select_admin" ON profiles;
+CREATE POLICY "profiles_select_admin" ON profiles FOR SELECT
+  USING (auth.uid() = id OR is_admin());
+
+-- Progress: admin can read all
+DROP POLICY IF EXISTS "progress_select_admin" ON progress;
+CREATE POLICY "progress_select_admin" ON progress FOR SELECT
+  USING (profile_id = auth.uid() OR is_admin());
+
+-- Leads: admin can read all (was INSERT-only for anon)
+DROP POLICY IF EXISTS "leads_select_admin" ON leads;
+CREATE POLICY "leads_select_admin" ON leads FOR SELECT
+  USING (is_admin());
+
+-- Notes: admin can read all
+DROP POLICY IF EXISTS "notes_select_admin" ON notes;
+CREATE POLICY "notes_select_admin" ON notes FOR SELECT
+  USING (profile_id = auth.uid() OR is_admin());
+
+-- Favorites: admin can read all
+DROP POLICY IF EXISTS "favorites_select_admin" ON favorites;
+CREATE POLICY "favorites_select_admin" ON favorites FOR SELECT
+  USING (profile_id = auth.uid() OR is_admin());
+
+-- Timeline: admin can read all
+DROP POLICY IF EXISTS "timeline_select_admin" ON timeline;
+CREATE POLICY "timeline_select_admin" ON timeline FOR SELECT
+  USING (profile_id = auth.uid() OR is_admin());
+
+-- Weekly XP: admin can read all
+DROP POLICY IF EXISTS "weekly_xp_select_admin" ON weekly_xp;
+CREATE POLICY "weekly_xp_select_admin" ON weekly_xp FOR SELECT
+  USING (profile_id = auth.uid() OR is_admin());
+
+-- Subscriptions: admin can read all
+DROP POLICY IF EXISTS "subscriptions_select_admin" ON subscriptions;
+CREATE POLICY "subscriptions_select_admin" ON subscriptions FOR SELECT
+  USING (user_id = auth.uid() OR is_admin());
+
+-- Admin Settings: admin can read + write
+DROP POLICY IF EXISTS "admin_settings_admin" ON admin_settings;
+CREATE POLICY "admin_settings_admin" ON admin_settings FOR ALL
+  USING (is_admin());
+
+-- Moderation Log: admin can read all
+DROP POLICY IF EXISTS "moderation_log_select_admin" ON moderation_log;
+CREATE POLICY "moderation_log_select_admin" ON moderation_log FOR SELECT
+  USING (is_admin() OR auth.uid() = user_id);
+
+-- Verification
+SELECT 'Admin policies created' AS status;
+SELECT policyname, tablename FROM pg_policies
+  WHERE policyname LIKE '%admin%'
+  ORDER BY tablename;

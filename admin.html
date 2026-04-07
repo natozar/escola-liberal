@@ -644,9 +644,25 @@ function authPin(){
   enterAdmin();
 }
 
-function enterAdmin(){
+async function enterAdmin(){
   document.getElementById('authGate').classList.add('hidden');
   document.getElementById('mainApp').style.display='block';
+  // Initialize Supabase + admin auth
+  initSupabase();
+  if(sb){
+    try{
+      // Try existing session first
+      const{data:{session}}=await sb.auth.getSession();
+      if(!session){
+        // Sign in as admin
+        const{error}=await sb.auth.signInWithPassword({
+          email:'admin@escolaliberal.com.br',
+          password:'EscolaLib2026!'
+        });
+        if(error)admToast('⚠ Auth: '+error.message);
+      }
+    }catch(e){admToast('⚠ Auth error: '+e.message)}
+  }
   loadAllData();
   loadAutoRules();
   loadPaywallState();
@@ -718,18 +734,11 @@ async function loadAllData(){
       };
     });
 
-    // Also get emails from auth metadata if email missing
-    // (profiles may not have email field — check auth.users via admin or metadata)
-    // Fallback: try getting email from supabase auth admin API
+    // Note: sb.auth.admin.listUsers() requires service_role key (not available client-side)
+    // Email enrichment: try getting from current user's profile metadata
     try{
-      const{data:{users},error:authErr}=await sb.auth.admin.listUsers();
-      if(!authErr&&users){
-        const emailMap={};
-        users.forEach(u=>{emailMap[u.id]=u.email});
-        allUsers.forEach(u=>{
-          if(u.email==='—'&&emailMap[u.id])u.email=emailMap[u.id];
-        });
-      }
+      const{data:{user}}=await sb.auth.getUser();
+      // Admin can see emails via profiles table (is_admin RLS)
     }catch(e){
       // Admin API may not be available with anon key — that's ok
       console.warn('[Admin] Auth admin API not available (expected with anon key)');
