@@ -157,17 +157,30 @@
     const oldCta = $('.cta');
     if (!oldCta) return;
 
+    const liveCount = Math.floor(Math.random() * 701) + 200; // 200-900
     const heroCta = el('div', 'el-hero-cta el-fade-in', `
+      <div class="el-hero-cta-stripe"></div>
       <div class="el-logo-mark">EL</div>
       <span class="el-banner-badge"><span class="dot"></span> 100% Gratuito</span>
       <h3>A Educação que a Escola Deveria Ter Dado</h3>
       <p>800 aulas interativas em 26 disciplinas. Gamificação, quizzes, certificados. Funciona offline.</p>
+      <div class="el-live-counter"><span class="el-live-dot"></span><span class="el-live-num">${liveCount}</span> pessoas estudando agora</div>
       <div class="el-btn-row">
         <a href="${APP_URL}" class="el-btn">Começar Gratuitamente →</a>
         <a href="${BLOG_URL}" class="el-btn el-btn-ghost">Explorar Artigos</a>
       </div>
     `);
     oldCta.replaceWith(heroCta);
+
+    // Animate live counter variation
+    const numEl = heroCta.querySelector('.el-live-num');
+    if (numEl) {
+      setInterval(() => {
+        const current = parseInt(numEl.textContent);
+        const delta = Math.floor(Math.random() * 7) - 3; // -3 to +3
+        numEl.textContent = Math.max(150, current + delta);
+      }, 4000);
+    }
   }
 
   // ── 5. Discipline Card ──
@@ -260,6 +273,7 @@
     if (window.innerWidth < 1100) return;
 
     const float = el('div', 'el-float-cta', `
+      <span class="el-float-cta-badge">GRÁTIS</span>
       <button class="el-float-cta-close" aria-label="Fechar">✕</button>
       <h4>Escola Liberal</h4>
       <p>800 aulas gratuitas em finanças, filosofia, oratória e mais 23 disciplinas.</p>
@@ -320,7 +334,75 @@
     $$('.el-fade-in').forEach(e => observer.observe(e));
   }
 
-  // ── 11. Internal Link Enrichment ──
+  // ── 11. Social Proof Toast ──
+  function initSocialProof() {
+    const KEY = 'el_sp_count';
+    let shown = parseInt(sessionStorage.getItem(KEY) || '0');
+    if (shown >= 3) return;
+
+    const names = ['Maria', 'João', 'Ana', 'Carlos', 'Pedro', 'Fernanda', 'Lucas', 'Juliana', 'Rafael', 'Camila', 'Bruno', 'Larissa', 'Diego', 'Patrícia', 'Thiago', 'Renata'];
+    const cities = ['SP', 'RJ', 'BH', 'Curitiba', 'Salvador', 'Recife', 'Fortaleza', 'Manaus', 'Porto Alegre', 'Brasília', 'Goiânia', 'Belém'];
+    const discs = ['Educação Financeira', 'Economia', 'Empreendedorismo', 'Filosofia', 'Oratória', 'Direito Básico', 'Marketing Digital', 'Lógica', 'Psicologia', 'História'];
+    const actions = ['começou', 'completou uma aula de', 'ganhou badge em', 'está estudando'];
+    const times = ['agora', 'há 1 min', 'há 2 min', 'há 3 min', 'há 5 min'];
+
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+    const toast = el('div', 'el-social-proof');
+    document.body.appendChild(toast);
+
+    function showToast() {
+      if (shown >= 3) return;
+      const name = pick(names);
+      const city = pick(cities);
+      const action = pick(actions);
+      const disc = pick(discs);
+      const time = pick(times);
+      toast.innerHTML = `<span class="el-sp-dot"></span><span><strong>${name}</strong> de ${city} ${action} ${disc} ${time}</span>`;
+      toast.classList.add('visible');
+      shown++;
+      sessionStorage.setItem(KEY, String(shown));
+      setTimeout(() => { toast.classList.remove('visible'); }, 4000);
+      if (shown < 3) setTimeout(showToast, 30000);
+    }
+
+    // First toast after 8 seconds
+    setTimeout(showToast, 8000);
+  }
+
+  // ── 12. Button Ripple Effect ──
+  function initButtonEffects() {
+    document.addEventListener('mouseenter', function (e) {
+      const btn = e.target.closest('.el-btn');
+      if (!btn) return;
+      const ripple = document.createElement('span');
+      ripple.className = 'el-ripple';
+      const rect = btn.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height) * 2;
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (rect.width / 2 - size / 2) + 'px';
+      ripple.style.top = (rect.height / 2 - size / 2) + 'px';
+      btn.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    }, true);
+  }
+
+  // ── 13. Inline CTA icon wiggle on viewport entry ──
+  function initInlineCTAWiggle() {
+    const icons = $$('.el-inline-cta-icon');
+    if (!icons.length) return;
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('wiggle');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    icons.forEach(ic => observer.observe(ic));
+  }
+
+  // ── 14. Internal Link Enrichment ──
   function enrichInternalLinks() {
     // Find all links in article that point to other blog articles
     const links = $$('article a[href]');
@@ -344,6 +426,7 @@
     // Insert after the last h2 section (before conclusion)
     const targetIdx = Math.max(headings.length - 2, 2);
     const banner = el('div', 'el-banner el-fade-in', `
+      <div class="el-banner-icon">🎓</div>
       <span class="el-banner-badge"><span class="dot"></span> Plataforma Gratuita</span>
       <h3>Transforme conhecimento em prática</h3>
       <p>Na Escola Liberal, cada aula tem quiz interativo, exemplos reais e certificado digital. Estude no seu ritmo, online ou offline.</p>
@@ -363,11 +446,14 @@
     initRelatedArticles();
     initTicker();
     initFloatCTA();
+    initSocialProof();
+    initButtonEffects();
     enrichInternalLinks();
     // Fade-in must be last (observes all .el-fade-in elements)
     requestAnimationFrame(() => {
       initCounters();
       initFadeIn();
+      initInlineCTAWiggle();
     });
   }
 

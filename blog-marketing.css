@@ -25,13 +25,56 @@
   width: 280px;
   background: var(--card);
   border: 1px solid var(--border);
+  border-top: none;
   border-radius: var(--r-xl) 0 0 var(--r-xl);
   padding: 1.5rem;
+  padding-top: 1.75rem;
   z-index: 90;
-  transition: right .5s cubic-bezier(.4,0,.2,1);
   box-shadow: -4px 0 24px rgba(0,0,0,.2);
+  opacity: 0;
 }
-.el-float-cta.visible { right: 0; }
+/* Gradient top bar */
+.el-float-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  border-radius: var(--r-xl) 0 0 0;
+  background: linear-gradient(90deg, var(--sage), #dba550, var(--sage-light));
+  background-size: 200% 100%;
+  animation: el-border-slide 3s linear infinite;
+}
+/* FREE badge */
+.el-float-cta-badge {
+  position: absolute;
+  top: -8px;
+  left: -6px;
+  background: var(--sage);
+  color: #fff;
+  font-size: .55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  padding: .2rem .5rem;
+  border-radius: 6px;
+  transform: rotate(-12deg);
+  box-shadow: 0 2px 8px rgba(74,158,126,.3);
+  z-index: 3;
+}
+/* Bounce entrance */
+.el-float-cta.visible {
+  right: 0;
+  opacity: 1;
+  animation: el-float-bounce .6s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes el-float-bounce {
+  0% { right: -320px; opacity: 0; }
+  60% { right: 8px; opacity: 1; }
+  80% { right: -3px; }
+  100% { right: 0; opacity: 1; }
+}
 .el-float-cta-close {
   position: absolute;
   top: .5rem;
@@ -58,35 +101,96 @@
 .el-float-cta .el-btn {
   display: block;
   text-align: center;
+  animation: el-float-btn-pulse 5s ease-in-out infinite;
+}
+@keyframes el-float-btn-pulse {
+  0%, 85%, 100% { box-shadow: 0 0 0 0 rgba(74,158,126,0); }
+  90% { box-shadow: 0 0 0 6px rgba(74,158,126,.2); }
+  95% { box-shadow: 0 0 0 12px rgba(74,158,126,0); }
 }
 @media (max-width: 1100px) { .el-float-cta { display: none; } }
 
-/* ── Animated Banner — Gradient Pulse ── */
+/* ── Animated Banner — Gradient Pulse + Shimmer + Rotating Border ── */
 .el-banner {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--card) 0%, var(--bg2) 100%);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--card) 0%, var(--bg2) 40%, var(--card) 100%);
+  background-size: 200% 200%;
+  animation: el-banner-bg 6s ease infinite;
+  border: none;
   border-radius: var(--r-xl);
   padding: 1.75rem 1.5rem;
   margin: 2rem 0;
   text-align: center;
+  transition: box-shadow .4s ease;
 }
+/* Rotating conic-gradient border */
+.el-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-xl);
+  padding: 1.5px;
+  background: conic-gradient(from var(--el-border-angle, 0deg), var(--sage), #dba550, rgba(210,100,80,.4), var(--sage-light), var(--sage));
+  background-size: 100% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: el-border-rotate 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes el-border-rotate {
+  to { --el-border-angle: 360deg; }
+}
+/* Fallback for browsers without @property */
+@supports not (background: conic-gradient(from 0deg, red, blue)) {
+  .el-banner::after {
+    background: linear-gradient(90deg, var(--sage), #dba550, var(--sage));
+    background-size: 300% 100%;
+    animation: el-border-slide-fallback 3s linear infinite;
+  }
+  @keyframes el-border-slide-fallback {
+    0% { background-position: 0% 0; }
+    100% { background-position: 300% 0; }
+  }
+}
+@keyframes el-banner-bg {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+/* Shimmer streak across card */
 .el-banner::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(74,158,126,.15) 0%, transparent 60%);
-  animation: el-pulse 4s ease-in-out infinite;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+  animation: el-shimmer 5s ease-in-out infinite;
+  z-index: 1;
 }
-@keyframes el-pulse {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: .6; }
-  50% { transform: translate(10%, 10%) scale(1.1); opacity: 1; }
+@keyframes el-shimmer {
+  0%, 100% { left: -100%; opacity: 0; }
+  40%, 60% { opacity: 1; }
+  100% { left: 150%; }
+}
+.el-banner:hover {
+  box-shadow: 0 0 20px rgba(74,158,126,.2), 0 0 40px rgba(74,158,126,.1);
 }
 .el-banner > * { position: relative; z-index: 2; }
+/* Animated emoji icon */
+.el-banner-icon {
+  font-size: 1.8rem;
+  display: inline-block;
+  animation: el-icon-bounce 2s ease-in-out infinite;
+  margin-bottom: .5rem;
+}
+@keyframes el-icon-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
 .el-banner-badge {
   display: inline-flex;
   align-items: center;
@@ -162,15 +266,41 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: var(--sage-muted);
+  background: linear-gradient(90deg, var(--sage-muted), rgba(74,158,126,.06), var(--sage-muted));
+  background-size: 200% 100%;
+  animation: el-inline-bg-slide 8s ease infinite;
   border-left: 3px solid var(--sage);
   border-radius: 0 var(--r-md) var(--r-md) 0;
   padding: 1rem 1.25rem;
   margin: 2rem 0;
+  box-shadow: -3px 0 12px rgba(74,158,126,0);
+  transition: box-shadow .3s ease;
+}
+.el-inline-cta.visible {
+  animation: el-inline-bg-slide 8s ease infinite, el-inline-glow 3s ease-in-out infinite;
+}
+@keyframes el-inline-bg-slide {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes el-inline-glow {
+  0%, 100% { box-shadow: -3px 0 8px rgba(74,158,126,.1); }
+  50% { box-shadow: -3px 0 18px rgba(74,158,126,.3); }
 }
 .el-inline-cta-icon {
   font-size: 1.5rem;
   flex-shrink: 0;
+  display: inline-block;
+}
+.el-inline-cta-icon.wiggle {
+  animation: el-wiggle .6s ease-in-out;
+}
+@keyframes el-wiggle {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-12deg); }
+  40% { transform: rotate(10deg); }
+  60% { transform: rotate(-6deg); }
+  80% { transform: rotate(4deg); }
 }
 .el-inline-cta-text {
   flex: 1;
@@ -189,6 +319,15 @@
   padding: .5rem 1.25rem;
   font-size: .78rem;
   white-space: nowrap;
+  overflow: hidden;
+}
+.el-inline-cta .el-btn::after {
+  content: ' →';
+  display: inline-block;
+  transition: transform .25s ease;
+}
+.el-inline-cta .el-btn:hover::after {
+  transform: translateX(4px);
 }
 @media (max-width: 600px) {
   .el-inline-cta { flex-direction: column; text-align: center; }
@@ -199,19 +338,41 @@
 .el-stats-banner {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: .5rem;
+  gap: 0;
   background: var(--card);
+  background-image: radial-gradient(circle at 20% 50%, rgba(74,158,126,.04) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 50%, rgba(219,165,80,.04) 0%, transparent 50%);
   border: 1px solid var(--border);
   border-radius: var(--r-xl);
-  padding: 1.25rem;
+  padding: 1.25rem .5rem;
   margin: 2rem 0;
   text-align: center;
+}
+.el-stats-banner > div {
+  position: relative;
+  padding: .25rem .5rem;
+}
+.el-stats-banner > div:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 15%;
+  height: 70%;
+  width: 1px;
+  background: var(--sage);
+  opacity: .15;
+  animation: el-sep-pulse 3s ease-in-out infinite;
+}
+@keyframes el-sep-pulse {
+  0%, 100% { opacity: .1; }
+  50% { opacity: .3; }
 }
 .el-stats-banner .stat-num {
   font-family: 'DM Serif Display', serif;
   font-size: 1.5rem;
   color: var(--sage-light);
   display: block;
+  text-shadow: 0 0 12px rgba(74,158,126,.2);
 }
 .el-stats-banner .stat-label {
   font-size: .65rem;
@@ -221,6 +382,7 @@
 }
 @media (max-width: 600px) {
   .el-stats-banner { grid-template-columns: repeat(2, 1fr); }
+  .el-stats-banner > div:nth-child(2)::after { display: none; }
 }
 
 /* ── Animated Discipline Card ── */
@@ -347,34 +509,76 @@
   background: linear-gradient(135deg, var(--card) 0%, var(--bg2) 50%, var(--card) 100%);
   background-size: 200% 200%;
   animation: el-gradient-shift 6s ease infinite;
-  border: 1px solid var(--border);
+  border: none;
   border-radius: var(--r-xl);
   padding: 2.5rem 1.5rem;
   margin: 2.5rem 0;
+}
+/* Rotating border */
+.el-hero-cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-xl);
+  padding: 2px;
+  background: conic-gradient(from var(--el-border-angle, 0deg), var(--sage), #dba550, var(--sage-light), rgba(210,100,80,.3), var(--sage));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: el-border-rotate 5s linear infinite;
+  pointer-events: none;
+  z-index: 0;
 }
 @keyframes el-gradient-shift {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+/* Particle/star field — CSS only */
 .el-hero-cta::before {
   content: '';
   position: absolute;
-  top: -2px;
+  inset: 0;
+  background:
+    radial-gradient(1.5px 1.5px at 10% 20%, var(--sage-light) 50%, transparent 50%),
+    radial-gradient(1px 1px at 25% 70%, #dba550 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 40% 15%, var(--sage) 50%, transparent 50%),
+    radial-gradient(1px 1px at 55% 80%, var(--sage-light) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 70% 30%, #dba550 50%, transparent 50%),
+    radial-gradient(1px 1px at 85% 65%, var(--sage) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 90% 10%, var(--sage-light) 50%, transparent 50%),
+    radial-gradient(1px 1px at 15% 90%, #dba550 50%, transparent 50%),
+    radial-gradient(1px 1px at 60% 50%, var(--sage) 50%, transparent 50%);
+  animation: el-stars-drift 12s ease-in-out infinite alternate;
+  opacity: .4;
+  z-index: 0;
+  pointer-events: none;
+}
+@keyframes el-stars-drift {
+  0% { transform: translateY(0) scale(1); opacity: .3; }
+  50% { opacity: .6; }
+  100% { transform: translateY(-8px) scale(1.02); opacity: .3; }
+}
+/* Animated top border stripe */
+.el-hero-cta-stripe {
+  position: absolute;
+  top: 0;
   left: 0;
   width: 100%;
   height: 3px;
   background: linear-gradient(90deg, var(--sage), #dba550, var(--sage));
   background-size: 200% 100%;
   animation: el-border-slide 3s linear infinite;
+  z-index: 1;
 }
 @keyframes el-border-slide {
   0% { background-position: 0% 0; }
   100% { background-position: 200% 0; }
 }
 .el-hero-cta .el-logo-mark {
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   margin: 0 auto .75rem;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--sage), var(--sage-light));
@@ -385,12 +589,21 @@
   font-size: 1.3rem;
   color: #fff;
   font-weight: 700;
+  position: relative;
+  z-index: 2;
+  animation: el-logo-glow 3s ease-in-out infinite;
+}
+@keyframes el-logo-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(74,158,126,.3); }
+  50% { box-shadow: 0 0 20px rgba(74,158,126,.5), 0 0 40px rgba(219,165,80,.15); }
 }
 .el-hero-cta h3 {
   font-family: 'DM Serif Display', serif;
   font-size: 1.4rem;
   color: var(--text);
   margin-bottom: .4rem;
+  position: relative;
+  z-index: 2;
 }
 .el-hero-cta p {
   font-size: .85rem;
@@ -399,12 +612,44 @@
   max-width: 440px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
+  z-index: 2;
+}
+/* Live counter */
+.el-live-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .75rem;
+  color: var(--sage-light);
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 2;
+}
+.el-live-counter .el-live-dot {
+  width: 7px;
+  height: 7px;
+  background: #4ade80;
+  border-radius: 50%;
+  animation: el-dot-blink 1.5s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(74,222,128,.4);
+}
+.el-live-counter .el-live-num {
+  font-weight: 700;
+  font-family: 'DM Serif Display', serif;
+  font-size: .9rem;
 }
 .el-hero-cta .el-btn-row {
   display: flex;
   gap: .75rem;
   justify-content: center;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 2;
+}
+.el-hero-cta .el-banner-badge {
+  position: relative;
+  z-index: 2;
 }
 
 /* ── Ticker / Scrolling Info Strip ── */
@@ -537,3 +782,81 @@
 }
 .el-toc a:hover { color: var(--sage-light); }
 .el-toc a.active { color: var(--sage-light); font-weight: 600; }
+
+/* ── Button Ripple Effect ── */
+.el-btn {
+  position: relative;
+  overflow: hidden;
+}
+.el-btn .el-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,.25);
+  transform: scale(0);
+  animation: el-ripple-anim .5s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes el-ripple-anim {
+  to { transform: scale(3); opacity: 0; }
+}
+
+/* ── Social Proof Toast ── */
+.el-social-proof {
+  position: fixed;
+  z-index: 200;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: .6rem 1rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,.25);
+  font-size: .78rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  max-width: 360px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease, transform .4s cubic-bezier(.34,1.56,.64,1);
+}
+.el-social-proof .el-sp-dot {
+  width: 7px;
+  height: 7px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: el-dot-blink 1.5s ease-in-out infinite;
+  box-shadow: 0 0 6px rgba(74,222,128,.4);
+}
+.el-social-proof strong { color: var(--text); }
+/* Mobile: bottom center, slide-up */
+.el-social-proof {
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+}
+.el-social-proof.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+/* Desktop: top-right corner, slide-left */
+@media (min-width: 1100px) {
+  .el-social-proof {
+    bottom: auto;
+    top: 1rem;
+    left: auto;
+    right: 1rem;
+    transform: translateX(40px);
+  }
+  .el-social-proof.visible {
+    transform: translateX(0);
+  }
+}
+
+/* ── @property for conic-gradient animation (progressive enhancement) ── */
+@property --el-border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
