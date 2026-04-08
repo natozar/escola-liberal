@@ -1176,3 +1176,13 @@ document.addEventListener('click', function(e) {
       break;
   }
 });
+
+// Enter key on PIN input
+document.addEventListener('DOMContentLoaded', function() {
+  var pinInput = document.getElementById('adminPin');
+  if (pinInput) {
+    pinInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') authPin();
+    });
+  }
+});
