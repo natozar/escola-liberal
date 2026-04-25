@@ -2,7 +2,7 @@
 
 ## Identidade do Projeto
 
-Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 21 disciplinas, 66 módulos, 660 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN. Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
+Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 29 disciplinas, 174 módulos, 1.740 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN (com `history` em CLIL — American History em inglês). Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
 
 **Domínio:** escolaliberal.com.br
 **Repo:** github.com/natozar/escola-liberal
@@ -19,7 +19,7 @@ Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a ed
 | Backend | Supabase (auth, database, realtime sync) |
 | Pagamentos | Stripe (checkout via Edge Functions) |
 | IA | API Anthropic (Claude) — tutor + quiz generator |
-| PWA | Service Worker v89 (network-first + stale-while-revalidate + cache-first) |
+| PWA | Service Worker v163 (network-first + stale-while-revalidate + cache-first) |
 | Testes | Playwright + html-validate + Lighthouse + Axe |
 | CI/CD | GitHub Actions → GitHub Pages |
 
@@ -40,7 +40,7 @@ Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a ed
 ├── stripe-billing.js   → Integração Stripe (plans, checkout, verificação)
 ├── i18n.js             → Internacionalização PT/EN
 ├── cookie-consent.js   → Banner de cookies
-├── sw.js               → Service Worker v89
+├── sw.js               → Service Worker v163
 ├── manifest.json       → PWA manifest
 ├── vite.config.js      → Config Vite + plugin minifyLegacyJS
 ├── package.json        → Deps: vite, terser, playwright, html-validate, lighthouse, axe
@@ -48,7 +48,7 @@ Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a ed
 ├── lessons/
 │   ├── index.json      → Índice leve (metadados, ~320KB) — carrega no boot
 │   ├── mod-0.json      → Módulo completo (lazy-loaded sob demanda)
-│   └── ...mod-65.json  → 66 módulos no total
+│   └── ...mod-N.json   → 174 módulos no total (com campo `order` para sequencia pedagogica)
 ├── lessons.json        → Fallback legado (currículo completo, 346KB)
 │
 ├── supabase/
@@ -86,7 +86,7 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 - Fallback chain: index.json → lessons.json → cache
 
 ### Disciplinas & Navegação (linhas 100-200)
-- 21 disciplinas com cores de acento únicas (DISC_ACCENT map)
+- 29 disciplinas com cores de acento únicas (DISC_ACCENT map)
 - `buildSidebar()`, `toggleDiscGroup()`, `getDiscModules()`
 - COLOR_MAP e COLOR_MUTED_MAP para theming por disciplina
 
@@ -312,14 +312,14 @@ O arquivo é monolítico (~4500 linhas). Estas são as seções principais e sua
 
 ---
 
-## Service Worker (sw.js v89)
+## Service Worker (sw.js v163)
 
 ### Estratégia de Cache
 - **Install:** pré-cache CORE_ASSETS (HTML, JS, ícones, index.json, manifest.json) — SEM skipWaiting (SW fica em waiting)
 - **Navigation:** Network-first com fallback para cache, offline.html como último recurso
 - **Assets estáticos:** Stale-while-revalidate
 - **Fontes:** Cache-first (nunca expira)
-- **Lessons:** Lazy-loaded, cached no primeiro acesso (66 módulos)
+- **Lessons:** Lazy-loaded, cached no primeiro acesso (174 módulos)
 - **Google Auth URLs:** Skip (sem cache para evitar poluição)
 
 ### Atualização (Política Permanente)
@@ -743,10 +743,12 @@ Deploy → SW novo detectado (polling 60s)
 - **gen-integrity.mjs:** parametrizado para aceitar dir/output via CLI args.
 - SW v161
 
-### Pendencia identificada — curriculo
-- Distribuicao desigual de modulos: Economia(6), Matematica/Financas(5), maioria(3), Marketing/Tributario/Trabalhista(2), Sustentabilidade/Espanhol(1)
-- Duplicata `historia`(3) e `history`(3) como disciplinas separadas no index.json — investigar se sao PT/EN ou bug
-- Total atual: 81 modulos em 27 disciplinas (CLAUDE.md "Identidade" diz 66/21 — desatualizado, mas preservado ate decidir expansao)
+### Curriculo (estado atual pos-auditoria 2026-04-25)
+- 29 disciplinas, 6 modulos por disciplina (uniforme), 174 modulos total, 1.740 aulas
+- `historia` (BR, PT) e `history` (EUA, EN/CLIL) sao disciplinas distintas DELIBERADAMENTE (nao bug)
+- Sequencia entre modulos controlada por campo `order` em cada modulo (fallback: idx do arquivo)
+- IDs unicos garantidos (script `scripts/editorial-fixes.mjs` valida)
+- Watermark forense + integrity manifest aplicados em build (build_id rotativo)
 
 ### Concluido nesta sessao (2026-04-25 — Editorial Audit Sessao 2)
 - Aplicadas TODAS as decisoes pendentes do RELATORIO-EDITORIAL.md via `scripts/editorial-fixes-v2.mjs` (idempotente)
@@ -769,7 +771,7 @@ Deploy → SW novo detectado (polling 60s)
 - skipWaiting() removido do install event (só no message handler)
 - controllerchange condicionado a _userRequestedUpdate
 - Política de atualização permanente aplicada
-- SW v89 (atual)
+- SW v163 (atual)
 
 ---
 
