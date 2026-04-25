@@ -28,7 +28,9 @@ const DISCIPLINES={
   trabalhista:{label:'Direito Trabalhista',icon:'👷',order:23},
   marketing:{label:'Marketing Digital',icon:'📱',order:24},
   sustentabilidade:{label:'Sustentabilidade',icon:'🌱',order:25},
-  espanol:{label:'Espanhol',icon:'🇪🇸',order:26}
+  espanol:{label:'Espanhol',icon:'🇪🇸',order:26},
+  investimentos:{label:'Investimentos',icon:'📈',order:27},
+  produtividade:{label:'Produtividade',icon:'⚡',order:28}
 };
 const COLOR_MAP={
   sage:'var(--sage)',sky:'var(--sky)',honey:'var(--honey)',
@@ -49,7 +51,8 @@ const DISC_ACCENT={
   ia:'lavender',midia:'coral',direito:'sage',saude:'mint',artes:'honey',logica:'lavender',
   programacao:'sky',oratoria:'honey',civica:'sage',
   empreendedorismo:'coral',tributario:'sage',trabalhista:'honey',marketing:'sky',sustentabilidade:'mint',
-  espanol:'coral'
+  espanol:'coral',
+  investimentos:'mint',produtividade:'lavender'
 };
 function setDiscAccent(disc){
   const color=DISC_ACCENT[disc]||'sage';
