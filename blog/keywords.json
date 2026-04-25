@@ -24,7 +24,7 @@
       "discipline": "Educação Financeira",
       "targetWordCount": 1800,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "financas-pessoais-iniciantes",
         "educacao-financeira-adultos"
@@ -32,7 +32,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-10T12:00:00Z",
       "disciplineContext": [
         "Financas Pessoais",
         "Economia",
@@ -49,7 +49,7 @@
       "discipline": "Educação Financeira",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "financas-pessoais-iniciantes",
         "como-sair-das-dividas"
@@ -57,7 +57,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-11T12:00:00Z",
       "disciplineContext": [
         "Financas Pessoais",
         "Economia",
@@ -74,7 +74,7 @@
       "discipline": "Educação Financeira",
       "targetWordCount": 1500,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-investir-pouco-dinheiro",
         "renda-passiva-para-iniciantes"
@@ -82,7 +82,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-13T12:00:00Z",
       "disciplineContext": [
         "Financas Pessoais",
         "Economia",
@@ -99,7 +99,7 @@
       "discipline": "Educação Financeira",
       "targetWordCount": 1800,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "financas-pessoais-iniciantes",
         "como-fazer-orcamento-pessoal"
@@ -107,7 +107,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-12T12:00:00Z",
       "disciplineContext": [
         "Financas Pessoais",
         "Economia",
@@ -124,7 +124,7 @@
       "discipline": "Educação Financeira",
       "targetWordCount": 1800,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-investir-pouco-dinheiro",
         "o-que-e-juros-compostos"
@@ -132,7 +132,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-17T12:00:00Z",
       "disciplineContext": [
         "Financas Pessoais",
         "Economia",
@@ -149,7 +149,7 @@
       "discipline": "Educação Financeira",
       "targetWordCount": 1500,
       "priority": "medium",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "financas-pessoais-iniciantes",
         "o-que-e-juros-compostos"
@@ -157,7 +157,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-16T12:00:00Z",
       "disciplineContext": [
         "Financas Pessoais",
         "Economia",
@@ -174,7 +174,7 @@
       "discipline": "Educação Financeira",
       "targetWordCount": 1500,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "financas-pessoais-iniciantes",
         "tesouro-direto-para-iniciantes"
@@ -182,7 +182,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-04T12:00:00Z",
       "disciplineContext": [
         "Financas Pessoais",
         "Economia",
@@ -249,7 +249,7 @@
       "discipline": "Educação Financeira",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "tesouro-direto-para-iniciantes",
         "o-que-e-cdi-como-funciona"
@@ -257,7 +257,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-13T12:00:00Z",
       "disciplineContext": [
         "Financas Pessoais",
         "Economia",
@@ -1174,7 +1174,7 @@
       "discipline": "Empreendedorismo",
       "targetWordCount": 1800,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-abrir-mei-passo-a-passo",
         "empreendedorismo-digital-iniciantes"
@@ -1182,7 +1182,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-03T12:00:00Z",
       "disciplineContext": [
         "Empreendedorismo",
         "Marketing Digital",
@@ -1199,7 +1199,7 @@
       "discipline": "Empreendedorismo",
       "targetWordCount": 1500,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-comecar-negocio-pouco-dinheiro",
         "empreendedorismo-digital-iniciantes"
@@ -1207,7 +1207,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-04T12:00:00Z",
       "disciplineContext": [
         "Empreendedorismo",
         "Marketing Digital",
@@ -1249,7 +1249,7 @@
       "discipline": "Empreendedorismo",
       "targetWordCount": 1500,
       "priority": "medium",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-comecar-negocio-pouco-dinheiro",
         "como-validar-ideia-negocio"
@@ -1257,7 +1257,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-06T12:00:00Z",
       "disciplineContext": [
         "Empreendedorismo",
         "Marketing Digital",
@@ -1274,7 +1274,7 @@
       "discipline": "Empreendedorismo",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "marketing-digital-pequenos-negocios",
         "empreendedorismo-digital-iniciantes"
@@ -1282,7 +1282,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-07T12:00:00Z",
       "disciplineContext": [
         "Empreendedorismo",
         "Marketing Digital",
@@ -1824,7 +1824,7 @@
       "discipline": "Desenvolvimento Pessoal",
       "targetWordCount": 1500,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-aprender-mais-rapido",
         "como-estudar-sozinho-autodidata"
@@ -1832,7 +1832,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-30T12:00:00Z",
       "disciplineContext": [
         "Inteligencia Emocional",
         "Psicologia do Crescimento",
@@ -1849,7 +1849,7 @@
       "discipline": "Desenvolvimento Pessoal",
       "targetWordCount": 1500,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-ter-mais-disciplina",
         "como-aprender-mais-rapido"
@@ -1857,7 +1857,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-31T12:00:00Z",
       "disciplineContext": [
         "Inteligencia Emocional",
         "Psicologia do Crescimento",
@@ -1874,7 +1874,7 @@
       "discipline": "Desenvolvimento Pessoal",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "inteligencia-emocional-no-trabalho",
         "como-falar-em-publico"
@@ -1882,7 +1882,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-01T12:00:00Z",
       "disciplineContext": [
         "Inteligencia Emocional",
         "Psicologia do Crescimento",
@@ -1924,7 +1924,7 @@
       "discipline": "Desenvolvimento Pessoal",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-vencer-procrastinacao",
         "como-ter-mais-disciplina"
@@ -1932,7 +1932,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-04T12:00:00Z",
       "disciplineContext": [
         "Inteligencia Emocional",
         "Psicologia do Crescimento",
@@ -2024,7 +2024,7 @@
       "discipline": "Desenvolvimento Pessoal",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-ter-mais-disciplina",
         "como-ser-mais-produtivo"
@@ -2032,7 +2032,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-12T12:00:00Z",
       "disciplineContext": [
         "Inteligencia Emocional",
         "Psicologia do Crescimento",
@@ -2174,7 +2174,7 @@
       "discipline": "Direito e Cidadania",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "direitos-trabalhistas-clt-basico",
         "educacao-financeira-adultos"
@@ -2182,7 +2182,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-02T12:00:00Z",
       "disciplineContext": [
         "Direito Trabalhista",
         "Educacao Tributaria",
@@ -2424,7 +2424,7 @@
       "discipline": "Educação",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "educacao-para-adultos-voltar-estudar",
         "como-estudar-sozinho-autodidata"
@@ -2432,7 +2432,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-27T12:00:00Z",
       "disciplineContext": [
         "Portugues",
         "Matematica",
@@ -2450,7 +2450,7 @@
       "discipline": "Educação",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-aprender-mais-rapido",
         "como-estudar-sozinho-autodidata"
@@ -2458,7 +2458,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-25T12:00:00Z",
       "disciplineContext": [
         "Portugues",
         "Matematica",
@@ -2476,7 +2476,7 @@
       "discipline": "Educação",
       "targetWordCount": 1400,
       "priority": "medium",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "metodos-estudo-mais-eficientes",
         "como-aprender-mais-rapido"
@@ -2484,7 +2484,7 @@
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-03-26T12:00:00Z",
       "disciplineContext": [
         "Portugues",
         "Matematica",
@@ -4438,14 +4438,14 @@
       "discipline": "Desenvolvimento Pessoal",
       "targetWordCount": 1500,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-ser-mais-produtivo"
       ],
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-12T12:00:00Z",
       "disciplineContext": [
         "Inteligencia Emocional",
         "Psicologia do Crescimento",
@@ -4606,14 +4606,14 @@
       "discipline": "Desenvolvimento Pessoal",
       "targetWordCount": 1600,
       "priority": "high",
-      "status": "pending",
+      "status": "published",
       "relatedSlugs": [
         "como-ser-mais-produtivo"
       ],
       "draftedAt": null,
       "reviewScore": null,
       "reviewNotes": null,
-      "publishedAt": null,
+      "publishedAt": "2026-04-13T12:00:00Z",
       "disciplineContext": [
         "Inteligencia Emocional",
         "Psicologia do Crescimento",
