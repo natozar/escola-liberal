@@ -16,7 +16,11 @@ function shareWhatsApp(){
     `🧠💪 TESTE SUA INTELIGÊNCIA ECONÔMICA!\n\nComecei a estudar economia austríaca na Escola Liberal e já mudou minha forma de ver o mundo.\n\n🤔 Você sabe a diferença entre dinheiro e moeda? Entre preço e valor?\n\nSe não sabe, tá na hora de aprender:\n👉 https://escolaliberal.com.br\n\n🎯 Gratuito • No celular • Aulas de 5 minutos\nQuem chegar nos 1.000 XP primeiro? 🔥`,
     `📚 AULA QUE A ESCOLA NÃO DÁ:\n\n"Por que o real perde valor todo ano?"\n"Por que os preços só sobem?"\n"O que é taxa de juros DE VERDADE?"\n\nEu aprendi tudo isso na Escola Liberal. Em 5 min por dia. Pelo celular.\n\n👉 https://escolaliberal.com.br\n\n⭐ Já tenho ${xp} XP — e você? Aceita o desafio?`
   ];
-  const text=msgs[Math.floor(Math.random()*msgs.length)];
+  // Especial Eleições 2026: até 04/10/2026, metade dos shares divulga a disciplina Voto Consciente
+  const votoMsg=`🗳️ VOCÊ SABE ESCOLHER UM CANDIDATO?\n\nA maioria decide o voto em 40 segundos de vídeo. Eu tô aprendendo a decidir com MÉTODO.\n\n✅ Como investigar o passado do candidato (é público e grátis)\n✅ Como saber se a promessa cabe no orçamento\n✅ Como fugir da manipulação de campanha\n\n100% apartidário — ninguém te diz em quem votar, você aprende a decidir sozinho.\n\n👉 https://escolaliberal.com.br\n\n📚 60 aulas gratuitas, no celular, funciona offline.\nEleição é em outubro. Chega preparado. 🇧🇷`;
+  let text;
+  if(new Date()<new Date(2026,9,5)&&Math.random()<0.5)text=votoMsg;
+  else text=msgs[Math.floor(Math.random()*msgs.length)];
   const waUrl='https://wa.me/?text='+encodeURIComponent(text);
   window.open(waUrl,'_blank');
   // Track
