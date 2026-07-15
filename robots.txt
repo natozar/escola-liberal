@@ -62,12 +62,32 @@ User-agent: Omgilibot
 Disallow: /
 User-agent: FacebookBot
 Disallow: /
+User-agent: meta-externalagent
+Disallow: /
 User-agent: Diffbot
 Disallow: /
+
+# Crawlers de PREVIEW de link (WhatsApp, Facebook, X, LinkedIn, Telegram, Discord)
+# NAO sao bots de scraping — geram a imagem/titulo quando alguem compartilha o site
+User-agent: facebookexternalhit
+Allow: /
+User-agent: meta-externalfetcher
+Allow: /
+User-agent: WhatsApp
+Allow: /
+User-agent: Twitterbot
+Allow: /
+User-agent: LinkedInBot
+Allow: /
+User-agent: TelegramBot
+Allow: /
+User-agent: Discordbot
+Allow: /
 
 # Googlebot específico — permitir crawl de imagens
 User-agent: Googlebot
 Allow: /assets/icons/og-image.png
+Allow: /assets/icons/og-voto.jpg
 Allow: /assets/icons/icon-512.png
 
 # Googlebot-Image
