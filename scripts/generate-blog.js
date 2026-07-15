@@ -80,7 +80,7 @@ TAREFA: Escreva artigo educacional completo em HTML (apenas conteudo dentro de <
 
 === REGRAS DE VINCULACAO AS AULAS ===
 1. O artigo e extensao da disciplina "${kw.discipline}" da Escola Liberal.
-2. Na ultima secao, conectar: "Na Escola Liberal, a disciplina de ${kw.discipline} aprofunda esse tema com aulas interativas, quizzes e exercicios praticos. Sao 800 aulas gratuitas em 26 disciplinas."
+2. Na ultima secao, conectar: "Na Escola Liberal, a disciplina de ${kw.discipline} aprofunda esse tema com aulas interativas, quizzes e exercicios praticos. Sao 1.800 aulas gratuitas em 30 disciplinas."
 3. DISCIPLINAS RELACIONADAS (mencionar naturalmente): ${discCtx}
 4. O artigo deve ser util por si so — o leitor veio do Google, nao conhece a escola.
 
@@ -157,7 +157,8 @@ function getDisclaimer(cluster) {
     marketing:'Este artigo e de natureza educacional. Resultados de marketing variam conforme contexto, mercado e execucao.',
     desenvolvimento:'Este artigo e de natureza educacional e nao substitui acompanhamento psicologico ou psiquiatrico profissional.',
     direito:'Este artigo e de natureza educacional e nao constitui aconselhamento juridico. A legislacao pode sofrer alteracoes. Consulte um advogado.',
-    educacao:'Este artigo e de natureza educacional e apresenta metodos de estudo baseados em pesquisas amplamente divulgadas.'
+    educacao:'Este artigo e de natureza educacional e apresenta metodos de estudo baseados em pesquisas amplamente divulgadas.',
+    voto:'Este artigo e de natureza educacional e apartidaria. Nao constitui propaganda eleitoral, nao recomenda candidatos ou partidos e nao substitui a consulta as fontes oficiais (TSE, tribunais de contas e portais de transparencia).'
   };
   return d[cluster] || 'Este artigo e de natureza educacional e nao substitui orientacao profissional especializada.';
 }
@@ -203,7 +204,7 @@ function wrapTemplate(kw, body, dateISO) {
 ${body}
     <p style="font-size:.8rem;color:var(--dim);font-style:italic;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border)">${getDisclaimer(kw.cluster)}</p>
   </article>
-  <div class="cta"><h3>Comece hoje. E 100% gratuito.</h3><p>800 aulas interativas, 26 disciplinas, gamificacao completa. Para adultos. Funciona offline.</p><a href="../app.html">Comecar Gratuitamente →</a></div>
+  <div class="cta"><h3>Comece hoje. E 100% gratuito.</h3><p>1.800 aulas interativas, 30 disciplinas, gamificacao completa. Para adultos. Funciona offline.</p><a href="../app.html">Comecar Gratuitamente →</a></div>
   <div class="footer"><p>Escola Liberal © 2026 · <a href="../termos.html">Termos</a> · <a href="../privacidade.html">Privacidade</a> · <a href="../contato.html">Contato</a></p></div>
 </div>
 <script>
@@ -313,4 +314,8 @@ async function main() {
   console.log('Proximo: abra admin-blog.html para revisar.');
 }
 
-main().catch(e => { console.error('Erro:', e); process.exit(1); });
+if (require.main === module) {
+  main().catch(e => { console.error('Erro:', e); process.exit(1); });
+}
+
+module.exports = { wrapTemplate, getDisclaimer };

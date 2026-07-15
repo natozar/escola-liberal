@@ -4936,6 +4936,1627 @@
         "Filosofia",
         "Ciencias"
       ]
+    },
+    {
+      "slug": "voto-peso-do-voto-nas-eleicoes",
+      "title": "Seu Voto na Ponta do Lápis: A matemática que ninguém te mostrou antes de você votar",
+      "keyword": "peso do voto nas eleicoes",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "A matemática que ninguém te mostrou antes de você votar",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 1,
+      "status": "published",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 1,
+      "votoModule": 174,
+      "votoLesson": 0,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-15T23:46:54.004Z"
+    },
+    {
+      "slug": "voto-o-que-faz-um-vereador",
+      "title": "O Vereador: O cargo mais próximo de você — e o mais mal compreendido",
+      "keyword": "o que faz um vereador",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O cargo mais próximo de você — e o mais mal compreendido",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 2,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 2,
+      "votoModule": 174,
+      "votoLesson": 1,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-faz-um-prefeito",
+      "title": "O Prefeito: O que a prefeitura realmente faz — e o que não é com ela",
+      "keyword": "o que faz um prefeito",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O que a prefeitura realmente faz — e o que não é com ela",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 3,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 3,
+      "votoModule": 174,
+      "votoLesson": 2,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-diferenca-deputado-estadual-e-federal",
+      "title": "Deputado Estadual × Deputado Federal: A diferença que quase ninguém sabe explicar",
+      "keyword": "diferenca deputado estadual e federal",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "A diferença que quase ninguém sabe explicar",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 4,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 4,
+      "votoModule": 174,
+      "votoLesson": 3,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-faz-um-senador",
+      "title": "O Senador: Oito anos de mandato e poderes que só o Senado tem",
+      "keyword": "o que faz um senador",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Oito anos de mandato e poderes que só o Senado tem",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 5,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 5,
+      "votoModule": 174,
+      "votoLesson": 4,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-faz-governador-e-presidente",
+      "title": "Governador e Presidente: Quem cuida do quê — a divisão federal que evita cobrança errada",
+      "keyword": "o que faz governador e presidente",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Quem cuida do quê — a divisão federal que evita cobrança errada",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 6,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 6,
+      "votoModule": 174,
+      "votoLesson": 5,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-competencia-de-cada-cargo-eleitoral",
+      "title": "A Promessa Fora do Cargo: O detector de promessa impossível — competência antes de simpatia",
+      "keyword": "competencia de cada cargo eleitoral",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O detector de promessa impossível — competência antes de simpatia",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 7,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 7,
+      "votoModule": 174,
+      "votoLesson": 6,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-titulo-de-eleitor-e-justificativa",
+      "title": "Título, Obrigação e Justificativa: As regras reais do voto no Brasil — sem lenda urbana",
+      "keyword": "titulo de eleitor e justificativa",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "As regras reais do voto no Brasil — sem lenda urbana",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 8,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 8,
+      "votoModule": 174,
+      "votoLesson": 7,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-funciona-a-urna-eletronica",
+      "title": "A Urna Por Dentro: Como seu voto vira número — e como qualquer cidadão pode conferir",
+      "keyword": "como funciona a urna eletronica",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Como seu voto vira número — e como qualquer cidadão pode conferir",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 9,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 9,
+      "votoModule": 174,
+      "votoLesson": 8,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-funciona-o-sistema-proporcional",
+      "title": "O Sistema Proporcional Sem Mistério: Por que votar num candidato pode eleger outro — a conta completa",
+      "keyword": "como funciona o sistema proporcional",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Por que votar num candidato pode eleger outro — a conta completa",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 10,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 10,
+      "votoModule": 174,
+      "votoLesson": 9,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-avaliar-o-passado-de-um-candidato",
+      "title": "Discurso vs Histórico: Por que o passado prevê comportamento melhor que qualquer promessa",
+      "keyword": "como avaliar o passado de um candidato",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Por que o passado prevê comportamento melhor que qualquer promessa",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 11,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 11,
+      "votoModule": 175,
+      "votoLesson": 0,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-pesquisar-candidato-no-tse",
+      "title": "Onde Estão os Dados Públicos: TSE, portais de transparência e sites legislativos — tudo grátis",
+      "keyword": "como pesquisar candidato no tse",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "TSE, portais de transparência e sites legislativos — tudo grátis",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 12,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 12,
+      "votoModule": 175,
+      "votoLesson": 1,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-ver-votacao-de-deputado",
+      "title": "O Histórico de Votações: Como o parlamentar votou quando o placar estava valendo",
+      "keyword": "como ver votacao de deputado",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Como o parlamentar votou quando o placar estava valendo",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 13,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 13,
+      "votoModule": 175,
+      "votoLesson": 2,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-cobrar-promessa-de-campanha",
+      "title": "A Promessa da Eleição Passada: O plano de governo registrado no TSE é documento — e dá pra cobrar",
+      "keyword": "como cobrar promessa de campanha",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O plano de governo registrado no TSE é documento — e dá pra cobrar",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 14,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 14,
+      "votoModule": 175,
+      "votoLesson": 3,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-patrimonio-de-candidato-declarado",
+      "title": "O Patrimônio Declarado: A evolução dos bens entre eleições — onde olhar e o que levanta bandeira",
+      "keyword": "patrimonio de candidato declarado",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "A evolução dos bens entre eleições — onde olhar e o que levanta bandeira",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 15,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 15,
+      "votoModule": 175,
+      "votoLesson": 4,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-sao-emendas-parlamentares",
+      "title": "Emendas Parlamentares: O que são, por que existem e como seguir o dinheiro",
+      "keyword": "o que sao emendas parlamentares",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O que são, por que existem e como seguir o dinheiro",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 16,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 16,
+      "votoModule": 175,
+      "votoLesson": 5,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-presenca-e-produtividade-de-parlamentar",
+      "title": "Presença e Produtividade: Comparecimento e projetos — e a armadilha de contar quantidade",
+      "keyword": "presenca e produtividade de parlamentar",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Comparecimento e projetos — e a armadilha de contar quantidade",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 17,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 17,
+      "votoModule": 175,
+      "votoLesson": 6,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-troca-de-partido-politico",
+      "title": "O Troca-Troca Partidário: Janela partidária, histórico de filiações e o que muitas trocas sugerem",
+      "keyword": "troca de partido politico",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Janela partidária, histórico de filiações e o que muitas trocas sugerem",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 18,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 18,
+      "votoModule": 175,
+      "votoLesson": 7,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-quem-financia-campanha-eleitoral",
+      "title": "Quem Paga a Campanha: Fundo eleitoral, doadores e por que financiamento revela incentivos",
+      "keyword": "quem financia campanha eleitoral",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Fundo eleitoral, doadores e por que financiamento revela incentivos",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 19,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 19,
+      "votoModule": 175,
+      "votoLesson": 8,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-pesquisar-sobre-um-candidato",
+      "title": "Montando a Ficha do Candidato: Roteiro prático: 30 minutos de pesquisa com checklist",
+      "keyword": "como pesquisar sobre um candidato",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Roteiro prático: 30 minutos de pesquisa com checklist",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 20,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 20,
+      "votoModule": 175,
+      "votoLesson": 9,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-de-onde-vem-o-dinheiro-publico",
+      "title": "De Onde Vem o Dinheiro Público: Governo não gera receita do nada — alguém sempre pagou antes",
+      "keyword": "de onde vem o dinheiro publico",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Governo não gera receita do nada — alguém sempre pagou antes",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 21,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 21,
+      "votoModule": 176,
+      "votoLesson": 0,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-custo-invisivel-das-promessas",
+      "title": "Não Existe Almoço Grátis: O que se vê e o que não se vê em cada benefício prometido",
+      "keyword": "o custo invisivel das promessas",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O que se vê e o que não se vê em cada benefício prometido",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 22,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 22,
+      "votoModule": 176,
+      "votoLesson": 1,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-funciona-o-orcamento-publico",
+      "title": "O Orçamento Engessado: Quanto do dinheiro público já tem dono antes de o eleito tomar posse",
+      "keyword": "como funciona o orcamento publico",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Quanto do dinheiro público já tem dono antes de o eleito tomar posse",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 23,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 23,
+      "votoModule": 176,
+      "votoLesson": 2,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-identificar-promessa-impossivel",
+      "title": "O Teste da Promessa Impossível: Quatro perguntas de 30 segundos que filtram 80% do palanque",
+      "keyword": "como identificar promessa impossivel",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Quatro perguntas de 30 segundos que filtram 80% do palanque",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 24,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 24,
+      "votoModule": 176,
+      "votoLesson": 3,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-competencia-do-cargo-e-promessa",
+      "title": "Competência vs Promessa: Prometer o que o cargo não pode entregar é impossível por definição",
+      "keyword": "competencia do cargo e promessa",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Prometer o que o cargo não pode entregar é impossível por definição",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 25,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 25,
+      "votoModule": 176,
+      "votoLesson": 4,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-ciclo-eleitoral-e-obras-publicas",
+      "title": "Os Incentivos de Quem Promete: Por que a obra fica pronta em ano de eleição — e a conta chega depois",
+      "keyword": "ciclo eleitoral e obras publicas",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Por que a obra fica pronta em ano de eleição — e a conta chega depois",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 26,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 26,
+      "votoModule": 176,
+      "votoLesson": 5,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-custo-de-oportunidade-no-governo",
+      "title": "Custo de Oportunidade: Cada real no projeto A é um real que não vai para o B",
+      "keyword": "custo de oportunidade no governo",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Cada real no projeto A é um real que não vai para o B",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 27,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 27,
+      "votoModule": 176,
+      "votoLesson": 6,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-por-que-candidatos-prometem-demais",
+      "title": "A Inflação de Promessas: Por que quem promete pouco parece fraco — e o exagero vence a triagem",
+      "keyword": "por que candidatos prometem demais",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Por que quem promete pouco parece fraco — e o exagero vence a triagem",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 28,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 28,
+      "votoModule": 176,
+      "votoLesson": 7,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-quanto-custa-uma-promessa-de-campanha",
+      "title": "Cabe no Orçamento? Exercício Guiado: Estimando o custo de uma promessa com números redondos",
+      "keyword": "quanto custa uma promessa de campanha",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Estimando o custo de uma promessa com números redondos",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 29,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 29,
+      "votoModule": 176,
+      "votoLesson": 8,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-perguntas-para-avaliar-promessa-politica",
+      "title": "As Perguntas que Desmontam Promessa Vazia: O checklist completo para debate, sabatina ou pesquisa solo",
+      "keyword": "perguntas para avaliar promessa politica",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O checklist completo para debate, sabatina ou pesquisa solo",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 30,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 30,
+      "votoModule": 176,
+      "votoLesson": 9,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-funciona-o-marketing-politico",
+      "title": "O Marketing Político por Dentro: Candidato também é produto — e existe uma indústria inteira pra vendê-lo",
+      "keyword": "como funciona o marketing politico",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Candidato também é produto — e existe uma indústria inteira pra vendê-lo",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 31,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 31,
+      "votoModule": 177,
+      "votoLesson": 0,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-falacias-em-discurso-politico",
+      "title": "Falácias de Palanque: Os truques de argumentação que aparecem em discurso de todo espectro",
+      "keyword": "falacias em discurso politico",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Os truques de argumentação que aparecem em discurso de todo espectro",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 32,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 32,
+      "votoModule": 177,
+      "votoLesson": 1,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-emocao-e-manipulacao-eleitoral",
+      "title": "Emoção Não É Prova: Por que jingle, história de superação e bebê no colo funcionam tão bem",
+      "keyword": "emocao e manipulacao eleitoral",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Por que jingle, história de superação e bebê no colo funcionam tão bem",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 33,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 33,
+      "votoModule": 177,
+      "votoLesson": 2,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-identificar-fake-news-eleitoral",
+      "title": "A Fake News de Véspera: Anatomia do boato que aparece no sábado antes da eleição",
+      "keyword": "como identificar fake news eleitoral",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Anatomia do boato que aparece no sábado antes da eleição",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 34,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 34,
+      "votoModule": 177,
+      "votoLesson": 3,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-verificar-noticia-eleitoral",
+      "title": "Verificação em 5 Minutos: O kit básico pra checar antes de acreditar — ou compartilhar",
+      "keyword": "como verificar noticia eleitoral",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O kit básico pra checar antes de acreditar — ou compartilhar",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 35,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 35,
+      "votoModule": 177,
+      "votoLesson": 4,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-ler-pesquisa-eleitoral",
+      "title": "Como Ler Pesquisa Eleitoral: Margem de erro, quem pagou e por que pesquisa não é previsão",
+      "keyword": "como ler pesquisa eleitoral",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Margem de erro, quem pagou e por que pesquisa não é previsão",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 36,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 36,
+      "votoModule": 177,
+      "votoLesson": 5,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-algoritmo-e-bolha-politica",
+      "title": "Algoritmo e Bolha: Por que seu feed concorda com você — e o dos outros não",
+      "keyword": "algoritmo e bolha politica",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Por que seu feed concorda com você — e o dos outros não",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 37,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 37,
+      "votoModule": 177,
+      "votoLesson": 6,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-culto-a-personalidade-na-politica",
+      "title": "O Salvador da Pátria: Messianismo político: o padrão que se repete em todos os espectros",
+      "keyword": "culto a personalidade na politica",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Messianismo político: o padrão que se repete em todos os espectros",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 38,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 38,
+      "votoModule": 177,
+      "votoLesson": 7,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-compra-de-voto-e-assedio-eleitoral",
+      "title": "Compra de Votos e Assédio Eleitoral: O que a lei diz, por que o voto secreto te protege e como denunciar",
+      "keyword": "compra de voto e assedio eleitoral",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O que a lei diz, por que o voto secreto te protege e como denunciar",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 39,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 39,
+      "votoModule": 177,
+      "votoLesson": 8,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-se-proteger-de-manipulacao-eleitoral",
+      "title": "Checklist Anti-Manipulação: Os sinais de alerta e as perguntas de defesa, tudo numa página só",
+      "keyword": "como se proteger de manipulacao eleitoral",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Os sinais de alerta e as perguntas de defesa, tudo numa página só",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 40,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 40,
+      "votoModule": 177,
+      "votoLesson": 9,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-e-a-lei-da-ficha-limpa",
+      "title": "A Lei da Ficha Limpa: A lei que 1,6 milhão de brasileiros escreveram — e o que ela realmente barra",
+      "keyword": "o que e a lei da ficha limpa",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "A lei que 1,6 milhão de brasileiros escreveram — e o que ela realmente barra",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 41,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 41,
+      "votoModule": 178,
+      "votoLesson": 0,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-consultar-processo-de-candidato",
+      "title": "Como Consultar Processos: Investigado, réu e condenado são três coisas diferentes — e tudo é público",
+      "keyword": "como consultar processo de candidato",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Investigado, réu e condenado são três coisas diferentes — e tudo é público",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 42,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 42,
+      "votoModule": 178,
+      "votoLesson": 1,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-nepotismo-e-uso-da-maquina-publica",
+      "title": "Nepotismo e Uso da Máquina: Parente em cargo de confiança e estrutura pública a serviço de campanha",
+      "keyword": "nepotismo e uso da maquina publica",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Parente em cargo de confiança e estrutura pública a serviço de campanha",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 43,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 43,
+      "votoModule": 178,
+      "votoLesson": 2,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-e-improbidade-administrativa",
+      "title": "Improbidade Administrativa: O que a lei pune, o que mudou em 2021 e o que uma condenação significa",
+      "keyword": "o que e improbidade administrativa",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O que a lei pune, o que mudou em 2021 e o que uma condenação significa",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 44,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 44,
+      "votoModule": 178,
+      "votoLesson": 3,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-sao-contas-rejeitadas",
+      "title": "Contas Rejeitadas: TCU, TCEs, pareceres — o que pesa de verdade e o que é tecnicalidade",
+      "keyword": "o que sao contas rejeitadas",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "TCU, TCEs, pareceres — o que pesa de verdade e o que é tecnicalidade",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 45,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 45,
+      "votoModule": 178,
+      "votoLesson": 4,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-evolucao-patrimonial-de-politico",
+      "title": "Evolução Patrimonial: As declarações de bens ao TSE contam uma história — aprenda a ler",
+      "keyword": "evolucao patrimonial de politico",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "As declarações de bens ao TSE contam uma história — aprenda a ler",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 46,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 46,
+      "votoModule": 178,
+      "votoLesson": 5,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-avaliar-um-partido-politico",
+      "title": "E o Partido, Importa?: Como avaliar uma legenda por critérios — sem ninguém te dizer qual escolher",
+      "keyword": "como avaliar um partido politico",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Como avaliar uma legenda por critérios — sem ninguém te dizer qual escolher",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 47,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 47,
+      "votoModule": 178,
+      "votoLesson": 6,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-coerencia-de-trajetoria-politica",
+      "title": "Coerência de Trajetória: Mudou de posição: convicção ou conveniência? Há como distinguir",
+      "keyword": "coerencia de trajetoria politica",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Mudou de posição: convicção ou conveniência? Há como distinguir",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 48,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 48,
+      "votoModule": 178,
+      "votoLesson": 7,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-transparencia-de-candidato",
+      "title": "Transparência do Próprio Candidato: Agenda aberta, patrimônio explicado e a pergunta incômoda respondida",
+      "keyword": "transparencia de candidato",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Agenda aberta, patrimônio explicado e a pergunta incômoda respondida",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 49,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 49,
+      "votoModule": 178,
+      "votoLesson": 8,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-criterios-de-integridade-para-votar",
+      "title": "Montando Seu Filtro de Integridade: O checklist final: o que elimina, o que pesa, o que é ruído",
+      "keyword": "criterios de integridade para votar",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O checklist final: o que elimina, o que pesa, o que é ruído",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 50,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 50,
+      "votoModule": 178,
+      "votoLesson": 9,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-escolher-candidato-com-criterios",
+      "title": "Sua Régua: Defina os critérios antes de olhar os nomes",
+      "keyword": "como escolher candidato com criterios",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Defina os critérios antes de olhar os nomes",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 51,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 51,
+      "votoModule": 179,
+      "votoLesson": 0,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-matriz-de-decisao-para-votar",
+      "title": "Pesos e Notas: A matriz de decisão que cabe numa folha de caderno",
+      "keyword": "matriz de decisao para votar",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "A matriz de decisão que cabe numa folha de caderno",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 52,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 52,
+      "votoModule": 179,
+      "votoLesson": 1,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-comparar-candidatos",
+      "title": "Exercício Guiado: Três candidatos fictícios, uma folha de papel e você",
+      "keyword": "como comparar candidatos",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Três candidatos fictícios, uma folha de papel e você",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 53,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 53,
+      "votoModule": 179,
+      "votoLesson": 2,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-voto-util-nulo-e-branco",
+      "title": "Voto Útil, Nulo e Branco: O que cada um faz de verdade na contagem",
+      "keyword": "voto util nulo e branco",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O que cada um faz de verdade na contagem",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 54,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 54,
+      "votoModule": 179,
+      "votoLesson": 3,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-votar-no-segundo-turno",
+      "title": "Segundo Turno: Menos opções, mais informação — reavalie do zero",
+      "keyword": "como votar no segundo turno",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Menos opções, mais informação — reavalie do zero",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 55,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 55,
+      "votoModule": 179,
+      "votoLesson": 4,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-fazer-no-dia-da-votacao",
+      "title": "O Dia da Votação: e-Título, fila, cabine: o manual prático de domingo",
+      "keyword": "o que fazer no dia da votacao",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "e-Título, fila, cabine: o manual prático de domingo",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 56,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 56,
+      "votoModule": 179,
+      "votoLesson": 5,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-acompanhar-politico-eleito",
+      "title": "Depois da Urna: O mandato começa quando a campanha acaba",
+      "keyword": "como acompanhar politico eleito",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "O mandato começa quando a campanha acaba",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 57,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 57,
+      "votoModule": 179,
+      "votoLesson": 6,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-cobrar-politico-eleito",
+      "title": "Como Cobrar: Ouvidoria, LAI, audiência pública: os canais que funcionam",
+      "keyword": "como cobrar politico eleito",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Ouvidoria, LAI, audiência pública: os canais que funcionam",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 58,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 58,
+      "votoModule": 179,
+      "votoLesson": 7,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-o-que-e-accountability-politica",
+      "title": "Accountability: A próxima eleição começa no caderninho de hoje",
+      "keyword": "o que e accountability politica",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "A próxima eleição começa no caderninho de hoje",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 59,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 59,
+      "votoModule": 179,
+      "votoLesson": 8,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+    },
+    {
+      "slug": "voto-como-ser-um-eleitor-consciente",
+      "title": "O Eleitor que o Brasil Precisa: Seis módulos em um checklist — e o voto como hábito",
+      "keyword": "como ser um eleitor consciente",
+      "cluster": "voto",
+      "tag": "Cidadania",
+      "description150": "Seis módulos em um checklist — e o voto como hábito",
+      "discipline": "Voto Consciente",
+      "disciplineContext": [
+        "Educacao Civica",
+        "Economia",
+        "Direito e Cidadania",
+        "Logica e Argumentacao"
+      ],
+      "targetWordCount": 1500,
+      "priority": 60,
+      "status": "drafted",
+      "relatedSlugs": [
+        "como-escolher-candidato"
+      ],
+      "order": 60,
+      "votoModule": 179,
+      "votoLesson": 9,
+      "draftedAt": "2026-07-15T12:00:00.000Z",
+      "reviewScore": 8,
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
     }
   ]
 }

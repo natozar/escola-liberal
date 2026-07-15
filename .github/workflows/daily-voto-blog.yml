@@ -1,0 +1,48 @@
+name: Daily Voto Consciente Article
+
+# Publica 1 artigo da série "Voto Consciente" por dia, na ordem pedagógica.
+# Os rascunhos são gerados em lote e revisados ANTES; este workflow só PUBLICA
+# o próximo aprovado — não gera conteúdo (sem chave de IA envolvida).
+
+on:
+  schedule:
+    - cron: '0 12 * * *'   # 12:00 UTC = 09:00 BRT, diariamente
+  workflow_dispatch: {}      # permite rodar manualmente pelo botão do GitHub
+
+permissions:
+  contents: write            # necessário para commitar/pushar
+
+concurrency:
+  group: daily-voto-blog
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Publicar próximo artigo da série
+        id: publish
+        run: node scripts/publish-next-voto.mjs
+
+      - name: Verificar sitemap
+        run: node scripts/verify-sitemap.mjs
+
+      - name: Commit e push se houve publicação
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add blog/ blog.html sitemap.xml sw.js
+            SLUG=$(git status --porcelain blog/ | grep -oE 'blog/voto-[a-z0-9-]+\.html' | head -1)
+            git commit -m "blog(voto): publica artigo diário da série Voto Consciente ($SLUG)"
+            git push
+            echo "Publicado e deployado."
+          else
+            echo "Nada para publicar hoje."
+          fi
