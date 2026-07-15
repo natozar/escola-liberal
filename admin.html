@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; form-action 'self' https://*.supabase.co;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self' https://cdn.jsdelivr.net; img-src 'self' data: https: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; form-action 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; upgrade-insecure-requests;">
   <title>Admin — Painel de Gestão | Escola Liberal</title>
   <meta name="robots" content="noindex,nofollow">
   <link rel="manifest" href="manifest-admin.json">
@@ -175,6 +175,7 @@
     <div class="tab" data-action="switchTab" data-tab="geo">📍 Geografia</div>
     <div class="tab" data-action="switchTab" data-tab="installs">📱 Instalações</div>
     <div class="tab" data-action="switchTab" data-tab="impact">🎯 Impacto</div>
+    <div class="tab" data-action="switchTab" data-tab="security">🛡️ Segurança</div>
   </div>
 
   <div class="content">
@@ -577,6 +578,55 @@
       <div class="chart-card">
         <h3>📋 Perfil dos Alunos</h3>
         <div id="studentProfile"></div>
+      </div>
+    </div>
+
+    <!-- SECURITY -->
+    <div class="panel" id="panSecurity">
+      <div style="text-align:center;padding:1rem 0 1.5rem">
+        <h2 style="font-size:1.3rem;color:var(--accent)">🛡️ Relatórios de Erros e Tentativas de Invasão</h2>
+        <p style="color:var(--muted);font-size:.82rem">Erros JS, falhas de integridade de conteúdo, age tamper, brute-force, CSP — em tempo real</p>
+      </div>
+
+      <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+        <div class="stat" style="text-align:center;padding:1.2rem"><div style="font-size:2rem;font-weight:700;color:#e07460" id="secCritical">—</div><div style="color:var(--muted);font-size:.78rem;margin-top:.25rem">Críticos não resolvidos</div></div>
+        <div class="stat" style="text-align:center;padding:1.2rem"><div style="font-size:2rem;font-weight:700;color:var(--accent)" id="secErr24h">—</div><div style="color:var(--muted);font-size:.78rem;margin-top:.25rem">Erros 24h</div></div>
+        <div class="stat" style="text-align:center;padding:1.2rem"><div style="font-size:2rem;font-weight:700;color:var(--blue)" id="secErr7d">—</div><div style="color:var(--muted);font-size:.78rem;margin-top:.25rem">Erros 7 dias</div></div>
+        <div class="stat" style="text-align:center;padding:1.2rem"><div style="font-size:2rem;font-weight:700;color:var(--sage)" id="secErrTotal">—</div><div style="color:var(--muted);font-size:.78rem;margin-top:.25rem">Total Erros</div></div>
+        <div class="stat" style="text-align:center;padding:1.2rem"><div style="font-size:2rem;font-weight:700;color:#e07460" id="secIntegrity">—</div><div style="color:var(--muted);font-size:.78rem;margin-top:.25rem">Adulteração de Conteúdo</div></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🔥 Top 10 Tipos de Erro (7 dias)</h3>
+        <div id="secTopKinds" style="font-size:.85rem">Carregando…</div>
+      </div>
+
+      <div class="chart-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem">
+          <h3 style="margin:0">🚨 Tentativas de Invasão e Erros Críticos</h3>
+          <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+            <select class="form-select" id="secFilterSev" style="min-width:120px"><option value="all">Todas severidades</option><option value="critical">Crítico</option><option value="warning">Warning</option><option value="info">Info</option></select>
+            <select class="form-select" id="secFilterRes" style="min-width:130px"><option value="open">Não resolvidos</option><option value="all">Todos</option><option value="resolved">Resolvidos</option></select>
+            <button class="btn btn-ghost" data-action="loadSecurity">🔄 Atualizar</button>
+            <button class="btn btn-ghost" data-action="exportSecurityCSV">📥 CSV</button>
+          </div>
+        </div>
+        <div id="secErrorsList" style="max-height:520px;overflow-y:auto;font-size:.82rem">Carregando…</div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🔐 Adulteração de Conteúdo (Integrity Alerts)</h3>
+        <p style="color:var(--muted);font-size:.78rem;margin-bottom:.75rem">Hash SHA-256 divergente em arquivos de aulas/módulos. Indica CDN poisoning, MITM ou build comprometido.</p>
+        <div id="secIntegrityList" style="max-height:360px;overflow-y:auto;font-size:.82rem">Carregando…</div>
+      </div>
+
+      <div class="chart-card">
+        <h3>📡 Saúde do sistema</h3>
+        <div style="font-size:.82rem;color:var(--muted);line-height:1.7">
+          <div>SW versão: <span id="secSwVersion">—</span></div>
+          <div>Manifesto integridade: <span id="secManifestStatus">—</span></div>
+          <div>Última atualização: <span id="secLastUpdate">—</span></div>
+        </div>
       </div>
     </div>
 

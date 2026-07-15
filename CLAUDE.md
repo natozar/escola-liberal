@@ -775,6 +775,12 @@ Deploy → SW novo detectado (polling 60s)
   - `LICENSE.md` proprietaria + `robots.txt` anti-AI-scraping (GPTBot, ClaudeBot, etc bloqueados)
   - Pipeline build: copy lessons → watermark dist → integrity hash dist (manifesto bate com conteudo deployado)
 
+### Concluido nesta sessao (2026-07-14 — Housekeeping)
+- **Security headers commitados** (estavam soltos na working tree desde sessao anterior): CSP + nosniff + X-Frame-Options + referrer-policy em 12 paginas publicas. CSP auditado contra os recursos externos reais de cada pagina antes do commit
+- **Aba 🛡️ Segurança no admin** commitada: dashboards de erros JS, adulteracao de conteudo, age tamper, brute-force (fonte: error-reporter → Supabase), filtros por severidade, export CSV
+- **dist/ untracked** (git rm --cached): producao e buildada pelo CI (comprovado — mod-174+ foram ao ar sem dist commitado); dist rastreado so gerava churn de watermark a cada build local. dist/ ja estava no .gitignore
+- Posts antigos do blog: numeros defasados (800 aulas/26 disciplinas) corrigidos para 1.800/30
+
 ### Concluido nesta sessao (2026-07-14 — Disciplina Voto Consciente)
 - **Nova disciplina `voto` ("Voto Consciente" 🗳️) como PRIMEIRA disciplina da plataforma** — decisao estrategica: janela eleitoral (eleicoes outubro/2026)
 - 6 modulos novos: mod-174 a mod-179 (60 aulas, ~231KB de conteudo, media ~3.900 chars/aula):
@@ -818,6 +824,7 @@ Deploy → SW novo detectado (polling 60s)
 | 📍 Geografia | Mapa de alunos por estado/região do Brasil |
 | 📱 Instalações | Métricas PWA, dispositivos, navegadores |
 | 🎯 Impacto | Dashboard executivo para pitch gov (horas, retenção, crescimento) |
+| 🛡️ Segurança | Erros JS, integridade de conteúdo, age tamper, brute-force, CSP (via error-reporter) |
 
 ### Features especiais
 - **🖥 Modo Apresentação** — fullscreen com números grandes para projetar em reuniões

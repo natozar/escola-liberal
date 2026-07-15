@@ -27,6 +27,11 @@ function authPin(){
   if(_authAttempts>5){
     _authLocked=true;
     document.getElementById('authErr').textContent='Muitas tentativas. Aguarde 2 minutos.';
+    // Reporta tentativa de brute-force (best-effort: nem sempre sb esta inicializado aqui)
+    try{
+      const tmp=window.supabase&&window.supabase.createClient(SB_URL,SB_KEY);
+      if(tmp){tmp.from('error_reports').insert({kind:'pin_brute_force',severity:'critical',message:'>5 tentativas PIN admin',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}
+    }catch(_){}
     setTimeout(()=>{_authAttempts=0;_authLocked=false;document.getElementById('authErr').textContent=''},120000);
     return;
   }
@@ -568,6 +573,150 @@ function switchTab(id){
   event.target.classList.add('active');
   const pan=document.getElementById('pan'+id.charAt(0).toUpperCase()+id.slice(1));
   if(pan)pan.classList.add('active');
+  if(id==='security')loadSecurity();
+}
+
+// ============================================================
+// SECURITY AREA — relatorios de erros e tentativas de invasao
+// ============================================================
+const SEV_BADGE={critical:'background:#3a1a1a;color:#e07460;border:1px solid #5a2a2a',warning:'background:#3a2e1a;color:#d4a843;border:1px solid #5a4a2a',info:'background:#1a2a3a;color:#7aa3d4;border:1px solid #2a3a5a'};
+const SEV_LABEL={critical:'CRÍTICO',warning:'WARNING',info:'INFO'};
+let _secErrors=[];
+let _secIntegrity=[];
+
+function _secEsc(s){return String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'})[c])}
+function _secFmtTime(t){if(!t)return '—';const d=new Date(t),now=new Date(),diff=(now-d)/1000;if(diff<60)return Math.floor(diff)+'s atrás';if(diff<3600)return Math.floor(diff/60)+'m atrás';if(diff<86400)return Math.floor(diff/3600)+'h atrás';return d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR').slice(0,5)}
+
+async function loadSecurity(){
+  if(!sb){admToast('⚠ Supabase não inicializado');return}
+  try{
+    const swEl=document.getElementById('secSwVersion');
+    if(swEl&&navigator.serviceWorker){
+      const reg=await navigator.serviceWorker.getRegistration();
+      const v=reg&&reg.active?'ativo':'—';
+      swEl.textContent=v;
+    }
+    const lastEl=document.getElementById('secLastUpdate');
+    if(lastEl)lastEl.textContent=new Date().toLocaleString('pt-BR');
+
+    // Manifesto
+    try{
+      const mr=await fetch('/lessons/integrity.json',{cache:'no-store'});
+      const mEl=document.getElementById('secManifestStatus');
+      if(mr.ok){const m=await mr.json();if(mEl)mEl.textContent=Object.keys(m.files||{}).length+' arquivos · '+(m.generated||'').slice(0,16)}
+      else if(mEl)mEl.textContent='ausente';
+    }catch(_){}
+
+    // Summary RPC
+    let summary=null;
+    try{const{data}=await sb.rpc('security_summary');summary=data}catch(_){}
+    if(summary){
+      const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v==null?'—':String(v)};
+      set('secCritical',summary.errors_critical_unresolved);
+      set('secErr24h',summary.errors_24h);
+      set('secErr7d',summary.errors_7d);
+      set('secErrTotal',summary.errors_all);
+      set('secIntegrity',summary.integrity_unresolved);
+      const tk=summary.top_kinds_7d||[];
+      const tkEl=document.getElementById('secTopKinds');
+      if(tkEl){
+        if(!tk.length){tkEl.innerHTML='<div style="color:var(--muted)">Sem eventos nos últimos 7 dias.</div>'}
+        else{
+          tkEl.innerHTML=tk.map(t=>`<div style="display:flex;justify-content:space-between;padding:.4rem .6rem;border-bottom:1px solid var(--border)"><span>${_secEsc(t.kind)}</span><strong>${t.c}</strong></div>`).join('');
+        }
+      }
+    }
+
+    // Lista de erros
+    const sev=document.getElementById('secFilterSev').value;
+    const res=document.getElementById('secFilterRes').value;
+    let q=sb.from('error_reports').select('*').order('occurred_at',{ascending:false}).limit(200);
+    if(sev!=='all')q=q.eq('severity',sev);
+    if(res==='open')q=q.eq('resolved',false);
+    else if(res==='resolved')q=q.eq('resolved',true);
+    const{data:errs,error:eErr}=await q;
+    if(eErr)throw eErr;
+    _secErrors=errs||[];
+    renderSecurityList();
+
+    // Integrity alerts
+    const{data:ints}=await sb.from('integrity_alerts').select('*').order('occurred_at',{ascending:false}).limit(50);
+    _secIntegrity=ints||[];
+    renderIntegrityList();
+
+  }catch(e){
+    admToast('❌ Erro ao carregar segurança: '+e.message);
+    console.error('[Security]',e);
+  }
+}
+
+function renderSecurityList(){
+  const el=document.getElementById('secErrorsList');
+  if(!el)return;
+  if(!_secErrors.length){el.innerHTML='<div style="color:var(--muted);padding:1rem;text-align:center">✅ Nenhum evento. Sistema limpo.</div>';return}
+  el.innerHTML=_secErrors.map(r=>{
+    const sevSt=SEV_BADGE[r.severity]||SEV_BADGE.info;
+    const sevLb=SEV_LABEL[r.severity]||r.severity;
+    const det=r.details?_secEsc(JSON.stringify(r.details).slice(0,400)):'';
+    const ua=r.user_agent?_secEsc(r.user_agent.slice(0,80)):'';
+    return `<div style="border:1px solid var(--border);border-radius:8px;padding:.7rem;margin-bottom:.5rem;background:${r.resolved?'transparent':'var(--card-bg,rgba(255,255,255,.02))'}">
+      <div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin-bottom:.4rem">
+        <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <span style="${sevSt};padding:.15rem .5rem;border-radius:4px;font-size:.7rem;font-weight:700">${sevLb}</span>
+          <strong style="font-family:ui-monospace,monospace;font-size:.85rem">${_secEsc(r.kind)}</strong>
+          <span style="color:var(--muted);font-size:.72rem">${_secFmtTime(r.occurred_at)}</span>
+        </div>
+        <div style="display:flex;gap:.3rem">
+          ${r.resolved?'<span style="color:var(--green);font-size:.72rem">✓ resolvido</span>':`<button class="btn btn-ghost" data-action="resolveSecurityItem" data-table="error_reports" data-id="${r.id}" style="padding:.2rem .5rem;font-size:.72rem">Resolver</button>`}
+        </div>
+      </div>
+      <div style="font-size:.82rem;margin-bottom:.3rem;word-break:break-word">${_secEsc(r.message||'(sem mensagem)')}</div>
+      ${r.url_path?`<div style="color:var(--muted);font-size:.7rem">📍 ${_secEsc(r.url_path)}</div>`:''}
+      ${ua?`<div style="color:var(--muted);font-size:.7rem">🖥 ${ua}</div>`:''}
+      ${det?`<details style="margin-top:.4rem"><summary style="cursor:pointer;font-size:.72rem;color:var(--muted)">detalhes</summary><pre style="font-size:.7rem;background:rgba(0,0,0,.2);padding:.4rem;border-radius:4px;overflow-x:auto;margin:.3rem 0 0">${det}</pre></details>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderIntegrityList(){
+  const el=document.getElementById('secIntegrityList');
+  if(!el)return;
+  if(!_secIntegrity.length){el.innerHTML='<div style="color:var(--green);padding:1rem;text-align:center">✅ Nenhuma adulteração detectada.</div>';return}
+  el.innerHTML=_secIntegrity.map(r=>{
+    const det=r.details?_secEsc(JSON.stringify(r.details).slice(0,400)):'';
+    return `<div style="border:1px solid #5a2a2a;border-radius:8px;padding:.7rem;margin-bottom:.5rem;background:rgba(224,116,96,.05)">
+      <div style="display:flex;justify-content:space-between;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem">
+        <strong style="color:#e07460;font-family:ui-monospace,monospace;font-size:.85rem">${_secEsc(r.kind)}</strong>
+        <span style="color:var(--muted);font-size:.72rem">${_secFmtTime(r.occurred_at)}</span>
+      </div>
+      ${r.url?`<div style="color:var(--muted);font-size:.7rem;margin-bottom:.3rem">📍 ${_secEsc((r.url||'').slice(0,200))}</div>`:''}
+      ${det?`<pre style="font-size:.7rem;background:rgba(0,0,0,.2);padding:.4rem;border-radius:4px;overflow-x:auto;margin:.3rem 0 0">${det}</pre>`:''}
+      ${r.resolved?'<span style="color:var(--green);font-size:.72rem">✓ resolvido</span>':`<button class="btn btn-ghost" data-action="resolveSecurityItem" data-table="integrity_alerts" data-id="${r.id}" style="padding:.2rem .5rem;font-size:.72rem;margin-top:.4rem">Marcar como resolvido</button>`}
+    </div>`;
+  }).join('');
+}
+
+async function resolveSecurityItem(table,id){
+  if(!sb||!table||!id)return;
+  try{
+    const{error}=await sb.from(table).update({resolved:true,resolved_at:new Date().toISOString()}).eq('id',id);
+    if(error)throw error;
+    admToast('✓ Marcado como resolvido');
+    admLog('Security: resolved '+table+'#'+id);
+    loadSecurity();
+  }catch(e){admToast('❌ '+e.message)}
+}
+
+function exportSecurityCSV(){
+  if(!_secErrors.length){admToast('⚠ Nada para exportar');return}
+  const cols=['occurred_at','kind','severity','message','url_path','resolved'];
+  const csv=[cols.join(',')].concat(_secErrors.map(r=>cols.map(c=>{
+    const v=r[c]==null?'':String(r[c]).replace(/"/g,'""').replace(/[\r\n]+/g,' ');
+    return /[,"]/.test(v)?`"${v}"`:v;
+  }).join(','))).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='security-'+new Date().toISOString().slice(0,10)+'.csv';a.click();
+  admToast('✓ CSV exportado: '+_secErrors.length+' eventos');
 }
 
 // ============================================================
@@ -1174,6 +1323,20 @@ document.addEventListener('click', function(e) {
       var tab = el.getAttribute('data-tab');
       if (tab) switchTab(tab);
       break;
+    case 'loadSecurity': loadSecurity(); break;
+    case 'exportSecurityCSV': exportSecurityCSV(); break;
+    case 'resolveSecurityItem':
+      var t = el.getAttribute('data-table');
+      var i = el.getAttribute('data-id');
+      if(t && i) resolveSecurityItem(t, i);
+      break;
+  }
+});
+
+// Filter changes on security panel
+document.addEventListener('change', function(e){
+  if(e.target && (e.target.id==='secFilterSev' || e.target.id==='secFilterRes')){
+    loadSecurity();
   }
 });
 
