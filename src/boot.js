@@ -272,8 +272,11 @@ export async function boot(){
   window.initOnboard();
 
   // Go straight to dashboard — no auth wait
-  // DEMO_MODE (without OFFLINE_MODE) still requires age verification for new users
-  if((window.DEMO_MODE && window.OFFLINE_MODE) || (window.DEMO_MODE && window.S.ageGroup==='adult') || window.S.name!=='Aluno'){
+  // DEMO_MODE (without OFFLINE_MODE) still requires age verification for new users.
+  // A última condição espelha o initOnboard (adult + ageVerifiedAt = onboarding escondido):
+  // sem ela, quem verifica idade e PULA o nome (opcional) reabria o app num dashboard
+  // não-renderizado, pois nem o initOnboard nem este gate chamavam goDash.
+  if((window.DEMO_MODE && window.OFFLINE_MODE) || (window.DEMO_MODE && window.S.ageGroup==='adult') || window.S.name!=='Aluno' || (window.S.ageGroup==='adult' && window.S.ageVerifiedAt)){
     document.getElementById('onboard').style.display='none';
     window.goDash();
   }
