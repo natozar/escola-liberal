@@ -775,6 +775,13 @@ Deploy → SW novo detectado (polling 60s)
   - `LICENSE.md` proprietaria + `robots.txt` anti-AI-scraping (GPTBot, ClaudeBot, etc bloqueados)
   - Pipeline build: copy lessons → watermark dist → integrity hash dist (manifesto bate com conteudo deployado)
 
+### Escala e Custos (auditoria 2026-07-14)
+- **Custo fixo atual: R$ 0** (exceto dominio ~R$40/ano). GitHub Pages/Actions free, Supabase free tier, AI Tutor/Quiz desabilitados, Serpro sem chaves (fallback auto-declaracao), moderacao debate com fallback permissivo sem ANTHROPIC_API_KEY (filtro local 3 camadas segura sozinho)
+- **Payload primeira visita: ~450KB gzip** (index.json 284KB + JS 76KB + CSS 21KB + HTML). Modulos lazy ~18KB cada. Visitas repetidas ~0 (SW offline-first)
+- **Gargalos em ordem de quebra:** (1) Supabase Realtime debate — ~200 conexoes simultaneas no free tier, degrada sem derrubar o resto; (2) banda GitHub Pages ~100GB/mes ≈ 150-200k usuarios novos/mes; (3) Supabase DB 500MB free
+- **Fix do gargalo 2: CLOUDFLARE-SETUP.md** (guia pronto, R$0) — proxy Cloudflare Free na frente do Pages = banda ilimitada + DDoS + edge cache 2h. Execucao e do Renato (troca de nameservers no Registro.br)
+- Gargalo 1 se resolve com Supabase Pro (US$25/mes) QUANDO a escala chegar — nao antes
+
 ### Concluido nesta sessao (2026-07-14 — Housekeeping)
 - **Security headers commitados** (estavam soltos na working tree desde sessao anterior): CSP + nosniff + X-Frame-Options + referrer-policy em 12 paginas publicas. CSP auditado contra os recursos externos reais de cada pagina antes do commit
 - **Aba 🛡️ Segurança no admin** commitada: dashboards de erros JS, adulteracao de conteudo, age tamper, brute-force (fonte: error-reporter → Supabase), filtros por severidade, export CSV
