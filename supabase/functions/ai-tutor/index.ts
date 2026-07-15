@@ -23,7 +23,7 @@ function isOriginAllowed(req: Request): boolean {
   const origin = req.headers.get('Origin') || ''
   const referer = req.headers.get('Referer') || ''
   // OPTIONS preflight pode nao ter origin (ex: alguns proxies) — permitir
-  if (!origin && !referer) return true
+  if (!origin && !referer) return false  // sem Origin nem Referer = chamada direta (curl/servidor) → bloqueia
   if (origin && ALLOWED_ORIGINS.includes(origin)) return true
   // Fallback referer (alguns clientes nao enviam Origin em POST same-origin)
   if (referer) {

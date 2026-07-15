@@ -24,7 +24,7 @@ const ALLOWED_ORIGINS = [
 function isOriginAllowed(req: Request): boolean {
   const origin = req.headers.get('origin') || ''
   const referer = req.headers.get('referer') || ''
-  if (!origin && !referer) return true
+  if (!origin && !referer) return false  // sem Origin nem Referer = chamada direta (curl/servidor) → bloqueia
   if (origin && ALLOWED_ORIGINS.includes(origin)) return true
   if (referer) {
     try { const u = new URL(referer); if (ALLOWED_ORIGINS.includes(u.origin)) return true } catch {}
