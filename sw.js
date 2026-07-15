@@ -1,7 +1,7 @@
 // Escola Liberal PWA — Service Worker v118
 // Estratégia: Network-first (navigation + Vite bundles) + Stale-While-Revalidate (other assets) + Cache-first (fonts)
 // © Escola Liberal — escolaliberal.com.br — Lei 9.610/98 — distribuicao nao autorizada e crime
-const SW_VERSION = 'v166';
+const SW_VERSION = 'v167';
 const CACHE_NAME = 'escola-liberal-v163';
 const STATIC_CACHE = 'escola-static-v163';
 const FONT_CACHE = 'escola-fonts-v1';

@@ -12,12 +12,12 @@ function shareWhatsApp(){
   const pct=total?Math.round(done/total*100):0;
   const xp=window.totalXP();
   const msgs=[
-    `🎓🔥 DESAFIO LANÇADO!\n\nEstou aprendendo economia de verdade na Escola Liberal — e já completei ${pct}% do curso!\n\n💡 Você sabia que tudo o que te ensinaram sobre economia na escola pode estar ERRADO?\n\nAceita o desafio? Aprenda em 5 minutos o que nenhum professor te ensinou:\n\n👉 https://escolaliberal.com.br\n\n⚡ É grátis, funciona no celular e você aprende no seu ritmo.\nBora ver quem aprende mais rápido? 🏆`,
-    `🧠💪 TESTE SUA INTELIGÊNCIA ECONÔMICA!\n\nComecei a estudar economia austríaca na Escola Liberal e já mudou minha forma de ver o mundo.\n\n🤔 Você sabe a diferença entre dinheiro e moeda? Entre preço e valor?\n\nSe não sabe, tá na hora de aprender:\n👉 https://escolaliberal.com.br\n\n🎯 Gratuito • No celular • Aulas de 5 minutos\nQuem chegar nos 1.000 XP primeiro? 🔥`,
-    `📚 AULA QUE A ESCOLA NÃO DÁ:\n\n"Por que o real perde valor todo ano?"\n"Por que os preços só sobem?"\n"O que é taxa de juros DE VERDADE?"\n\nEu aprendi tudo isso na Escola Liberal. Em 5 min por dia. Pelo celular.\n\n👉 https://escolaliberal.com.br\n\n⭐ Já tenho ${xp} XP — e você? Aceita o desafio?`
+    `Você sabe por que o real perde valor todo ano? 🤔\n\nEu não sabia. Aprendi na Escola Liberal — escola gratuita pra adultos, direto no celular.\n\n👉 https://escolaliberal.com.br\n\nSão 1.800 aulas de 5 minutos: dinheiro, juros, impostos, filosofia, como abrir um negócio. Tudo que a escola devia ter ensinado e não ensinou.\n\nJá fiz ${pct}% — duvido você me alcançar 🏆`,
+    `Descobri uma escola GRATUITA que ensina o que importa 📚\n\n💰 Como sair das dívidas e investir\n🗳️ Como escolher candidato sem cair em conversa\n🧠 Como argumentar e detectar manipulação\n🚀 Como abrir um negócio do zero\n\n👉 https://escolaliberal.com.br\n\nFunciona offline, tem XP e certificado. Já tenho ${xp} XP. Vem estudar comigo?`,
+    `A pergunta que me pegou hoje: 🎯\n\n"Por que os preços só sobem — e quem ganha com isso?"\n\nA resposta tá na Escola Liberal, de graça:\n👉 https://escolaliberal.com.br\n\n1.800 aulas de 5 min, no celular, com quiz e XP. A educação que a escola devia ter dado. Aceita o desafio?`
   ];
   // Especial Eleições 2026: até 04/10/2026, metade dos shares divulga a disciplina Voto Consciente
-  const votoMsg=`🗳️ VOCÊ SABE ESCOLHER UM CANDIDATO?\n\nA maioria decide o voto em 40 segundos de vídeo. Eu tô aprendendo a decidir com MÉTODO.\n\n✅ Como investigar o passado do candidato (é público e grátis)\n✅ Como saber se a promessa cabe no orçamento\n✅ Como fugir da manipulação de campanha\n\n100% apartidário — ninguém te diz em quem votar, você aprende a decidir sozinho.\n\n👉 https://escolaliberal.com.br\n\n📚 60 aulas gratuitas, no celular, funciona offline.\nEleição é em outubro. Chega preparado. 🇧🇷`;
+  const votoMsg=`Eleição é em outubro. Você já sabe escolher? 🗳️\n\nA maioria decide o voto em 40 segundos de vídeo. Eu tô aprendendo a decidir com MÉTODO:\n\n✅ Investigar o passado do candidato (é público e grátis)\n✅ Saber se a promessa cabe no orçamento\n✅ Fugir da manipulação de campanha\n\n👉 https://escolaliberal.com.br\n\n100% apartidário — ninguém te diz em quem votar, você aprende a decidir sozinho. 60 aulas gratuitas, funciona offline. Chega preparado 🇧🇷`;
   let text;
   if(new Date()<new Date(2026,9,5)&&Math.random()<0.5)text=votoMsg;
   else text=msgs[Math.floor(Math.random()*msgs.length)];
@@ -166,7 +166,7 @@ function createChallenge(){
 
   // Share via WhatsApp
   const shareUrl=`https://escolaliberal.com.br/app.html?challenge=${challenge.id}`;
-  const text=`🏆 ${window.S.name} te desafia!\n\nQuem consegue mais XP esta semana na Escola Liberal?\n\nAceite o desafio: ${shareUrl}`;
+  const text=`🏆 ${window.S.name||'Um amigo'} te desafiou!\n\nQuem estuda mais essa semana na Escola Liberal? Cada aula de 5 minutos vale XP — e o placar é público.\n\n👉 Aceita? ${shareUrl}\n\nÉ grátis: 1.800 aulas de dinheiro, lógica, filosofia e mais, direto no celular.`;
   const waUrl='https://wa.me/?text='+encodeURIComponent(text);
   window.open(waUrl,'_blank');
   window.toast('Desafio criado! Compartilhe com amigos.');
