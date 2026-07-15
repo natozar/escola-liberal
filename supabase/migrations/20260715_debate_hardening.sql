@@ -60,16 +60,20 @@ BEGIN
   END IF;
   NEW.user_name := left(coalesce(NEW.user_name, 'Aluno'), 40);
 
-  -- 1e. OPCIONAL — bloqueio LGPD de dados pessoais (descomente para ativar).
-  --     Reforço server-side do filtro do cliente. Regex conservador para
-  --     minimizar falso-positivo; ajuste conforme necessário.
-  -- IF NEW.text ~ '\y\d{3}\.?\d{3}\.?\d{3}-?\d{2}\y'                     -- CPF
-  --    OR NEW.text ~ '\y\(?\d{2}\)?\s?9?\d{4}-?\d{4}\y'                  -- telefone
-  --    OR NEW.text ~ '[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}' -- email
-  -- THEN
-  --   RAISE EXCEPTION 'Não compartilhe dados pessoais (telefone, CPF, email) no debate.'
-  --     USING ERRCODE = 'check_violation';
-  -- END IF;
+  -- 1e. LGPD — bloqueio de dados pessoais (reforço server-side do filtro do cliente).
+  --     Regexes validados contra falso-positivo: valores monetários com pontos de
+  --     milhar (50.000.000.000) e percentuais NÃO disparam; só CPF/telefone/email.
+  --     O CPF formatado exige o traço (distingue de valor monetário); o cru exige
+  --     exatamente 11 dígitos isolados (word boundary).
+  IF NEW.text ~ '\y\d{3}\.?\d{3}\.?\d{3}-\d{2}\y'                        -- CPF formatado (traço obrigatório)
+     OR NEW.text ~ '\y\d{11}\y'                                          -- CPF/celular sem formatação (11 dígitos)
+     OR NEW.text ~ '\(\d{2}\)\s?9?\d{4}-?\d{4}'                          -- telefone com DDD entre ()
+     OR NEW.text ~ '\y\d{2}\s?9\d{4}-\d{4}\y'                            -- celular DD 9XXXX-XXXX
+     OR NEW.text ~ '[[:alnum:]._%+-]+@[[:alnum:].-]+\.[[:alpha:]]{2,}'   -- email
+  THEN
+    RAISE EXCEPTION 'Não compartilhe dados pessoais (telefone, CPF, email) no debate.'
+      USING ERRCODE = 'check_violation';
+  END IF;
 
   RETURN NEW;
 END;
