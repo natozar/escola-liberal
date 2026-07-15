@@ -107,6 +107,13 @@ if (fs.existsSync(path.join(DRAFTS_DIR, 'manifest.json'))) {
   }, null, 2));
 }
 
+// 8. Verify sitemap consistency (no 404 URLs, no orphan articles)
+try {
+  require('child_process').execSync('node scripts/verify-sitemap.mjs', { cwd: ROOT, stdio: 'inherit' });
+} catch (e) {
+  console.error('\n⚠ Verificação do sitemap falhou — rode `node scripts/verify-sitemap.mjs` e corrija antes de deployar.');
+}
+
 console.log(`\n${'='.repeat(50)}`);
 console.log(`Published: ${published.length} | Remaining drafts: ${remaining.length} | Total published: ${data.keywords.filter(k=>k.status==='published').length}`);
 console.log(`\nNext: npm run build && git add blog/ blog.html sitemap.xml sw.js && git commit -m "blog: ${published.length} new articles" && git push`);

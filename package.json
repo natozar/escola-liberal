@@ -16,6 +16,7 @@
     "blog:generate:10": "node scripts/generate-blog.js --count=10",
     "blog:generate:dry": "node scripts/generate-blog.js --count=1 --dry-run",
     "blog:publish": "node scripts/publish-blog.js",
+    "blog:verify-sitemap": "node scripts/verify-sitemap.mjs",
     "blog:status": "node -e \"const d=require('./blog/keywords.json');const s=k=>d.keywords.filter(x=>x.status===k).length;console.log('Keywords:',d.keywords.length,'| Pendentes:',s('pending'),'| Rascunhos:',s('drafted'),'| Publicados:',s('published'))\""
   },
   "repository": {
