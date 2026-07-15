@@ -11,11 +11,17 @@ function renderDaily(){
     container.innerHTML='<div class="daily-card daily-compact" onclick="this.classList.toggle(\'expanded\')"><div class="daily-head"><span>⚡ Desafio Diário</span><span class="daily-tag">✓ Feito</span><span class="daily-chevron">›</span></div><div class="daily-expand-body"><div style="font-size:.85rem;color:var(--text-muted);padding:.75rem">'+(daily.correct?'+50 XP conquistados!':'Tente amanhã!')+'</div></div></div>';return;
   }
   const seed=today.split('').reduce((s,c)=>s+c.charCodeAt(0),0);
-  const allQ=[];window.M.forEach((m,mi)=>m.lessons.forEach((l,li)=>{if(l.quiz)allQ.push({mi,li,q:l.quiz.q,o:l.quiz.o,c:l.quiz.c,exp:l.quiz.exp,mod:m.title,icon:m.icon})}));
+  const allQ=[];window.M.forEach((m,mi)=>m.lessons.forEach((l,li)=>{if(l.quiz)allQ.push({mi,li,q:l.quiz.q,o:l.quiz.o,c:l.quiz.c,exp:l.quiz.exp,mod:m.title,icon:m.icon,disc:m.discipline})}));
   if(!allQ.length){container.innerHTML='';return}
-  const dq=allQ[seed%allQ.length];
+  // Especial Eleições 2026: até 04/10/2026, dias alternados sorteiam questão de Voto Consciente
+  let pool=allQ,electionDay=false;
+  if(new Date()<new Date(2026,9,5)&&seed%2===0){
+    const votoQ=allQ.filter(q=>q.disc==='voto');
+    if(votoQ.length){pool=votoQ;electionDay=true}
+  }
+  const dq=pool[seed%pool.length];
   container.innerHTML='<div class="daily-card daily-compact'+(isMobile?'':' expanded')+'" onclick="this.classList.toggle(\'expanded\')">'
-    +'<div class="daily-head"><span>⚡ Desafio Diário</span><span class="daily-tag">+50 XP</span><span class="daily-chevron">›</span></div>'
+    +'<div class="daily-head"><span>'+(electionDay?'🗳️ Desafio das Eleições':'⚡ Desafio Diário')+'</span><span class="daily-tag">+50 XP</span><span class="daily-chevron">›</span></div>'
     +'<div class="daily-expand-body" onclick="event.stopPropagation()">'
     +'<div class="daily-q">'+dq.q+'</div>'
     +'<div class="daily-opts">'+dq.o.map(function(o,i){return'<button class="daily-o" onclick="window.answerDaily('+i+','+dq.c+',\''+dq.exp.replace(/'/g,"\\'")+'\')">'+o+'</button>'}).join('')+'</div>'
