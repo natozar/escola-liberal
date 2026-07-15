@@ -2,7 +2,7 @@
 
 ## Identidade do Projeto
 
-Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 29 disciplinas, 174 módulos, 1.740 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN (com `history` em CLIL — American History em inglês). Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
+Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 30 disciplinas, 180 módulos, 1.800 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN (com `history` em CLIL — American History em inglês). Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
 
 **Domínio:** escolaliberal.com.br
 **Repo:** github.com/natozar/escola-liberal
@@ -19,7 +19,7 @@ Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a ed
 | Backend | Supabase (auth, database, realtime sync) |
 | Pagamentos | Stripe (checkout via Edge Functions) |
 | IA | API Anthropic (Claude) — tutor + quiz generator |
-| PWA | Service Worker v163 (network-first + stale-while-revalidate + cache-first) |
+| PWA | Service Worker v164 (network-first + stale-while-revalidate + cache-first) |
 | Testes | Playwright + html-validate + Lighthouse + Axe |
 | CI/CD | GitHub Actions → GitHub Pages |
 
@@ -743,8 +743,8 @@ Deploy → SW novo detectado (polling 60s)
 - **gen-integrity.mjs:** parametrizado para aceitar dir/output via CLI args.
 - SW v161
 
-### Curriculo (estado atual pos-auditoria 2026-04-25)
-- 29 disciplinas, 6 modulos por disciplina (uniforme), 174 modulos total, 1.740 aulas
+### Curriculo (estado atual pos-auditoria 2026-04-25, atualizado 2026-07-14)
+- 30 disciplinas, 6 modulos por disciplina (uniforme), 180 modulos total, 1.800 aulas
 - `historia` (BR, PT) e `history` (EUA, EN/CLIL) sao disciplinas distintas DELIBERADAMENTE (nao bug)
 - Sequencia entre modulos controlada por campo `order` em cada modulo (fallback: idx do arquivo)
 - IDs unicos garantidos (script `scripts/editorial-fixes.mjs` valida)
@@ -774,6 +774,21 @@ Deploy → SW novo detectado (polling 60s)
   - Origin lock nas 5 Edge Functions (Origin + Referer fallback, retorna 403 `origin_blocked`)
   - `LICENSE.md` proprietaria + `robots.txt` anti-AI-scraping (GPTBot, ClaudeBot, etc bloqueados)
   - Pipeline build: copy lessons → watermark dist → integrity hash dist (manifesto bate com conteudo deployado)
+
+### Concluido nesta sessao (2026-07-14 — Disciplina Voto Consciente)
+- **Nova disciplina `voto` ("Voto Consciente" 🗳️) como PRIMEIRA disciplina da plataforma** — decisao estrategica: janela eleitoral (eleicoes outubro/2026)
+- 6 modulos novos: mod-174 a mod-179 (60 aulas, ~231KB de conteudo, media ~3.900 chars/aula):
+  - mod-174 `voto-poder-do-voto` — cargos/mandatos, urna, sistema proporcional/quociente eleitoral
+  - mod-175 `voto-passado-do-candidato` — historico verificavel, DivulgaCandContas, emendas, financiamento
+  - mod-176 `voto-aritmetica-das-promessas` — orcamento publico, teste de viabilidade, competencia do cargo (instrumental economico da casa)
+  - mod-177 `voto-manipulacao-eleitoral` — marketing, falacias de palanque, fake news, pesquisas, crimes eleitorais
+  - mod-178 `voto-integridade-como-filtro` — Ficha Limpa LC 135/2010, processos, contas rejeitadas, coerencia
+  - mod-179 `voto-decidindo-com-metodo` — matriz de decisao, branco/nulo/util, dia da votacao, accountability pos-eleicao
+- **REGRA EDITORIAL da disciplina: ensina METODO, nunca conclusao.** Zero mencao a candidato/politico vivo/partido; exemplos ficticios; instituicoes citadas como fonte (TSE, TCU, LAI). Varredura automatica de neutralidade executada (falsos positivos verificados manualmente)
+- **Ordenacao de disciplinas corrigida em 3 pontos:** `disciplines.js` (novo helper `getOrderedDisciplineKeys()`, DISCIPLINES reordenado com voto order:0), `dashboard.js` renderCards + card "Comecar" de usuario novo, `mobile.js` grid + toggleDiscMobile — antes a ordem visual vinha da posicao crua no array M (mod files sao index-mapeados, nao podem ser reordenados)
+- LP atualizada: 30 disciplinas / 180 modulos / 1.800 aulas em index.html (title, metas, OG, 3 blocos JSON-LD, trust, FAQ) e institucional.html
+- index.json: 180 entradas (850KB), integrity manifest regenerado (181 arquivos), build com watermark OK (build_id 2f955674b5aa)
+- SW v164
 
 ### ✅ CONCLUÍDO: FASE 2 do update PWA
 - skipWaiting() removido do install event (só no message handler)

@@ -179,12 +179,9 @@ function renderDiscGrid(){
   var toolsSection=document.querySelector('.aulas-tools-section');
   if(toolsSection)toolsSection.style.display='';
 
-  const grouped={};const order=[];
-  window.M.forEach((m,i)=>{
-    const disc=m.discipline||'economia';
-    if(!grouped[disc]){grouped[disc]=[];order.push(disc)}
-    grouped[disc].push({mod:m,idx:i});
-  });
+  const grouped={};
+  const order=window.getOrderedDisciplineKeys();
+  order.forEach(disc=>{grouped[disc]=window.getDiscModules(disc)});
 
   let html='';
   order.forEach(disc=>{
@@ -219,7 +216,7 @@ function renderDiscGrid(){
 }
 
 function toggleDiscMobile(disc){
-  const mods=window.M.map((m,i)=>({mod:m,idx:i})).filter(x=>x.mod.discipline===disc);
+  const mods=window.getDiscModules(disc);
   if(mods.length===1){window.goMod(mods[0].idx);return}
   const d=window.DISCIPLINES[disc]||{label:disc,icon:'📚'};
   window.hideAllViews();

@@ -92,24 +92,22 @@ function renderXPEvent(){
 // ============================================================
 function renderCards(){
   let html='';
-  const seen=new Set();
-  window.M.forEach((m,i)=>{
-    const disc=m.discipline||'economia';
-    if(!seen.has(disc)){
-      seen.add(disc);
-      const d=window.DISCIPLINES[disc]||{label:disc,icon:'📚'};
-      html+=`<div class="disc-header"><span class="disc-icon">${d.icon}</span><h2 class="disc-title">${d.label}</h2></div>`;
-    }
-    const done=m.lessons.filter((_,li)=>window.S.done[`${i}-${li}`]).length;
-    const p=Math.round(done/m.lessons.length*100);
-    const clr=window.getModColor(m.color||'sage');
-    const clrMuted=window.getModColorMuted(m.color||'sage');
-    const statusCls=p===100?'completed':p>0?'in-progress':'not-started';
-    const statusTxt=p===100?'✓ Completo':p>0?`${done}/${m.lessons.length} aulas`:'Começar';
-    html+=`<div class="mc" onclick="goMod(${i})">`+
-      `<div class="mc-circle"><div class="mc-ring" style="--ring-pct:${p};--ring-color:${clr}"></div><div class="mc-ring-inner"></div><span class="mc-circle-icon">${m.icon}</span></div>`+
-      `<div class="mc-info"><h3>${m.title}</h3><p>${m.desc}</p><div class="mc-meta">${m.lessons.length} aulas · ${p}%</div></div>`+
-      `<div class="mc-status ${statusCls}">${statusTxt}</div></div>`;
+  window.getOrderedDisciplineKeys().forEach(disc=>{
+    const d=window.DISCIPLINES[disc]||{label:disc,icon:'📚'};
+    html+=`<div class="disc-header"><span class="disc-icon">${d.icon}</span><h2 class="disc-title">${d.label}</h2></div>`;
+    window.getDiscModules(disc).forEach(x=>{
+      const m=x.mod,i=x.idx;
+      const done=m.lessons.filter((_,li)=>window.S.done[`${i}-${li}`]).length;
+      const p=Math.round(done/m.lessons.length*100);
+      const clr=window.getModColor(m.color||'sage');
+      const clrMuted=window.getModColorMuted(m.color||'sage');
+      const statusCls=p===100?'completed':p>0?'in-progress':'not-started';
+      const statusTxt=p===100?'✓ Completo':p>0?`${done}/${m.lessons.length} aulas`:'Começar';
+      html+=`<div class="mc" onclick="goMod(${i})">`+
+        `<div class="mc-circle"><div class="mc-ring" style="--ring-pct:${p};--ring-color:${clr}"></div><div class="mc-ring-inner"></div><span class="mc-circle-icon">${m.icon}</span></div>`+
+        `<div class="mc-info"><h3>${m.title}</h3><p>${m.desc}</p><div class="mc-meta">${m.lessons.length} aulas · ${p}%</div></div>`+
+        `<div class="mc-status ${statusCls}">${statusTxt}</div></div>`;
+    });
   });
   document.getElementById('mcards').innerHTML=html
 }
@@ -175,8 +173,10 @@ function renderContinue(){
     const m=window.M[window.S.cMod],l=m.lessons[window.S.cLes];
     el.innerHTML=`<div class="continue-card" onclick="openL(${window.S.cMod},${window.S.cLes})"><div class="cc-icon">${m.icon}</div><div class="cc-info"><div class="cc-title">${l.title}</div><div class="cc-sub">${m.title} · Aula ${window.S.cLes+1}/${m.lessons.length}</div></div><div class="cc-btn">Continuar →</div></div>`;return
   }
-  // Find next available lesson
-  for(let mi=0;mi<window.M.length;mi++){
+  // Find next available lesson (follows discipline display order)
+  const orderedIdx=[];
+  window.getOrderedDisciplineKeys().forEach(d=>window.getDiscModules(d).forEach(x=>orderedIdx.push(x.idx)));
+  for(const mi of orderedIdx){
     if(!window.isModUnlocked(mi))continue;
     for(let li=0;li<window.M[mi].lessons.length;li++){
       if(!window.S.done[`${mi}-${li}`]){
