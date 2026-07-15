@@ -280,7 +280,7 @@ function _addMsg(msg){
   var d=document.createElement('div');
   d.className='debate-bubble'+(msg.is_own?' debate-bubble-own':'');
   var t=new Date(msg.created_at).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-  d.innerHTML='<span class="debate-bubble-av">'+msg.user_avatar+'</span>'
+  d.innerHTML='<span class="debate-bubble-av">'+_esc(msg.user_avatar)+'</span>'
     +'<div class="debate-bubble-body">'
     +'<div class="debate-bubble-head"><b>'+_esc(msg.user_name)+'</b><span>'+t+'</span></div>'
     +'<div class="debate-bubble-text">'+_esc(msg.text)+'</div></div>';

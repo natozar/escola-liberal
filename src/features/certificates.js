@@ -10,10 +10,9 @@ async function showCert(mi){
   const hours=Math.max(1,Math.round(nLessons*5/60));
   const quizOk=m.lessons.filter((_,li)=>window.S.quiz[`${mi}-${li}`]).length;
   const quizTotal=m.lessons.filter(l=>l.quiz).length;
-  // Generate verifiable hash
-  const certRaw=[mi,window.S.name||'Aluno',Date.now()].join('-');
-  const fullHash=await _hashStr(certRaw);
-  const certHash='EL-'+fullHash.substring(0,12).toUpperCase();
+  // Verifiable hash — DEVE ser idêntico ao ID desenhado no PDF/PNG (_certId),
+  // senão o certificado baixado não bate com o registrado/verificável.
+  const certHash=_certId(mi);
   // Save certificate
   _saveCert(mi,certHash);
   document.getElementById('certName').textContent=window.S.name;

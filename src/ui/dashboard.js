@@ -174,8 +174,13 @@ function renderContinue(){
     el.innerHTML=`<div class="continue-card" onclick="openL(${window.S.cMod},${window.S.cLes})"><div class="cc-icon">${m.icon}</div><div class="cc-info"><div class="cc-title">${l.title}</div><div class="cc-sub">${m.title} · Aula ${window.S.cLes+1}/${m.lessons.length}</div></div><div class="cc-btn">Continuar →</div></div>`;return
   }
   // Find next available lesson (follows discipline display order)
-  const orderedIdx=[];
+  let orderedIdx=[];
   window.getOrderedDisciplineKeys().forEach(d=>window.getDiscModules(d).forEach(x=>orderedIdx.push(x.idx)));
+  // Retomar a disciplina atual primeiro (evita pular para a 1a disciplina ao concluir uma aula)
+  if(window.S.cMod!=null&&window.M[window.S.cMod]){
+    const cd=window.M[window.S.cMod].discipline;
+    orderedIdx=orderedIdx.filter(i=>window.M[i].discipline===cd).concat(orderedIdx.filter(i=>window.M[i].discipline!==cd));
+  }
   for(const mi of orderedIdx){
     if(!window.isModUnlocked(mi))continue;
     for(let li=0;li<window.M[mi].lessons.length;li++){

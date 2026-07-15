@@ -20,22 +20,28 @@ function renderDaily(){
     if(votoQ.length){pool=votoQ;electionDay=true}
   }
   const dq=pool[seed%pool.length];
+  window._dailyQ=dq; // guarda a questão do dia; onclick passa só o índice (evita quebra de HTML por aspas no exp)
   container.innerHTML='<div class="daily-card daily-compact'+(isMobile?'':' expanded')+'" onclick="this.classList.toggle(\'expanded\')">'
     +'<div class="daily-head"><span>'+(electionDay?'🗳️ Desafio das Eleições':'⚡ Desafio Diário')+'</span><span class="daily-tag">+50 XP</span><span class="daily-chevron">›</span></div>'
     +'<div class="daily-expand-body" onclick="event.stopPropagation()">'
     +'<div class="daily-q">'+dq.q+'</div>'
-    +'<div class="daily-opts">'+dq.o.map(function(o,i){return'<button class="daily-o" onclick="window.answerDaily('+i+','+dq.c+',\''+dq.exp.replace(/'/g,"\\'")+'\')">'+o+'</button>'}).join('')+'</div>'
+    +'<div class="daily-opts">'+dq.o.map(function(o,i){return'<button class="daily-o" onclick="window.answerDaily('+i+')">'+o+'</button>'}).join('')+'</div>'
     +'<div class="daily-fb" id="dailyFb"></div>'
     +'<div style="font-size:.7rem;color:var(--text-muted);margin-top:.4rem">'+dq.icon+' '+dq.mod+'</div>'
     +'</div></div>';
 }
-function answerDaily(a,c,exp){
+function answerDaily(a){
+  const today=new Date().toDateString();
+  let daily;try{daily=JSON.parse(localStorage.getItem(DAILY_KEY)||'{}')}catch(e){daily={}}
+  if(daily.date===today&&daily.answered)return; // guard: já respondido hoje (evita XP duplicado no double-tap)
+  const q=window._dailyQ;if(!q)return;
+  const c=q.c,exp=q.exp;
   const ok=a===c;
   document.querySelectorAll('.daily-o').forEach((b,i)=>{b.classList.add('d-off');if(i===c)b.classList.add('d-ok');if(i===a&&!ok)b.classList.add('d-no')});
   const fb=document.getElementById('dailyFb');fb.className='daily-fb show';fb.style.color=ok?'var(--sage-light)':'var(--coral)';fb.textContent=(ok?'✓ Correto! ':'✗ ')+exp;
   if(ok){window.addXP(50);window.toast('⚡ +50 XP — Desafio Diário!');window.logActivity('daily','Desafio diário — Acertou!')}
   else{window.logActivity('daily','Desafio diário — Errou')}
-  localStorage.setItem(DAILY_KEY,JSON.stringify({date:new Date().toDateString(),answered:true,correct:ok}))
+  try{localStorage.setItem(DAILY_KEY,JSON.stringify({date:today,answered:true,correct:ok}))}catch(e){}
 }
 
 // ============================================================
