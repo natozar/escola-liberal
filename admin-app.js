@@ -18,41 +18,37 @@ let _authLocked=false;
 // ============================================================
 // AUTH — PIN
 // ============================================================
-async function authLogin(){
+// Login via Google OAuth — sem senha. Redireciona para o Google e volta para admin.html.
+async function authGoogle(){
   const errEl=document.getElementById('authErr');
-  if(_authLocked){errEl.textContent='Muitas tentativas. Aguarde 2 minutos.';return}
-  const email=(document.getElementById('adminEmail').value||'').trim();
-  const pass=document.getElementById('adminPass').value||'';
-  if(!email||!pass){errEl.textContent='Preencha e-mail e senha';return}
-  _authAttempts++;
-  if(_authAttempts>5){
-    _authLocked=true;
-    errEl.textContent='Muitas tentativas. Aguarde 2 minutos.';
-    try{
-      const tmp=window.supabase&&window.supabase.createClient(SB_URL,SB_KEY);
-      if(tmp){tmp.from('error_reports').insert({kind:'admin_login_brute_force',severity:'critical',message:'>5 tentativas de login admin',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}
-    }catch(_){}
-    setTimeout(()=>{_authAttempts=0;_authLocked=false;errEl.textContent=''},120000);
-    return;
-  }
-  errEl.textContent='Verificando...';
+  errEl.textContent='Redirecionando para o Google…';
   initSupabase();
   if(!sb){errEl.textContent='⚠ Supabase não carregou';return}
   try{
-    const{error}=await sb.auth.signInWithPassword({email,password:pass});
-    if(error){errEl.textContent='Credenciais inválidas';document.getElementById('adminPass').value='';return}
-    // Confirma que a conta é admin de verdade (RLS is_admin). Não-admin não passa.
-    const{data:me}=await sb.from('profiles').select('is_admin').eq('id',(await sb.auth.getUser()).data.user.id).maybeSingle();
-    if(!me||me.is_admin!==true){
-      errEl.textContent='Esta conta não tem acesso administrativo';
-      try{await sb.from('error_reports').insert({kind:'admin_login_non_admin',severity:'warning',message:'Login valido mas sem is_admin tentou acessar admin',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}catch(_){}
-      await sb.auth.signOut();
-      return;
-    }
-    sessionStorage.setItem('admin_auth','1');
-    _authAttempts=0;
-    enterAdmin();
+    const redir=location.origin+location.pathname; // volta para /admin.html
+    const{error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:redir,queryParams:{prompt:'select_account'}}});
+    if(error)errEl.textContent='Erro: '+error.message;
   }catch(e){errEl.textContent='Erro: '+e.message}
+}
+
+// Verifica se a sessão atual (inclui o callback do OAuth) é admin e entra; senão fica no gate.
+async function verifyAdminAndEnter(){
+  initSupabase();
+  if(!sb)return;
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session)return; // sem sessão → gate visível
+    const{data:me}=await sb.from('profiles').select('is_admin').eq('id',session.user.id).maybeSingle();
+    if(me&&me.is_admin===true){
+      sessionStorage.setItem('admin_auth','1');
+      enterAdmin();
+    }else{
+      const errEl=document.getElementById('authErr');
+      if(errEl)errEl.textContent='Esta conta Google não tem acesso administrativo';
+      try{await sb.from('error_reports').insert({kind:'admin_login_non_admin',severity:'warning',message:'Login Google valido mas sem is_admin tentou acessar admin',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}catch(_){}
+      await sb.auth.signOut();
+    }
+  }catch(e){}
 }
 
 // Device lock — admin acessível só do dispositivo-comando autorizado.
@@ -83,7 +79,7 @@ async function enterAdmin(){
   document.getElementById('authGate').classList.add('hidden');
   document.getElementById('mainApp').style.display='block';
   initSupabase();
-  // A sessão já foi estabelecida no authLogin (sem credenciais no código).
+  // A sessão já foi estabelecida no login Google (OAuth, sem senha).
   // Device lock: só o dispositivo-comando autorizado passa.
   const deviceOk=await enforceDeviceLock();
   if(!deviceOk){
@@ -101,17 +97,8 @@ async function enterAdmin(){
 
 // Check if already authenticated this session
 async function checkExistingSession(){
-  if(sessionStorage.getItem('admin_auth')!=='1')return;
-  // Só re-entra se a sessão Supabase ainda existe E a conta é admin.
-  initSupabase();
-  if(!sb){sessionStorage.removeItem('admin_auth');return}
-  try{
-    const{data:{session}}=await sb.auth.getSession();
-    if(!session){sessionStorage.removeItem('admin_auth');return}
-    const{data:me}=await sb.from('profiles').select('is_admin').eq('id',session.user.id).maybeSingle();
-    if(me&&me.is_admin===true){enterAdmin();}
-    else{sessionStorage.removeItem('admin_auth');await sb.auth.signOut();}
-  }catch(e){sessionStorage.removeItem('admin_auth');}
+  // Cobre re-visita E o retorno do OAuth do Google (o SDK detecta a sessão no hash).
+  await verifyAdminAndEnter();
 }
 
 // ============================================================
@@ -1341,7 +1328,7 @@ document.addEventListener('click', function(e) {
   if (!el) return;
   var action = el.getAttribute('data-action');
   switch (action) {
-    case 'authLogin': authLogin(); break;
+    case 'authGoogle': authGoogle(); break;
     case 'clearLogs': clearLogs(); break;
     case 'createXPEvent': createXPEvent(); break;
     case 'doExport': doExport(); break;
@@ -1378,10 +1365,5 @@ document.addEventListener('change', function(e){
 
 // Enter key on PIN input
 document.addEventListener('DOMContentLoaded', function() {
-  var passInput = document.getElementById('adminPass');
-  if (passInput) {
-    passInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') authLogin();
-    });
-  }
+  // (login é via botão Google — sem campo de senha)
 });
