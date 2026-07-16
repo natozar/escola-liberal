@@ -3,7 +3,6 @@
 // ============================================================
 const SB_URL='https://hwjplecfqsckfiwxiedo.supabase.co';
 const SB_KEY='sb_publishable_-_ZYfPPllImPNCKOA1ZMXQ_zYYM-P6q';
-const ADMIN_PIN='110108';
 const ADMIN_LOGS_KEY='escola_admin_logs';
 const AUTO_RULES_KEY='escola_auto_push_rules';
 
@@ -19,63 +18,100 @@ let _authLocked=false;
 // ============================================================
 // AUTH — PIN
 // ============================================================
-function authPin(){
-  if(_authLocked){document.getElementById('authErr').textContent='Muitas tentativas. Aguarde 2 minutos.';return}
-  const pin=document.getElementById('adminPin').value.trim();
-  if(!pin){document.getElementById('authErr').textContent='Digite o PIN';return}
+async function authLogin(){
+  const errEl=document.getElementById('authErr');
+  if(_authLocked){errEl.textContent='Muitas tentativas. Aguarde 2 minutos.';return}
+  const email=(document.getElementById('adminEmail').value||'').trim();
+  const pass=document.getElementById('adminPass').value||'';
+  if(!email||!pass){errEl.textContent='Preencha e-mail e senha';return}
   _authAttempts++;
   if(_authAttempts>5){
     _authLocked=true;
-    document.getElementById('authErr').textContent='Muitas tentativas. Aguarde 2 minutos.';
-    // Reporta tentativa de brute-force (best-effort: nem sempre sb esta inicializado aqui)
+    errEl.textContent='Muitas tentativas. Aguarde 2 minutos.';
     try{
       const tmp=window.supabase&&window.supabase.createClient(SB_URL,SB_KEY);
-      if(tmp){tmp.from('error_reports').insert({kind:'pin_brute_force',severity:'critical',message:'>5 tentativas PIN admin',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}
+      if(tmp){tmp.from('error_reports').insert({kind:'admin_login_brute_force',severity:'critical',message:'>5 tentativas de login admin',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}
     }catch(_){}
-    setTimeout(()=>{_authAttempts=0;_authLocked=false;document.getElementById('authErr').textContent=''},120000);
+    setTimeout(()=>{_authAttempts=0;_authLocked=false;errEl.textContent=''},120000);
     return;
   }
-  if(pin!==ADMIN_PIN){
-    document.getElementById('authErr').textContent='PIN incorreto';
-    document.getElementById('adminPin').value='';
-    document.getElementById('adminPin').focus();
-    return;
-  }
-  sessionStorage.setItem('admin_auth','1');
-  enterAdmin();
+  errEl.textContent='Verificando...';
+  initSupabase();
+  if(!sb){errEl.textContent='⚠ Supabase não carregou';return}
+  try{
+    const{error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error){errEl.textContent='Credenciais inválidas';document.getElementById('adminPass').value='';return}
+    // Confirma que a conta é admin de verdade (RLS is_admin). Não-admin não passa.
+    const{data:me}=await sb.from('profiles').select('is_admin').eq('id',(await sb.auth.getUser()).data.user.id).maybeSingle();
+    if(!me||me.is_admin!==true){
+      errEl.textContent='Esta conta não tem acesso administrativo';
+      try{await sb.from('error_reports').insert({kind:'admin_login_non_admin',severity:'warning',message:'Login valido mas sem is_admin tentou acessar admin',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}catch(_){}
+      await sb.auth.signOut();
+      return;
+    }
+    sessionStorage.setItem('admin_auth','1');
+    _authAttempts=0;
+    enterAdmin();
+  }catch(e){errEl.textContent='Erro: '+e.message}
+}
+
+// Device lock — admin acessível só do dispositivo-comando autorizado.
+function _getDeviceId(){
+  let id=localStorage.getItem('admin_device_id');
+  if(!id){id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.round(Math.random()*1e9));localStorage.setItem('admin_device_id',id);}
+  return id;
+}
+// Retorna true se este dispositivo está autorizado. Registra o 1º dispositivo (TOFU).
+async function enforceDeviceLock(){
+  if(!sb)return true; // sem banco (offline) não trava o admin legítimo
+  const myDevice=_getDeviceId();
+  try{
+    const{data}=await sb.from('admin_settings').select('value').eq('key','admin_device').maybeSingle();
+    const authorized=data&&data.value;
+    if(!authorized){ // primeiro setup: este dispositivo vira o comando
+      await sb.from('admin_settings').upsert({key:'admin_device',value:myDevice});
+      return true;
+    }
+    if(authorized===myDevice)return true;
+    // dispositivo diferente do autorizado → invasão
+    try{await sb.from('error_reports').insert({kind:'admin_intrusion',severity:'critical',message:'Acesso admin de dispositivo NAO autorizado (device lock)',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}catch(_){}
+    return false;
+  }catch(e){return true;} // erro de rede não deve travar o admin legítimo
 }
 
 async function enterAdmin(){
   document.getElementById('authGate').classList.add('hidden');
   document.getElementById('mainApp').style.display='block';
-  // Initialize Supabase + admin auth
   initSupabase();
-  if(sb){
-    try{
-      // Try existing session first
-      const{data:{session}}=await sb.auth.getSession();
-      if(!session){
-        // Sign in as admin
-        const{error}=await sb.auth.signInWithPassword({
-          email:'admin@escolaliberal.com.br',
-          password:'EscolaLib2026!'
-        });
-        if(error)admToast('⚠ Auth: '+error.message);
-      }
-    }catch(e){admToast('⚠ Auth error: '+e.message)}
+  // A sessão já foi estabelecida no authLogin (sem credenciais no código).
+  // Device lock: só o dispositivo-comando autorizado passa.
+  const deviceOk=await enforceDeviceLock();
+  if(!deviceOk){
+    sessionStorage.removeItem('admin_auth');
+    if(sb)try{await sb.auth.signOut()}catch(_){}
+    document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f1729;color:#e8e6e1;font-family:system-ui;text-align:center;padding:2rem"><div><div style="font-size:3rem;margin-bottom:1rem">🚫</div><h1 style="font-size:1.4rem;margin-bottom:.5rem">Dispositivo não autorizado</h1><p style="color:#9ba3b5;max-width:420px">Este painel só pode ser acessado do dispositivo-comando. Esta tentativa foi registrada. Se você é o administrador em um novo dispositivo, autorize-o pelo dispositivo original.</p></div></div>';
+    return;
   }
   loadAllData();
   loadAutoRules();
   loadPaywallState();
   renderLogs();
-  admLog('Login admin via PIN');
+  admLog('Login admin');
 }
 
 // Check if already authenticated this session
-function checkExistingSession(){
-  if(sessionStorage.getItem('admin_auth')==='1'){
-    enterAdmin();
-  }
+async function checkExistingSession(){
+  if(sessionStorage.getItem('admin_auth')!=='1')return;
+  // Só re-entra se a sessão Supabase ainda existe E a conta é admin.
+  initSupabase();
+  if(!sb){sessionStorage.removeItem('admin_auth');return}
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session){sessionStorage.removeItem('admin_auth');return}
+    const{data:me}=await sb.from('profiles').select('is_admin').eq('id',session.user.id).maybeSingle();
+    if(me&&me.is_admin===true){enterAdmin();}
+    else{sessionStorage.removeItem('admin_auth');await sb.auth.signOut();}
+  }catch(e){sessionStorage.removeItem('admin_auth');}
 }
 
 // ============================================================
@@ -1305,7 +1341,7 @@ document.addEventListener('click', function(e) {
   if (!el) return;
   var action = el.getAttribute('data-action');
   switch (action) {
-    case 'authPin': authPin(); break;
+    case 'authLogin': authLogin(); break;
     case 'clearLogs': clearLogs(); break;
     case 'createXPEvent': createXPEvent(); break;
     case 'doExport': doExport(); break;
@@ -1342,10 +1378,10 @@ document.addEventListener('change', function(e){
 
 // Enter key on PIN input
 document.addEventListener('DOMContentLoaded', function() {
-  var pinInput = document.getElementById('adminPin');
-  if (pinInput) {
-    pinInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') authPin();
+  var passInput = document.getElementById('adminPass');
+  if (passInput) {
+    passInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') authLogin();
     });
   }
 });
