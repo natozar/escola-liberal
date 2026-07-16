@@ -169,6 +169,7 @@
   <div class="tabs">
     <div class="tab active" data-action="switchTab" data-tab="dashboard">📊 Dashboard</div>
     <div class="tab" data-action="switchTab" data-tab="users">👥 Usuários</div>
+    <div class="tab" data-action="switchTab" data-tab="quiz">📝 Quiz</div>
     <div class="tab" data-action="switchTab" data-tab="push">🔔 Push & Lembretes</div>
     <div class="tab" data-action="switchTab" data-tab="events">⚡ Eventos XP</div>
     <div class="tab" data-action="switchTab" data-tab="billing">💳 Billing</div>
@@ -288,6 +289,51 @@
       </div>
     </div>
 
+    <!-- QUIZ DROP-OFF -->
+    <div class="panel" id="panQuiz">
+      <h2 style="margin-bottom:.4rem">📝 Lê as aulas mas não conclui o quiz</h2>
+      <p style="color:var(--muted);font-size:.85rem;margin-bottom:1.25rem">Usuários que leem o conteúdo das aulas (aula marcada como concluída) mas não respondem o quiz daquela aula. Cruza <code>completed_lessons</code> × <code>quiz_results</code> aula por aula — captura inclusive quem responde alguns quizzes e pula outros.</p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Alunos lendo e pulando quiz</div><div class="stat-val accent" id="qzReaders">—</div><div class="stat-sub" id="qzReadersSub"></div></div>
+        <div class="stat"><div class="stat-label">Aulas lidas sem quiz</div><div class="stat-val" id="qzSkipped" style="color:var(--red)">—</div><div class="stat-sub">total de quizzes pulados</div></div>
+        <div class="stat"><div class="stat-label">Pulam TODOS os quizzes</div><div class="stat-val blue" id="qzZero">—</div><div class="stat-sub">leem, nunca fazem quiz</div></div>
+        <div class="stat"><div class="stat-label">Ativos (7d)</div><div class="stat-val green" id="qzActive">—</div><div class="stat-sub">lendo agora e pulando</div></div>
+      </div>
+
+      <div class="chart-card" style="margin-top:1.25rem">
+        <h3>📉 Novos alunos que leem sem fazer quiz — por dia (30 dias)</h3>
+        <div class="bar-chart" id="qzTrendChart"></div>
+      </div>
+
+      <div class="tbl-wrap" style="margin-top:1.25rem">
+        <div class="tbl-head">
+          <h3>Quem lê e pula o quiz</h3>
+          <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+            <input class="tbl-search" id="qzSearch" placeholder="Buscar por nome ou email..." oninput="renderQuizDropoff()">
+            <select class="form-select" id="qzFilter" style="width:auto" onchange="renderQuizDropoff()">
+              <option value="all">Todos que leem e pulam</option>
+              <option value="zero">Pulam TODOS os quizzes</option>
+              <option value="active">Ativos (7d)</option>
+              <option value="inactive">Inativos (30d+)</option>
+            </select>
+          </div>
+        </div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr>
+              <th>Usuário</th><th>Email</th><th>Aulas lidas</th><th>Aulas s/ quiz</th><th>Quizzes feitos</th><th>Streak</th><th>Último acesso</th><th>Dias inativo</th>
+            </tr></thead>
+            <tbody id="qzBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.75rem">
+        <button class="btn btn-sage" data-action="exportQuizDropoffCSV">📄 Exportar CSV</button>
+        <div style="font-size:.72rem;color:var(--muted);align-self:center" id="qzCount"></div>
+      </div>
+    </div>
+
     <!-- PUSH -->
     <div class="panel" id="panPush">
       <!-- Manual Push -->
@@ -306,6 +352,8 @@
             <label class="form-label">Público-alvo</label>
             <select class="form-select" id="pushTarget">
               <option value="all">Todos os usuários</option>
+              <option value="noquiz">📝 Acessam mas nunca fazem quiz</option>
+              <option value="noquiz_lessons">📝 Leem as aulas e pulam o quiz</option>
               <option value="inactive7">Inativos há 7+ dias</option>
               <option value="inactive30">Inativos há 30+ dias</option>
               <option value="active">Ativos (últimos 7 dias)</option>
@@ -361,6 +409,14 @@
             <div class="rule-desc">Lembrete diário às 19h para quem tem streak ativo: "Não quebre sua sequência de X dias!"</div>
           </div>
           <label class="toggle"><input type="checkbox" id="ruleStreak" checked onchange="saveAutoRules()"><span class="toggle-slider"></span></label>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-info">
+            <div class="rule-name">📝 Incentivo ao Primeiro Quiz</div>
+            <div class="rule-desc">Envia push para quem acessa mas nunca fez um quiz: "Teste o que aprendeu! Responda seu primeiro quiz e ganhe XP."</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="ruleNoQuiz" checked onchange="saveAutoRules()"><span class="toggle-slider"></span></label>
         </div>
 
         <div class="rule-card">
@@ -590,6 +646,29 @@
         <p style="color:var(--muted);font-size:.82rem">Erros JS, falhas de integridade de conteúdo, age tamper, brute-force, CSP — em tempo real</p>
       </div>
 
+      <!-- DISPOSITIVOS AUTORIZADOS -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem">
+        <h3 style="margin-bottom:.4rem">🔐 Dispositivos autorizados</h3>
+        <p style="color:var(--muted);font-size:.82rem;margin-bottom:1rem">Só estes dispositivos conseguem abrir o admin. Para autorizar o celular: abra <code>escolaliberal.com.br/admin.html</code> nele, copie o ID que aparece na tela de bloqueio e cole abaixo.</p>
+        <div style="background:var(--bg,rgba(255,255,255,.03));border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;font-size:.78rem;margin-bottom:1rem">
+          <span style="color:var(--muted)">ID deste dispositivo (atual):</span>
+          <code id="devMyId" style="user-select:all;word-break:break-all">—</code>
+          <button class="btn btn-ghost" data-action="copyMyDeviceId" style="padding:.15rem .5rem;font-size:.7rem;margin-left:.5rem">Copiar</button>
+        </div>
+        <div id="devList" style="margin-bottom:1rem"><div style="color:var(--muted);font-size:.82rem">Carregando…</div></div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:flex-end">
+          <div style="flex:1;min-width:200px">
+            <label class="form-label" style="font-size:.75rem">ID do novo dispositivo</label>
+            <input class="form-input" id="devNewId" placeholder="cole o ID do celular aqui">
+          </div>
+          <div style="min-width:140px">
+            <label class="form-label" style="font-size:.75rem">Apelido</label>
+            <input class="form-input" id="devNewLabel" placeholder="Meu celular">
+          </div>
+          <button class="btn btn-sage" data-action="addAdminDevice">➕ Autorizar</button>
+        </div>
+      </div>
+
       <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
         <div class="stat" style="text-align:center;padding:1.2rem"><div style="font-size:2rem;font-weight:700;color:#e07460" id="secCritical">—</div><div style="color:var(--muted);font-size:.78rem;margin-top:.25rem">Críticos não resolvidos</div></div>
         <div class="stat" style="text-align:center;padding:1.2rem"><div style="font-size:2rem;font-weight:700;color:var(--accent)" id="secErr24h">—</div><div style="color:var(--muted);font-size:.78rem;margin-top:.25rem">Erros 24h</div></div>
@@ -647,6 +726,17 @@
     <div style="text-align:center;margin-top:3rem;padding:1.5rem;border-top:1px solid #243044">
       <p style="color:#7a8ca3;font-size:.75rem">escolaliberal.com.br · Plataforma PWA Educacional · 21 disciplinas · Bilíngue PT/EN</p>
     </div>
+  </div>
+</div>
+
+<!-- USER HISTORY MODAL -->
+<div id="userHistoryModal" style="display:none;position:fixed;inset:0;background:rgba(5,8,15,.72);z-index:10002;overflow-y:auto;padding:2rem" data-action="closeUserHistoryBackdrop">
+  <div style="max-width:760px;margin:2rem auto;background:var(--card,#141c2e);border:1px solid var(--border,#243044);border-radius:14px;padding:1.75rem" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:1.25rem">
+      <h2 id="uhTitle" style="font-size:1.25rem">Histórico do usuário</h2>
+      <button class="btn btn-ghost" data-action="closeUserHistory" style="flex-shrink:0">✕ Fechar</button>
+    </div>
+    <div id="uhBody"></div>
   </div>
 </div>
 

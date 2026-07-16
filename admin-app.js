@@ -57,22 +57,113 @@ function _getDeviceId(){
   if(!id){id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+'-'+Math.round(Math.random()*1e9));localStorage.setItem('admin_device_id',id);}
   return id;
 }
+// Lê a lista de dispositivos autorizados (formato novo em array + legado single).
+// Retorna {devices:[{id,label,added_at}], ids:Set}
+async function _loadAuthorizedDevices(){
+  const devices=[]; const ids=new Set();
+  try{
+    const{data}=await sb.from('admin_settings').select('key,value').in('key',['admin_devices','admin_device']);
+    (data||[]).forEach(r=>{
+      if(r.key==='admin_devices'&&Array.isArray(r.value)){
+        r.value.forEach(d=>{if(d&&d.id&&!ids.has(d.id)){ids.add(d.id);devices.push({id:d.id,label:d.label||'Dispositivo',added_at:d.added_at||null})}});
+      }
+      if(r.key==='admin_device'&&r.value){ // legado: um único id string
+        const legacy=typeof r.value==='string'?r.value:String(r.value);
+        if(legacy&&!ids.has(legacy)){ids.add(legacy);devices.push({id:legacy,label:'Dispositivo inicial (legado)',added_at:null})}
+      }
+    });
+  }catch(_){}
+  return{devices,ids};
+}
+
+// Persiste a lista consolidada em admin_devices (fonte única a partir de agora).
+// Remove a chave legada admin_device para evitar que um dispositivo removido volte.
+async function _saveAuthorizedDevices(devices){
+  await sb.from('admin_settings').upsert({key:'admin_devices',value:devices},{onConflict:'key'});
+  try{await sb.from('admin_settings').delete().eq('key','admin_device')}catch(_){}
+}
+
 // Retorna true se este dispositivo está autorizado. Registra o 1º dispositivo (TOFU).
 async function enforceDeviceLock(){
   if(!sb)return true; // sem banco (offline) não trava o admin legítimo
   const myDevice=_getDeviceId();
   try{
-    const{data}=await sb.from('admin_settings').select('value').eq('key','admin_device').maybeSingle();
-    const authorized=data&&data.value;
-    if(!authorized){ // primeiro setup: este dispositivo vira o comando
-      await sb.from('admin_settings').upsert({key:'admin_device',value:myDevice});
+    const{devices,ids}=await _loadAuthorizedDevices();
+    if(ids.size===0){ // primeiro setup: este dispositivo vira o comando
+      await _saveAuthorizedDevices([{id:myDevice,label:'Dispositivo inicial',added_at:new Date().toISOString()}]);
       return true;
     }
-    if(authorized===myDevice)return true;
-    // dispositivo diferente do autorizado → invasão
-    try{await sb.from('error_reports').insert({kind:'admin_intrusion',severity:'critical',message:'Acesso admin de dispositivo NAO autorizado (device lock)',user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}catch(_){}
+    if(ids.has(myDevice))return true;
+    // dispositivo diferente dos autorizados → invasão
+    try{await sb.from('error_reports').insert({kind:'admin_intrusion',severity:'critical',message:'Acesso admin de dispositivo NAO autorizado (device lock)',details:{device:myDevice},user_agent:(navigator.userAgent||'').slice(0,250),url_path:'/admin.html'})}catch(_){}
     return false;
   }catch(e){return true;} // erro de rede não deve travar o admin legítimo
+}
+
+// ============================================================
+// GERENCIAMENTO DE DISPOSITIVOS (aba Segurança)
+// ============================================================
+async function renderAdminDevices(){
+  const myId=_getDeviceId();
+  const myEl=document.getElementById('devMyId');
+  if(myEl)myEl.textContent=myId;
+  const listEl=document.getElementById('devList');
+  if(!listEl)return;
+  if(!sb){listEl.innerHTML='<div style="color:var(--muted);font-size:.82rem">Supabase offline.</div>';return}
+  const{devices}=await _loadAuthorizedDevices();
+  if(!devices.length){listEl.innerHTML='<div style="color:var(--muted);font-size:.82rem">Nenhum dispositivo registrado ainda.</div>';return}
+  listEl.innerHTML=devices.map(d=>{
+    const isMe=d.id===myId;
+    const added=d.added_at?new Date(d.added_at).toLocaleDateString('pt-BR'):'—';
+    return`<div style="display:flex;justify-content:space-between;align-items:center;gap:.75rem;border:1px solid var(--border);border-radius:8px;padding:.55rem .8rem;margin-bottom:.5rem">
+      <div style="min-width:0">
+        <div style="font-weight:600;font-size:.85rem">${esc(d.label)} ${isMe?'<span class="badge badge-green" style="margin-left:.3rem">este dispositivo</span>':''}</div>
+        <div style="font-size:.68rem;color:var(--muted);word-break:break-all">${esc(d.id)} · desde ${added}</div>
+      </div>
+      <button class="btn btn-red btn-sm" data-action="removeAdminDevice" data-id="${esc(d.id)}" style="flex-shrink:0;font-size:.72rem" ${isMe?'title="Você está usando este dispositivo"':''}>Remover</button>
+    </div>`;
+  }).join('');
+}
+
+async function addAdminDevice(){
+  if(!sb){admToast('⚠ Supabase offline');return}
+  const idEl=document.getElementById('devNewId'), labelEl=document.getElementById('devNewLabel');
+  const id=(idEl.value||'').trim();
+  const label=(labelEl.value||'').trim()||'Dispositivo';
+  if(id.length<8){admToast('⚠ Cole um ID de dispositivo válido');return}
+  try{
+    const{devices,ids}=await _loadAuthorizedDevices();
+    if(ids.has(id)){admToast('✓ Esse dispositivo já está autorizado');return}
+    devices.push({id,label,added_at:new Date().toISOString()});
+    await _saveAuthorizedDevices(devices);
+    idEl.value='';labelEl.value='';
+    admToast('✓ Dispositivo autorizado: '+label);
+    admLog('Device lock: autorizado "'+label+'" ('+id.slice(0,12)+'…)');
+    renderAdminDevices();
+  }catch(e){admToast('❌ '+e.message)}
+}
+
+async function removeAdminDevice(id){
+  if(!sb||!id)return;
+  const myId=_getDeviceId();
+  const warn=id===myId?'⚠ ATENÇÃO: este é o dispositivo que você está usando AGORA. Se remover, pode perder o acesso ao admin. Continuar?':'Remover este dispositivo autorizado?';
+  if(!confirm(warn))return;
+  try{
+    const{devices}=await _loadAuthorizedDevices();
+    const next=devices.filter(d=>d.id!==id);
+    if(!next.length){admToast('⚠ Não é possível remover o último dispositivo');return}
+    await _saveAuthorizedDevices(next);
+    admToast('✓ Dispositivo removido');
+    admLog('Device lock: removido '+id.slice(0,12)+'…');
+    renderAdminDevices();
+  }catch(e){admToast('❌ '+e.message)}
+}
+
+function copyMyDeviceId(){
+  const id=_getDeviceId();
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(id).then(()=>admToast('✓ ID copiado')).catch(()=>admToast('ID: '+id));
+  }else{admToast('ID: '+id)}
 }
 
 async function enterAdmin(){
@@ -85,7 +176,8 @@ async function enterAdmin(){
   if(!deviceOk){
     sessionStorage.removeItem('admin_auth');
     if(sb)try{await sb.auth.signOut()}catch(_){}
-    document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f1729;color:#e8e6e1;font-family:system-ui;text-align:center;padding:2rem"><div><div style="font-size:3rem;margin-bottom:1rem">🚫</div><h1 style="font-size:1.4rem;margin-bottom:.5rem">Dispositivo não autorizado</h1><p style="color:#9ba3b5;max-width:420px">Este painel só pode ser acessado do dispositivo-comando. Esta tentativa foi registrada. Se você é o administrador em um novo dispositivo, autorize-o pelo dispositivo original.</p></div></div>';
+    const _did=_getDeviceId();
+    document.body.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0f1729;color:#e8e6e1;font-family:system-ui;text-align:center;padding:2rem"><div><div style="font-size:3rem;margin-bottom:1rem">🚫</div><h1 style="font-size:1.4rem;margin-bottom:.5rem">Dispositivo não autorizado</h1><p style="color:#9ba3b5;max-width:440px;margin:0 auto">Este painel só pode ser acessado de um dispositivo autorizado. Esta tentativa foi registrada. Para liberar este aparelho, copie o ID abaixo e autorize-o pelo dispositivo já liberado (aba 🛡️ Segurança → Dispositivos autorizados).</p><div style="margin-top:1.25rem"><div style="font-size:.72rem;color:#7a8ca3;margin-bottom:.3rem">ID deste dispositivo:</div><code style="user-select:all;word-break:break-all;background:#1a2436;border:1px solid #2a3a55;border-radius:8px;padding:.5rem .8rem;display:inline-block;max-width:420px;font-size:.8rem">'+_did+'</code></div></div></div>';
     return;
   }
   loadAllData();
@@ -154,7 +246,14 @@ async function loadAllData(){
         quizTotal,quizCorrect,
         lastStudy:prog.last_study_date||null,
         createdAt:p.created_at||null,
-        onboardingDone:p.onboarding_done||false
+        onboardingDone:p.onboarding_done||false,
+        // dados brutos para o histórico detalhado
+        completedLessons:prog.completed_lessons||{},
+        quizResults,
+        currentModule:prog.current_module,
+        currentLesson:prog.current_lesson,
+        ageGroup:p.age_group||'',
+        birthYear:p.birth_year||null
       };
     });
 
@@ -171,6 +270,7 @@ async function loadAllData(){
     filteredUsers=[...allUsers];
     renderDashboard();
     renderUsersTable();
+    renderQuizDropoff();
     renderLeads();
     renderPushHistory();
     renderGeography();
@@ -324,7 +424,7 @@ function renderUsersTable(){
     const inactiveDays=u.lastStudy?Math.floor((Date.now()-new Date(u.lastStudy))/(864e5)):999;
     const statusBadge=inactiveDays<=7?'badge-green':inactiveDays<=30?'badge-yellow':'badge-red';
     const statusLabel=inactiveDays<=7?'Ativo':inactiveDays<=30?'Inativo':'Ausente';
-    return`<tr>
+    return`<tr data-action="openUserHistory" data-id="${u.id}" style="cursor:pointer" title="Ver histórico completo">
       <td>${u.avatar} ${esc(u.name)}</td>
       <td style="font-size:.72rem">${esc(u.email)}</td>
       <td><span class="badge ${planBadge}">${planLabel}</span></td>
@@ -352,6 +452,239 @@ function filterUsers(){
     return true;
   });
   renderUsersTable();
+}
+
+// ============================================================
+// QUIZ DROP-OFF — acessam o sistema mas não completam quiz
+// ============================================================
+let _quizDropList=[];
+
+// "acessou" = tem qualquer sinal de uso (abriu aula, tem último acesso, ou concluiu onboarding).
+// "não completou quiz" = quizTotal === 0 (nenhuma questão respondida em quiz_results).
+function _accessedNoQuiz(u){
+  const accessed=(u.lessons>0)||!!u.lastStudy||u.onboardingDone;
+  return accessed && (u.quizTotal||0)===0;
+}
+function _daysInactive(u){
+  return u.lastStudy?Math.floor((Date.now()-new Date(u.lastStudy))/864e5):null;
+}
+// Chaves de aulas LIDAS (completed_lessons) que NÃO têm quiz respondido (quiz_results).
+// = "leu a aula e pulou o quiz". Mesma chave "mi-li" nos dois lados.
+function _readNoQuizKeys(u){
+  const done=u.completedLessons||{}, q=u.quizResults||{};
+  return Object.keys(done).filter(k=>!(k in q));
+}
+function _readNoQuizCount(u){return _readNoQuizKeys(u).length}
+
+function renderQuizDropoff(){
+  // Base: quem leu ao menos uma aula sem responder o quiz dela
+  const base=allUsers.filter(u=>_readNoQuizCount(u)>0);
+
+  // Métricas do topo
+  const totalSkipped=base.reduce((s,u)=>s+_readNoQuizCount(u),0); // total de quizzes pulados
+  const zeroQuiz=base.filter(u=>(u.quizTotal||0)===0).length;      // leem mas nunca fazem quiz
+  const activeReaders=base.filter(u=>{const d=_daysInactive(u);return d!=null&&d<=7}).length;
+  const readersTotal=allUsers.filter(u=>u.lessons>0).length;       // quem leu ao menos 1 aula
+  const pct=readersTotal?Math.round(base.length/readersTotal*100):0;
+
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  set('qzReaders',base.length);
+  set('qzReadersSub',pct+'% de quem lê aulas');
+  set('qzSkipped',totalSkipped);
+  set('qzZero',zeroQuiz);
+  set('qzActive',activeReaders);
+
+  // Tendência: novos alunos (por cadastro) que leem sem fazer quiz (últimos 30 dias)
+  const chart=document.getElementById('qzTrendChart');
+  if(chart){
+    const days=[];
+    for(let i=29;i>=0;i--){
+      const d=new Date();d.setDate(d.getDate()-i);
+      const ds=d.toISOString().split('T')[0];
+      const count=base.filter(u=>u.createdAt&&u.createdAt.startsWith(ds)).length;
+      days.push({label:d.getDate()+'/'+(d.getMonth()+1),count});
+    }
+    const max=Math.max(...days.map(d=>d.count),1);
+    chart.innerHTML=days.map(d=>`<div class="bar-col"><div class="bar-val">${d.count||''}</div><div class="bar" style="height:${Math.max(2,d.count/max*140)}px;background:var(--red)"></div><div class="bar-label">${d.label}</div></div>`).join('');
+  }
+
+  // Filtro + busca da tabela
+  const q=(document.getElementById('qzSearch')?.value||'').toLowerCase();
+  const f=document.getElementById('qzFilter')?.value||'all';
+  let list=base.filter(u=>{
+    if(q&&!u.name.toLowerCase().includes(q)&&!(u.email||'').toLowerCase().includes(q))return false;
+    const d=_daysInactive(u);
+    if(f==='zero')return (u.quizTotal||0)===0;
+    if(f==='active')return d!=null&&d<=7;
+    if(f==='inactive')return d==null||d>30;
+    return true; // all
+  });
+  // Ordena por quem mais pula quiz, depois por acesso mais recente
+  list.sort((a,b)=>{
+    const sa=_readNoQuizCount(a), sb2=_readNoQuizCount(b);
+    if(sb2!==sa)return sb2-sa;
+    const da=_daysInactive(a), db=_daysInactive(b);
+    if(da==null)return 1; if(db==null)return -1; return da-db;
+  });
+  _quizDropList=list;
+
+  const body=document.getElementById('qzBody');
+  if(!body)return;
+  if(!list.length){body.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem">Ninguém está pulando quiz 🎉</td></tr>';document.getElementById('qzCount').textContent='';return}
+  body.innerHTML=list.map(u=>{
+    const d=_daysInactive(u);
+    const skipped=_readNoQuizCount(u);
+    const lastStr=u.lastStudy?timeAgo(u.lastStudy):'Nunca';
+    const inactBadge=d==null?'badge-red':d<=7?'badge-green':d<=30?'badge-yellow':'badge-red';
+    const inactLabel=d==null?'nunca estudou':d+'d';
+    return`<tr data-action="openUserHistory" data-id="${u.id}" style="cursor:pointer" title="Ver histórico completo">
+      <td>${u.avatar} ${esc(u.name)}</td>
+      <td style="font-size:.72rem">${esc(u.email)}</td>
+      <td style="font-weight:600">${u.lessons}</td>
+      <td style="color:var(--red);font-weight:700">${skipped}</td>
+      <td>${u.quizTotal||0}</td>
+      <td>${u.streak>0?'🔥 '+u.streak:'—'}</td>
+      <td style="font-size:.72rem">${lastStr}</td>
+      <td><span class="badge ${inactBadge}">${inactLabel}</span></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('qzCount').textContent=`${list.length} de ${base.length} alunos · ${totalSkipped} quizzes pulados no total`;
+}
+
+function exportQuizDropoffCSV(){
+  if(!_quizDropList.length){admToast('⚠ Nada para exportar');return}
+  const cols=['name','email','lessons_read','lessons_without_quiz','quizzes_done','streak','last_study','days_inactive'];
+  const rows=_quizDropList.map(u=>{
+    const d=_daysInactive(u);
+    return[u.name,u.email,u.lessons,_readNoQuizCount(u),u.quizTotal||0,u.streak,u.lastStudy||'',d==null?'':d];
+  });
+  const csv=[cols.join(',')].concat(rows.map(r=>r.map(v=>{
+    const s=String(v==null?'':v).replace(/"/g,'""');
+    return /[,"\r\n]/.test(s)?`"${s}"`:s;
+  }).join(','))).join('\n');
+  downloadFile(csv,'quiz_dropoff.csv','text/csv');
+  admToast('✓ CSV exportado: '+_quizDropList.length+' usuários');
+  admLog('Exportação quiz drop-off: '+_quizDropList.length+' usuários');
+}
+
+// ============================================================
+// USER HISTORY — histórico completo de um usuário
+// ============================================================
+function _lessonKeyLabel(key){
+  // chaves típicas: "mi-li" (módulo-aula) — mostra de forma legível
+  const m=String(key).match(/^(\d+)[-_.](\d+)$/);
+  if(m)return`Módulo ${(+m[1])+1} · Aula ${(+m[2])+1}`;
+  return String(key);
+}
+
+async function openUserHistory(id){
+  const u=allUsers.find(x=>x.id===id);
+  if(!u){admToast('⚠ Usuário não encontrado');return}
+  const modal=document.getElementById('userHistoryModal');
+  const titleEl=document.getElementById('uhTitle');
+  const body=document.getElementById('uhBody');
+  titleEl.textContent=`${u.avatar} ${u.name}`;
+
+  const quizRate=u.quizTotal?Math.round(u.quizCorrect/u.quizTotal*100)+'%':'—';
+  const lastStr=u.lastStudy?new Date(u.lastStudy).toLocaleString('pt-BR'):'Nunca';
+  const createdStr=u.createdAt?new Date(u.createdAt).toLocaleString('pt-BR'):'—';
+  const planLabel=u.plan==='premium'?'Premium':u.plan==='familia'?'Família':u.plan==='vitalicio'?'Vitalício':'Free';
+
+  // Cabeçalho de perfil + progresso (dados já em memória)
+  let html=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.75rem;margin-bottom:1.25rem">
+      ${_uhStat('XP',u.xp.toLocaleString(),'var(--accent)')}
+      ${_uhStat('Nível',u.level)}
+      ${_uhStat('Streak',u.streak>0?'🔥 '+u.streak:'—')}
+      ${_uhStat('Aulas concluídas',u.lessons,'var(--sage)')}
+      ${_uhStat('Quizzes',u.quizTotal)}
+      ${_uhStat('Acerto no quiz',quizRate,u.quizTotal?'var(--green)':'var(--muted)')}
+    </div>
+    <div style="font-size:.8rem;color:var(--muted);line-height:1.9;margin-bottom:1.25rem;border:1px solid var(--border);border-radius:10px;padding:.75rem 1rem">
+      <div><strong style="color:var(--text)">Email:</strong> ${esc(u.email)}</div>
+      <div><strong style="color:var(--text)">Plano:</strong> ${planLabel} &nbsp;·&nbsp; <strong style="color:var(--text)">Estado:</strong> ${esc(u.state||'—')} &nbsp;·&nbsp; <strong style="color:var(--text)">Faixa:</strong> ${esc(u.ageGroup||'—')}</div>
+      <div><strong style="color:var(--text)">Cadastro:</strong> ${createdStr}</div>
+      <div><strong style="color:var(--text)">Último acesso:</strong> ${lastStr}</div>
+      <div><strong style="color:var(--text)">Posição atual:</strong> ${u.currentModule!=null?'Módulo '+((+u.currentModule)+1):'—'}${u.currentLesson!=null?' · Aula '+((+u.currentLesson)+1):''}</div>
+    </div>`;
+
+  // Detalhe dos quizzes respondidos
+  const qEntries=Object.entries(u.quizResults||{});
+  html+=`<h3 style="font-size:.95rem;margin:.5rem 0 .6rem">✅ Quizzes respondidos (${qEntries.length})</h3>`;
+  if(!qEntries.length){
+    html+=`<div style="color:var(--muted);font-size:.82rem;margin-bottom:1.25rem">Nenhum quiz respondido até agora.</div>`;
+  }else{
+    html+='<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.25rem">'+qEntries.map(([k,v])=>
+      `<span class="badge ${v?'badge-green':'badge-red'}" title="${_lessonKeyLabel(k)}">${_lessonKeyLabel(k)} ${v?'✓':'✗'}</span>`
+    ).join('')+'</div>';
+  }
+
+  // Aulas concluídas
+  const lKeys=Object.keys(u.completedLessons||{});
+  html+=`<h3 style="font-size:.95rem;margin:.5rem 0 .6rem">📖 Aulas concluídas (${lKeys.length})</h3>`;
+  if(!lKeys.length){
+    html+=`<div style="color:var(--muted);font-size:.82rem;margin-bottom:1.25rem">Nenhuma aula concluída.</div>`;
+  }else{
+    html+='<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.25rem">'+lKeys.slice(0,120).map(k=>
+      `<span class="badge badge-blue">${_lessonKeyLabel(k)}</span>`
+    ).join('')+(lKeys.length>120?`<span style="color:var(--muted);font-size:.75rem;align-self:center">+${lKeys.length-120}</span>`:'')+'</div>';
+  }
+
+  // Aulas lidas sem responder o quiz
+  const skipKeys=_readNoQuizKeys(u);
+  html+=`<h3 style="font-size:.95rem;margin:.5rem 0 .6rem">⏭️ Leu a aula mas pulou o quiz (${skipKeys.length})</h3>`;
+  if(!skipKeys.length){
+    html+=`<div style="color:var(--muted);font-size:.82rem;margin-bottom:1.25rem">Respondeu o quiz de todas as aulas que leu. 🎉</div>`;
+  }else{
+    html+='<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.25rem">'+skipKeys.slice(0,120).map(k=>
+      `<span class="badge badge-yellow">${_lessonKeyLabel(k)}</span>`
+    ).join('')+(skipKeys.length>120?`<span style="color:var(--muted);font-size:.75rem;align-self:center">+${skipKeys.length-120}</span>`:'')+'</div>';
+  }
+
+  // Timeline (buscada sob demanda no Supabase)
+  html+=`<h3 style="font-size:.95rem;margin:.5rem 0 .6rem">🕑 Linha do tempo de atividades</h3>
+    <div id="uhTimeline"><div style="color:var(--muted);font-size:.82rem">Carregando atividades…</div></div>`;
+
+  body.innerHTML=html;
+  modal.style.display='block';
+  document.body.style.overflow='hidden';
+  admLog('Abriu histórico do usuário: '+u.name);
+
+  // Carrega a timeline da nuvem
+  const tlEl=document.getElementById('uhTimeline');
+  if(!sb){if(tlEl)tlEl.innerHTML='<div style="color:var(--muted);font-size:.82rem">Supabase offline — timeline indisponível.</div>';return}
+  try{
+    const{data,error}=await sb.from('timeline')
+      .select('activity_type,description,created_at')
+      .eq('profile_id',id)
+      .order('created_at',{ascending:false})
+      .limit(200);
+    if(error)throw error;
+    if(!data||!data.length){tlEl.innerHTML='<div style="color:var(--muted);font-size:.82rem">Nenhuma atividade registrada na nuvem.</div>';return}
+    const icons={lesson:'📖',quiz:'✅',level:'🏆',badge:'🏅',daily:'⭐',share:'📤',backup:'💾',install:'📱',exam:'📝',module:'🎓'};
+    tlEl.innerHTML=data.map(e=>{
+      const icon=icons[e.activity_type]||'📌';
+      const date=e.created_at?new Date(e.created_at).toLocaleString('pt-BR'):'';
+      return`<div style="display:flex;gap:.6rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:1.1rem;flex-shrink:0">${icon}</span>
+        <div style="flex:1;min-width:0"><div style="font-size:.82rem">${esc(e.description||e.activity_type)}</div>
+        <div style="font-size:.68rem;color:var(--muted)">${date}</div></div></div>`;
+    }).join('');
+  }catch(e){
+    tlEl.innerHTML='<div style="color:var(--red);font-size:.82rem">Erro ao carregar timeline: '+esc(e.message)+'</div>';
+  }
+}
+
+function _uhStat(label,val,color){
+  return`<div style="background:var(--bg,rgba(255,255,255,.02));border:1px solid var(--border);border-radius:10px;padding:.6rem .75rem;text-align:center">
+    <div style="font-size:1.15rem;font-weight:700;color:${color||'var(--text)'}">${val}</div>
+    <div style="font-size:.68rem;color:var(--muted)">${label}</div></div>`;
+}
+
+function closeUserHistory(){
+  const modal=document.getElementById('userHistoryModal');
+  if(modal)modal.style.display='none';
+  document.body.style.overflow='';
 }
 
 // ============================================================
@@ -480,6 +813,8 @@ async function sendManualPush(){
   // Count target audience
   const now=Date.now();
   let audience=allUsers;
+  if(target==='noquiz')audience=audience.filter(_accessedNoQuiz);
+  if(target==='noquiz_lessons')audience=audience.filter(u=>_readNoQuizCount(u)>0);
   if(target==='inactive7')audience=audience.filter(u=>!u.lastStudy||(now-new Date(u.lastStudy))/864e5>7);
   if(target==='inactive30')audience=audience.filter(u=>!u.lastStudy||(now-new Date(u.lastStudy))/864e5>30);
   if(target==='active')audience=audience.filter(u=>u.lastStudy&&(now-new Date(u.lastStudy))/864e5<=7);
@@ -553,6 +888,7 @@ function loadAutoRules(){
   document.getElementById('ruleInactive7').checked=rules.inactive7!==false;
   document.getElementById('ruleModComplete').checked=rules.modComplete!==false;
   document.getElementById('ruleStreak').checked=rules.streak!==false;
+  document.getElementById('ruleNoQuiz').checked=rules.noQuiz!==false;
   document.getElementById('ruleWelcome').checked=rules.welcome!==false;
 }
 
@@ -562,6 +898,7 @@ function saveAutoRules(){
     inactive7:document.getElementById('ruleInactive7').checked,
     modComplete:document.getElementById('ruleModComplete').checked,
     streak:document.getElementById('ruleStreak').checked,
+    noQuiz:document.getElementById('ruleNoQuiz').checked,
     welcome:document.getElementById('ruleWelcome').checked
   };
   localStorage.setItem(AUTO_RULES_KEY,JSON.stringify(rules));
@@ -666,6 +1003,9 @@ async function loadSecurity(){
     const{data:ints}=await sb.from('integrity_alerts').select('*').order('occurred_at',{ascending:false}).limit(50);
     _secIntegrity=ints||[];
     renderIntegrityList();
+
+    // Dispositivos autorizados
+    renderAdminDevices();
 
   }catch(e){
     admToast('❌ Erro ao carregar segurança: '+e.message);
@@ -1348,6 +1688,21 @@ document.addEventListener('click', function(e) {
       break;
     case 'loadSecurity': loadSecurity(); break;
     case 'exportSecurityCSV': exportSecurityCSV(); break;
+    case 'exportQuizDropoffCSV': exportQuizDropoffCSV(); break;
+    case 'openUserHistory':
+      var uid = el.getAttribute('data-id');
+      if(uid) openUserHistory(uid);
+      break;
+    case 'closeUserHistory': closeUserHistory(); break;
+    case 'closeUserHistoryBackdrop':
+      if(e.target === el) closeUserHistory();
+      break;
+    case 'addAdminDevice': addAdminDevice(); break;
+    case 'copyMyDeviceId': copyMyDeviceId(); break;
+    case 'removeAdminDevice':
+      var did = el.getAttribute('data-id');
+      if(did) removeAdminDevice(did);
+      break;
     case 'resolveSecurityItem':
       var t = el.getAttribute('data-table');
       var i = el.getAttribute('data-id');
