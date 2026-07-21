@@ -5093,7 +5093,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 6,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5102,7 +5102,8 @@
       "votoLesson": 5,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-21T13:27:28.880Z"
     },
     {
       "slug": "voto-competencia-de-cada-cargo-eleitoral",
