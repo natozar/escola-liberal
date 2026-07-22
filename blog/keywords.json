@@ -5121,7 +5121,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 7,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5130,7 +5130,8 @@
       "votoLesson": 6,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-22T13:39:46.922Z"
     },
     {
       "slug": "voto-titulo-de-eleitor-e-justificativa",
