@@ -35,7 +35,7 @@
   <!-- Blog -->
   <url>
     <loc>https://escolaliberal.com.br/blog.html</loc>
-    <lastmod>2026-07-22</lastmod>
+    <lastmod>2026-07-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -99,6 +99,7 @@
   <url><loc>https://escolaliberal.com.br/blog/voto-o-que-faz-um-senador.html</loc><lastmod>2026-07-20</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://escolaliberal.com.br/blog/voto-o-que-faz-governador-e-presidente.html</loc><lastmod>2026-07-21</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://escolaliberal.com.br/blog/voto-competencia-de-cada-cargo-eleitoral.html</loc><lastmod>2026-07-22</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://escolaliberal.com.br/blog/voto-titulo-de-eleitor-e-justificativa.html</loc><lastmod>2026-07-23</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <!-- Offline fallback (crawlable for PWA) -->
   <url>
     <loc>https://escolaliberal.com.br/offline.html</loc>
