@@ -5205,7 +5205,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 10,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5214,7 +5214,8 @@
       "votoLesson": 9,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-25T13:13:49.284Z"
     },
     {
       "slug": "voto-como-avaliar-o-passado-de-um-candidato",
