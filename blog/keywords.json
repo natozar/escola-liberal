@@ -5261,7 +5261,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 12,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5270,7 +5270,8 @@
       "votoLesson": 1,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-27T14:21:16.047Z"
     },
     {
       "slug": "voto-como-ver-votacao-de-deputado",
