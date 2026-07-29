@@ -5317,7 +5317,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 14,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5326,7 +5326,8 @@
       "votoLesson": 3,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-29T13:57:57.769Z"
     },
     {
       "slug": "voto-patrimonio-de-candidato-declarado",
