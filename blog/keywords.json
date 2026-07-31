@@ -5373,7 +5373,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 16,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5382,7 +5382,8 @@
       "votoLesson": 5,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-31T13:51:51.362Z"
     },
     {
       "slug": "voto-presenca-e-produtividade-de-parlamentar",
