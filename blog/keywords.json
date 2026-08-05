@@ -5513,7 +5513,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 21,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5522,7 +5522,8 @@
       "votoLesson": 0,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-05T13:55:50.735Z"
     },
     {
       "slug": "voto-o-custo-invisivel-das-promessas",

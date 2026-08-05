@@ -35,7 +35,7 @@
   <!-- Blog -->
   <url>
     <loc>https://escolaliberal.com.br/blog.html</loc>
-    <lastmod>2026-08-04</lastmod>
+    <lastmod>2026-08-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -112,6 +112,7 @@
   <url><loc>https://escolaliberal.com.br/blog/voto-troca-de-partido-politico.html</loc><lastmod>2026-08-02</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://escolaliberal.com.br/blog/voto-quem-financia-campanha-eleitoral.html</loc><lastmod>2026-08-03</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://escolaliberal.com.br/blog/voto-como-pesquisar-sobre-um-candidato.html</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://escolaliberal.com.br/blog/voto-de-onde-vem-o-dinheiro-publico.html</loc><lastmod>2026-08-05</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <!-- Offline fallback (crawlable for PWA) -->
   <url>
     <loc>https://escolaliberal.com.br/offline.html</loc>
