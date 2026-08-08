@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cidade Livre — Protótipo Fase 1</title>
+<style>
+  :root{
+    --fundo:#151820; --painel:#1e222d; --painel-2:#262b38; --borda:#333a4a;
+    --tinta:#e8e4da; --tinta-2:#a49eb0; --tinta-3:#6b6578;
+    --ouro:#d9a441; --verde:#5aa876; --vermelho:#c9605a; --azul:#6a8fc9;
+    --lucidez:#7ec8c9;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    background:var(--fundo); color:var(--tinta);
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    display:flex; justify-content:center;
+  }
+  #app{
+    width:100%; max-width:520px; min-height:100dvh;
+    display:flex; flex-direction:column; padding:12px 14px calc(14px + env(safe-area-inset-bottom));
+    gap:10px;
+  }
+
+  /* ---------- medidores ---------- */
+  .medidores{display:flex; gap:8px; flex-wrap:wrap}
+  .medidor{
+    flex:1; min-width:100px; background:var(--painel); border:1px solid var(--borda);
+    border-radius:10px; padding:7px 10px;
+  }
+  .medidor .rotulo{font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--tinta-3); display:flex; justify-content:space-between}
+  .medidor .valor{font-size:15px; font-weight:700; font-variant-numeric:tabular-nums; margin-top:2px}
+  .barra{height:4px; background:#0e1117; border-radius:2px; margin-top:5px; overflow:hidden}
+  .barra i{display:block; height:100%; border-radius:2px; transition:width .5s ease, background .5s}
+  .medidor.oculto{display:none}
+  .delta{font-size:11px; font-weight:600; margin-left:6px}
+  .delta.pos{color:var(--verde)} .delta.neg{color:var(--vermelho)}
+
+  /* ---------- cidade placeholder ---------- */
+  .cidade{
+    background:var(--painel); border:1px solid var(--borda); border-radius:12px;
+    padding:10px 12px 8px;
+  }
+  .cidade .skyline{display:flex; gap:6px; align-items:flex-end; justify-content:space-between}
+  .predio{
+    flex:1; border-radius:6px 6px 2px 2px; text-align:center;
+    display:flex; flex-direction:column; justify-content:flex-end; align-items:center;
+    font-size:19px; padding-bottom:3px; transition:background .8s, opacity .8s, filter .8s;
+    background:var(--painel-2); border:1px solid var(--borda); border-bottom:none; position:relative;
+  }
+  .predio small{font-size:8.5px; color:var(--tinta-3); letter-spacing:.04em; display:block; line-height:1.1; padding-bottom:2px}
+  .predio .tag{
+    position:absolute; top:-8px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    background:#f2ead9; color:#8a3d2e; font-size:8px; font-weight:800; letter-spacing:.05em;
+    padding:1px 5px; border-radius:2px; opacity:0; transition:opacity .5s; white-space:nowrap;
+  }
+  .predio.fechado .tag{opacity:1}
+  .predio.fechado{filter:grayscale(.9) brightness(.6)}
+  .cidade.estado-prospero .predio{background:#2c3a30}
+  .cidade.estado-alerta   .predio{background:#3a3630}
+  .cidade.estado-crise    .predio{background:#3a2c2c}
+  .fila{font-size:11px; letter-spacing:-2px; height:14px; overflow:hidden; transition:opacity .6s}
+  .rodape-cidade{display:flex; justify-content:space-between; margin-top:7px; font-size:11px; color:var(--tinta-3)}
+
+  /* ---------- noticiário ---------- */
+  .noticias{min-height:38px; display:flex; flex-direction:column; gap:4px}
+  .noticia{
+    font-size:12px; line-height:1.4; color:var(--tinta-2);
+    background:var(--painel); border-left:3px solid var(--ouro);
+    border-radius:0 8px 8px 0; padding:6px 10px;
+    animation:entrar .5s ease;
+  }
+  .noticia.ruim{border-left-color:var(--vermelho)}
+  .noticia.boa{border-left-color:var(--verde)}
+  @keyframes entrar{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+
+  /* ---------- carta ---------- */
+  .carta{
+    flex:1; display:flex; flex-direction:column;
+    background:var(--painel); border:1px solid var(--borda); border-radius:16px;
+    padding:18px 18px 16px; gap:12px; animation:entrar .4s ease;
+  }
+  .carta .quem{
+    font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; font-weight:700; color:var(--tinta-3);
+  }
+  .carta.prometedor{border-color:#5a4630; background:linear-gradient(180deg,#2a2317,var(--painel) 55%)}
+  .carta.prometedor .quem{color:var(--ouro)}
+  .carta.crise{border-color:#5a3030; background:linear-gradient(180deg,#2a1717,var(--painel) 55%)}
+  .carta.crise .quem{color:var(--vermelho)}
+  .carta.aula-carta{border-color:#2f4a4a}
+  .carta.aula-carta .quem{color:var(--lucidez)}
+  .carta h2{font-size:19px; line-height:1.25; text-wrap:balance}
+  .carta p{font-size:14.5px; line-height:1.55; color:var(--tinta-2)}
+  .opcoes{margin-top:auto; display:flex; flex-direction:column; gap:8px}
+  .opcao{
+    font:inherit; text-align:left; cursor:pointer;
+    background:var(--painel-2); color:var(--tinta);
+    border:1px solid var(--borda); border-radius:12px; padding:12px 14px;
+    font-size:14.5px; line-height:1.4; transition:border-color .2s, background .2s;
+  }
+  .opcao:hover{border-color:var(--ouro)}
+  .opcao:focus-visible{outline:2px solid var(--ouro); outline-offset:2px}
+  .opcao .custo{display:block; font-size:11.5px; color:var(--tinta-3); margin-top:3px}
+  .opcao[disabled]{opacity:.45; cursor:not-allowed}
+  .opcao[disabled]:hover{border-color:var(--borda)}
+  .opcao.destaque{border-color:var(--lucidez)}
+
+  /* ---------- aula ---------- */
+  .aula-conteudo{font-size:14px; line-height:1.6; color:var(--tinta-2); display:flex; flex-direction:column; gap:10px; overflow-y:auto}
+  .aula-conteudo strong{color:var(--tinta)}
+  .quiz p{font-weight:600; color:var(--tinta); margin-bottom:6px}
+  .quiz .opcao{margin-bottom:6px}
+  .quiz .opcao.certa{border-color:var(--verde); background:#243428}
+  .quiz .opcao.errada{border-color:var(--vermelho); background:#342424}
+
+  /* ---------- fim ---------- */
+  .selo{
+    align-self:center; text-align:center; border:2px solid var(--ouro); border-radius:14px;
+    padding:14px 22px; margin:6px 0;
+  }
+  .selo .nome{font-size:17px; font-weight:800; color:var(--ouro)}
+  .selo .desc{font-size:12px; color:var(--tinta-2); margin-top:3px}
+  .recap{font-size:13px; color:var(--tinta-2); line-height:1.7}
+  .recap b{color:var(--tinta)}
+
+  .rodape{display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--tinta-3)}
+  .rodape button{
+    font:inherit; font-size:11px; color:var(--tinta-3); background:none; border:1px solid var(--borda);
+    border-radius:8px; padding:4px 10px; cursor:pointer;
+  }
+  .rodape button:hover{color:var(--tinta)}
+  @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="medidores" id="medidores"></div>
+
+  <div class="cidade" id="cidade">
+    <div class="skyline" id="skyline"></div>
+    <div class="rodape-cidade">
+      <span id="populacao"></span>
+      <span id="semana"></span>
+    </div>
+  </div>
+
+  <div class="noticias" id="noticias"></div>
+
+  <div class="carta" id="carta"></div>
+
+  <div class="rodape">
+    <span>Cidade Livre · protótipo Fase 1 · arte provisória</span>
+    <button id="btnReiniciar">Recomeçar</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   CIDADE LIVRE — protótipo Fase 1 (core loop)
+   Engine determinística por turnos + efeitos agendados.
+   1 carta jogada = 1 semana (tick). Offline: localStorage puro.
+   ============================================================ */
+
+const SAVE_KEY = "cidade_livre_proto_v1";
+
+/* PRNG determinística (mulberry32) — pronta p/ duelos por seed */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+function estadoInicial(){
+  return {
+    seed: 20260808,
+    semana: 1,
+    aprovacao: 55, caixa: 100, escolaridade: 20,
+    moradia: 70, abastecimento: 80, produtividade: 60,
+    corrupcao: 5, lucidez: 0,
+    imprensaLivre: true, painelEconomico: false,
+    flags: {}, agendados: [], noticias: [],
+    deckPos: 0, criseDisparada: false, criseResolvida: false,
+    caiuNaTentacao: false, fim: null,
+    ultimoDelta: {}
+  };
+}
+let S = carregar() || estadoInicial();
+
+/* ---------- helpers ---------- */
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+function realidade(st){ // índice de prosperidade real (o que a cidade vive)
+  return clamp(Math.round(st.abastecimento*0.35 + st.moradia*0.3 + st.produtividade*0.35 - st.corrupcao*0.5), 0, 100);
+}
+function multIgnorancia(st){ // demagogia rende menos numa cidade educada
+  return clamp(1 - st.escolaridade/150, 0.3, 1);
+}
+function salvar(){ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }
+function carregar(){
+  try{ const d = JSON.parse(localStorage.getItem(SAVE_KEY)); return d && d.deckPos !== undefined ? d : null; }
+  catch(e){ return null; }
+}
+
+/* ---------- efeitos ---------- */
+function aplicar(ef, origem){
+  const antes = {aprovacao:S.aprovacao, caixa:S.caixa};
+  for(const k in ef){
+    if(k === "aprovBase"){ S.aprovacao = clamp(S.aprovacao + Math.round(ef[k]*multIgnorancia(S)), 0, 100); }
+    else if(k === "flags"){ Object.assign(S.flags, ef[k]); }
+    else if(k === "imprensaLivre"){ S.imprensaLivre = ef[k]; }
+    else if(typeof S[k] === "number"){ S[k] = k==="caixa" || k==="lucidez" ? S[k]+ef[k] : clamp(S[k]+ef[k],0,100); }
+  }
+  S.ultimoDelta = {aprovacao:S.aprovacao-antes.aprovacao, caixa:S.caixa-antes.caixa};
+}
+function agendar(lista){ for(const a of (lista||[])) S.agendados.push({...a}); }
+function noticia(txt, tom){ S.noticias.unshift({txt, tom:tom||""}); S.noticias = S.noticias.slice(0,2); }
+
+function passarSemana(){
+  S.semana++;
+  // efeitos agendados vencem
+  const vencidos = [];
+  S.agendados = S.agendados.filter(a=>{ a.em--; if(a.em<=0){vencidos.push(a); return false} return true; });
+  for(const a of vencidos){ aplicar(a.ef, "agendado"); if(a.msg) noticia(a.msg, a.tom||"ruim"); }
+  // corrupção silenciosa sem imprensa livre
+  if(!S.imprensaLivre){ S.corrupcao = clamp(S.corrupcao+2,0,100); S.caixa -= 4; }
+  // aprovação persegue a realidade só se a imprensa mede a realidade
+  if(S.imprensaLivre){ S.aprovacao = clamp(Math.round(S.aprovacao + (realidade(S)-S.aprovacao)*0.12), 0, 100); }
+  else { S.aprovacao = clamp(S.aprovacao+1, 0, 100); }
+  // gatilho de crise
+  if(!S.criseDisparada && (S.abastecimento<55 || S.moradia<55)){
+    S.criseDisparada = true;
+    if(!S.imprensaLivre){ S.aprovacao = clamp(S.aprovacao-18,0,100); noticia("A verdade vazou: ninguém mais acredita no Diário Oficial. Confiança desabou.","ruim"); }
+  }
+}
+
+/* ============================================================
+   AS 15 CARTAS DO ATO 1 (SPEC-FASE-0 §4)
+   ============================================================ */
+const DECK = [
+{ id:"a1-01", quem:"Prefeitura", titulo:"A cratera da Rua Principal",
+  texto:"A cratera da Rua Principal engoliu mais um pneu esta semana. O conserto custa caro — e adiar é sempre uma opção.",
+  opcoes:[
+    {rotulo:"Consertar agora", custo:"−15 do caixa", ef:{caixa:-15, aprovacao:6},
+     ag:[], news:["A rua foi consertada. Pequeno, visível, sentido por todos.","boa"]},
+    {rotulo:"Adiar o conserto", custo:"O caixa agradece… por enquanto", ef:{},
+     ag:[{em:6, ef:{caixa:-30, aprovacao:-8}, msg:"A cratera virou voçoroca. O conserto de emergência custou o dobro.", tom:"ruim"}],
+     news:["O conserto ficou para depois.",""]}
+  ]},
+{ id:"a1-02", quem:"Prefeitura", titulo:"A praça abandonada",
+  texto:"A praça central virou mato. Reformar custa. Um empresário oferece comprar o terreno para um estacionamento com lojinha.",
+  opcoes:[
+    {rotulo:"Reformar a praça", custo:"−20 do caixa", ef:{caixa:-20, aprovacao:8},
+     ag:[{em:8, ef:{produtividade:6}, msg:"O comércio ao redor da praça reabriu — gente na rua é cliente na porta.", tom:"boa"}],
+     news:["Obras na praça começaram.","boa"]},
+    {rotulo:"Vender o terreno", custo:"+25 no caixa", ef:{caixa:25},
+     ag:[{em:8, ef:{produtividade:8}, msg:"O estacionamento abriu, e a lojinha ao lado também. O terreno parado virou movimento.", tom:"boa"}],
+     news:["Terreno da praça foi vendido em leilão público.",""]}
+  ]},
+{ id:"a1-03", quem:"Prefeitura", titulo:"O alvará da feira",
+  texto:"Feirantes esperam 8 meses por licença. Pedem um alvará simplificado. O fiscal reclama: “vai virar bagunça”.",
+  opcoes:[
+    {rotulo:"Simplificar o alvará", custo:"O fiscal fica contrariado", ef:{aprovacao:5},
+     ag:[{em:6, ef:{produtividade:8, caixa:10}, msg:"A feira triplicou de tamanho. Mais movimento, mais arrecadação — sem subir imposto.", tom:"boa"}],
+     news:["Alvará da feira sai em 3 dias agora.","boa"]},
+    {rotulo:"Manter o processo atual", custo:"Tudo como sempre foi", ef:{},
+     ag:[{em:6, ef:{produtividade:-6}, msg:"Os feirantes migraram para a cidade vizinha, onde a licença sai na hora.", tom:"ruim"}],
+     news:["Pedido dos feirantes foi arquivado.",""]}
+  ]},
+{ id:"a1-04", quem:"Prefeitura", titulo:"O teto da escola",
+  texto:"O teto da escola municipal goteja sobre as carteiras. Consertar não rende manchete, e o retorno demora anos.",
+  opcoes:[
+    {rotulo:"Consertar e equipar a escola", custo:"−18 do caixa · retorno lento", ef:{caixa:-18},
+     ag:[{em:8, ef:{escolaridade:15}, msg:"Frequência escolar subiu. Uma geração começa a aprender de verdade.", tom:"boa"}],
+     news:["Reforma da escola iniciada.","boa"]},
+    {rotulo:"Adiar — ninguém vota em telhado", custo:"O caixa agradece", ef:{},
+     ag:[{em:8, ef:{escolaridade:-8}, msg:"A evasão escolar aumentou. Menos gente estudando, mais gente acreditando em qualquer promessa.", tom:"ruim"}],
+     news:["Conserto da escola ficou para o ano que vem.",""]}
+  ]},
+{ id:"a1-05", quem:"O Prometedor", tipo:"prometedor", titulo:"“Pão de graça às sextas!”",
+  texto:"Um sujeito carismático reúne multidão na praça: “Pão de graça toda sexta! A prefeitura paga. Ou o prefeito é CONTRA o pão do povo?”",
+  opcoes:[
+    {rotulo:"Bancar o pão de graça", custo:"−15 do caixa · a multidão vibra", ef:{aprovBase:14, caixa:-15, flags:{pao:true}},
+     ag:[{em:4, ef:{abastecimento:-10, flags:{padariaFechou:true}}, msg:"A padaria da esquina fechou. Impossível competir com pão de graça pago com imposto — que ela mesma pagava.", tom:"ruim"}],
+     news:["Sextas do Pão Grátis começam esta semana. Filas de comemoração.","boa"]},
+    {rotulo:"Recusar", custo:"“O prefeito negou pão ao povo”", ef:{aprovacao:-6},
+     news:["O Prometedor fez discurso inflamado contra a prefeitura.",""]}
+  ]},
+{ id:"a1-06", quem:"O Prometedor", tipo:"prometedor", titulo:"“Congele os aluguéis!”",
+  texto:"Os aluguéis subiram. O Prometedor propõe: “Congele os aluguéis por lei. Proteja as famílias — e não custa NADA aos cofres públicos!”",
+  opcoes:[
+    {rotulo:"Congelar os aluguéis", custo:"Custa zero ao caixa · as famílias agradecem", ef:{aprovBase:16, flags:{congelou:true}},
+     ag:[
+       {em:4, ef:{moradia:-12}, msg:"Construtoras suspenderam os novos prédios: “com aluguel congelado, a conta não fecha”.", tom:"ruim"},
+       {em:7, ef:{moradia:-14}, msg:"Proprietários pararam a manutenção. Imóveis vazios não vão mais para aluguel.", tom:"ruim"},
+       {em:10, ef:{moradia:-12, corrupcao:5}, msg:"Achar imóvel virou martírio. Por fora, cobram “luvas” — o aluguel real, escondido.", tom:"ruim"}],
+     news:["Lei do Congelamento aprovada sob aplausos.","boa"]},
+    {rotulo:"Não congelar", custo:"Protesto de inquilinos na porta da prefeitura", ef:{aprovacao:-8},
+     news:["Inquilinos protestam. O Prometedor discursa em cima de um caminhão.",""]}
+  ]},
+{ id:"a1-07", quem:"O Prometedor", tipo:"prometedor", titulo:"“Tabele a comida!”",
+  texto:"Os preços do mercado subiram. “Tabele os alimentos! Nenhuma família pode pagar mais que o preço JUSTO. Quem cobra mais é ganancioso.”",
+  opcoes:[
+    {rotulo:"Tabelar os alimentos", custo:"Custa zero ao caixa · manchete garantida", ef:{aprovBase:14, flags:{tabelou:true}},
+     ag:[
+       {em:3, ef:{abastecimento:-18}, msg:"Prateleiras começaram a esvaziar. Vender abaixo do custo, ninguém consegue por muito tempo.", tom:"ruim"},
+       {em:6, ef:{abastecimento:-14, corrupcao:6}, msg:"No beco atrás do mercado, o camelô vende de tudo — mais caro que antes do tabelamento.", tom:"ruim"}],
+     news:["Tabela oficial de preços publicada. População comemora.","boa"]},
+    {rotulo:"Não tabelar", custo:"“Prefeito dos comerciantes”, grita a multidão", ef:{aprovacao:-7},
+     news:["O Prometedor promete tabelar tudo “quando for a vez do povo”.",""]}
+  ]},
+{ id:"a1-08", quem:"O Prometedor", tipo:"prometedor", titulo:"“Imprima vales!”",
+  texto:"O caixa apertou. “Simples: emita vales-compra municipais. Todo comércio será OBRIGADO a aceitar. Dinheiro novo, problema velho resolvido.”",
+  opcoes:[
+    {rotulo:"Emitir os vales", custo:"+40 no caixa… de papel", ef:{aprovBase:8, caixa:40, flags:{vales:true}},
+     ag:[
+       {em:6, ef:{abastecimento:-8}, msg:"Os preços dispararam. Papel novo circulando, as mesmas mercadorias na prateleira.", tom:"ruim"},
+       {em:10, ef:{caixa:-50, aprovacao:-8}, msg:"Comerciantes recusam os vales ou aceitam pela metade. A prefeitura teve que recomprar tudo.", tom:"ruim"}],
+     news:["Vale-Cidade lançado em cerimônia na prefeitura.","boa"]},
+    {rotulo:"Cortar gastos", custo:"−10 do caixa em rescisões · vaias", ef:{aprovacao:-8, caixa:-10},
+     news:["Prefeitura anuncia corte de cargos e contratos.",""]}
+  ]},
+{ id:"a1-09", quem:"O Prometedor", tipo:"prometedor", titulo:"“Crie o seu jornal”",
+  texto:"O jornal da cidade publicou: “Prefeitura gasta mais do que arrecada”. O Prometedor sussurra: “Crie o Diário Oficial Popular. Notícia boa, feita por nós. E anuncie só nele.”",
+  opcoes:[
+    {rotulo:"Criar o Diário Oficial Popular", custo:"−8 do caixa · só notícia boa daqui pra frente", ef:{aprovBase:10, caixa:-8, imprensaLivre:false},
+     news:["Diário Oficial Popular nas bancas: “CIDADE VIVE SEU MELHOR MOMENTO”.","boa"]},
+    {rotulo:"Manter a imprensa livre", custo:"As críticas continuam — e doem", ef:{aprovacao:-5},
+     news:["Jornal publica nova série sobre as contas da prefeitura.",""]}
+  ]},
+{ id:"a1-10", quem:"O Prometedor", tipo:"prometedor", titulo:"“Estatize a padaria!”",
+  cond:s=>s.flags.padariaFechou,
+  texto:"A padaria que fechou virou símbolo. Multidão na porta: “Estatize! Padaria do Povo: pão barato, emprego garantido, gestão do povo!”",
+  opcoes:[
+    {rotulo:"Criar a Padaria do Povo", custo:"−20 do caixa + folha de pagamento", ef:{aprovBase:12, caixa:-20},
+     ag:[{em:6, ef:{produtividade:-8, caixa:-15}, msg:"A Padaria do Povo dá prejuízo todo mês. A fila dobrou: o pão barato acaba às 8h.", tom:"ruim"}],
+     news:["Padaria do Povo inaugurada com festa e fita vermelha.","boa"]},
+    {rotulo:"Leiloar para um novo dono", custo:"“Entregou ao capital”, gritam na porta", ef:{aprovacao:-7},
+     ag:[{em:6, ef:{abastecimento:8, produtividade:5}, msg:"A padaria reabriu com dono novo. Pão na prateleira o dia inteiro, fila nenhuma.", tom:"boa"}],
+     news:["Ponto da padaria vai a leilão.",""]}
+  ]},
+{ id:"a1-11", quem:"A cidade", tipo:"crise", titulo:"As prateleiras vazias",
+  cond:s=>s.criseDisparada && !s.criseResolvida,
+  texto:"A fila da padaria dobra o quarteirão. O mercado racionou o arroz. Achar casa para alugar, nem pagando. Ninguém na cidade sabe explicar por quê — e todos olham para você.",
+  aula:true,
+  opcoes:[
+    {rotulo:"Entender o que aconteceu", custo:"Abrir a aula “Por que Controle de Preços Falha”", ef:{}, abrirAula:true, destaque:true},
+    {rotulo:"Ignorar e seguir governando", custo:"A crise continua sem resposta", ef:{aprovacao:-6},
+     news:["Sem explicação da prefeitura, boatos tomam conta da cidade.","ruim"]}
+  ]},
+{ id:"a1-12", quem:"Prefeitura", titulo:"A reforma impopular",
+  cond:s=>s.criseDisparada,
+  texto:"Agora você sabe o que causou as filas. Desfazer tem preço: manchetes, protestos, o Prometedor gritando “traição”. Manter é ver a cidade definhar devagar.",
+  opcoes:[
+    {rotulo:"Descongelar preços e aluguéis", custo:"Gasta 2 de Lucidez · protestos imediatos", lucidez:2, ef:{lucidez:-2, aprovacao:-10, flags:{reformou:true}},
+     ag:[
+       {em:3, ef:{abastecimento:18}, msg:"As prateleiras estão voltando. Preço livre chamou mercadoria de volta.", tom:"boa"},
+       {em:6, ef:{abastecimento:12, moradia:16}, msg:"As construtoras retomaram as obras. Placas de ALUGA-SE reapareceram — desta vez de verdade.", tom:"boa"}],
+     news:["Prefeitura revoga congelamentos. Protesto na porta, prateleira enchendo atrás.","boa"],
+     aoEscolher:s=>{s.criseResolvida=true}},
+    {rotulo:"Manter tudo como está", custo:"A espiral continua", ef:{},
+     ag:[{em:4, ef:{abastecimento:-8, moradia:-6}, msg:"Mais uma semana de filas. O mercado paralelo agora tem tabela própria.", tom:"ruim"}],
+     news:["Prefeitura mantém congelamentos “em defesa do povo”.",""]}
+  ]},
+{ id:"a1-13", quem:"O Prometedor", tipo:"prometedor", titulo:"“O problema é o ganancioso”",
+  cond:s=>s.criseDisparada,
+  texto:"O Prometedor tem outra saída: “O problema não é a tabela — é o comerciante ganancioso! Contrate FISCAIS. Multe quem cobrar caro. Prenda quem esconder mercadoria.”",
+  opcoes:[
+    {rotulo:"Contratar os fiscais de preço", custo:"−15 do caixa · a multidão apoia", ef:{aprovBase:6, caixa:-15},
+     ag:[{em:5, ef:{corrupcao:8, abastecimento:-6}, msg:"Dois fiscais foram pegos cobrando propina para “não ver”. O beco do camelô dobrou de tamanho.", tom:"ruim"}],
+     news:["Fiscalização de preços nas ruas a partir de segunda.","boa"]},
+    {rotulo:"Recusar: “o problema é a tabela”", custo:"Com Lucidez, você explica em público", lucidezOpcional:1,
+     ef:{}, aoEscolher:s=>{ if(s.lucidez>=1){s.lucidez--; aplicar({aprovacao:-3}); noticia("Você explicou na rádio por que fiscal não enche prateleira. Nem todos aplaudiram — mas entenderam.","boa");} else { aplicar({aprovacao:-9}); noticia("Sem conseguir explicar o porquê, a recusa soou como frieza.","ruim");} }}
+  ]},
+{ id:"a1-14", quem:"O Prometedor", tipo:"prometedor", titulo:"A promessa impagável",
+  texto:"Véspera de eleição. O Prometedor, agora candidato, sobe no palanque: “Aluguel ZERO para todos! Comida tabelada! Vales em DOBRO!” A cidade escuta em silêncio.",
+  opcoes:[
+    {rotulo:"Rebater com números, em praça pública", custo:"Gasta 1 de Lucidez · funciona se a cidade estudou", lucidez:1,
+     ef:{lucidez:-1}, aoEscolher:s=>{ if(s.escolaridade>=30){ aplicar({aprovacao:8}); noticia("Você fez as contas no quadro-negro da praça. A multidão fez as contas junto. O palanque esvaziou.","boa"); } else { aplicar({aprovacao:-6}); noticia("Você mostrou números; a multidão queria promessas. Uma cidade sem escola não confere contas.","ruim"); } }},
+    {rotulo:"Prometer mais ainda", custo:"Vence hoje, paga depois", ef:{aprovBase:12, flags:{prometeuMais:true}},
+     news:["Guerra de promessas: cada palanque promete o dobro do outro.",""]}
+  ]},
+{ id:"a1-15", quem:"A cidade", tipo:"eleicao", titulo:"Dia de eleição",
+  texto:"As urnas abrem às 8h. A cidade inteira — a fila da padaria, a feira, a escola — decide se você continua.",
+  opcoes:[{rotulo:"Aguardar a apuração", custo:"", ef:{}, eleicao:true, destaque:true}]
+}
+];
+
+/* ============================================================
+   AULA — "Por que Controle de Preços Falha" (módulo real: supply)
+   Resumo destilado; no app real abre o módulo completo offline.
+   ============================================================ */
+const AULA = {
+  titulo:"Por que Controle de Preços Falha",
+  fonte:"Disciplina Oferta e Demanda · módulo real da Escola Liberal",
+  paragrafos:[
+    "Um preço não é um número inventado pelo comerciante. É um <strong>sinal</strong>: resume, num só valor, quanta gente quer aquilo e quanto existe disponível. Preço subindo grita “está faltando — tragam mais!”.",
+    "Quando uma lei <strong>congela o preço abaixo do custo</strong>, o sinal é silenciado, mas a escassez não. Produzir passa a dar prejuízo — e ninguém consegue vender no prejuízo por muito tempo. A padaria fecha, a construtora para a obra.",
+    "O resultado aparece em semanas: <strong>prateleira vazia e fila</strong>. E como a necessidade continua existindo, nasce o mercado paralelo — o mesmo produto, agora mais caro e sem nota.",
+    "Congelar preço é quebrar o termômetro para curar a febre. O número some do papel; a doença continua na cidade."
+  ],
+  quiz:[
+    {p:"O que um preço subindo está comunicando?",
+     ops:["Que o comerciante ficou ganancioso","Que o produto está escasso e é preciso produzir mais","Que o governo precisa tabelar"], certa:1},
+    {p:"Se a lei obriga a vender abaixo do custo, o que acontece com a oferta?",
+     ops:["Aumenta, porque todos podem comprar","Nada — a lei garante o produto","Diminui: quem produz no prejuízo para de produzir"], certa:2}
+  ],
+  recompensa:3
+};
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+const $ = id=>document.getElementById(id);
+const PREDIOS = [
+  {emoji:"🏫", nome:"escola", chave:"escolaridade"},
+  {emoji:"🥖", nome:"padaria", chave:"abastecimento"},
+  {emoji:"🏪", nome:"mercado", chave:"abastecimento"},
+  {emoji:"🏦", nome:"banco", chave:"produtividade"},
+  {emoji:"🏢", nome:"moradia", chave:"moradia"},
+  {emoji:"🌳", nome:"praça", chave:null}
+];
+
+function renderMedidores(){
+  const r = realidade(S);
+  const d = S.ultimoDelta || {};
+  const itens = [
+    {rot:"Aprovação", val:S.aprovacao+"%", pct:S.aprovacao, cor:"var(--ouro)", delta:d.aprovacao},
+    {rot:"Caixa", val:S.caixa, pct:clamp(S.caixa,0,150)/1.5, cor:S.caixa<0?"var(--vermelho)":"var(--verde)", delta:d.caixa},
+    {rot:"Lucidez", val:"💡 "+S.lucidez, pct:clamp(S.lucidez*20,0,100), cor:"var(--lucidez)", oculto:S.lucidez===0 && !S.painelEconomico},
+    {rot:"Abastecimento", val:S.abastecimento+"%", pct:S.abastecimento, cor:S.abastecimento<45?"var(--vermelho)":"var(--azul)", oculto:!S.painelEconomico},
+    {rot:"Moradia", val:S.moradia+"%", pct:S.moradia, cor:S.moradia<45?"var(--vermelho)":"var(--azul)", oculto:!S.painelEconomico}
+  ];
+  $("medidores").innerHTML = itens.map(m=>
+    `<div class="medidor${m.oculto?" oculto":""}">
+       <div class="rotulo"><span>${m.rot}</span>${m.delta? `<span class="delta ${m.delta>0?"pos":"neg"}">${m.delta>0?"+":""}${m.delta}</span>`:""}</div>
+       <div class="valor">${m.val}</div>
+       <div class="barra"><i style="width:${m.pct}%;background:${m.cor}"></i></div>
+     </div>`).join("");
+}
+
+function renderCidade(){
+  const r = realidade(S);
+  const el = $("cidade");
+  el.className = "cidade " + (r>=60?"estado-prospero": r>=40?"estado-alerta":"estado-crise");
+  const altura = v => 34 + Math.round((v==null? r : v)*0.45);
+  $("skyline").innerHTML = PREDIOS.map(p=>{
+    const v = p.chave? S[p.chave] : null;
+    const fechado = (p.nome==="padaria" && S.flags.padariaFechou && !S.criseResolvida);
+    const fila = (p.nome==="padaria"||p.nome==="mercado") && S.abastecimento<50 && !fechado;
+    return `<div class="predio${fechado?" fechado":""}" style="height:${altura(v)}px">
+      <span class="tag">FECHADO</span>
+      <div class="fila" style="opacity:${fila?1:0}">🧍🧍🧍🧍</div>
+      ${p.emoji}<small>${p.nome}</small></div>`;
+  }).join("");
+  const pop = 12400 + Math.round((r-50)*40);
+  $("populacao").textContent = `👥 ${pop.toLocaleString("pt-BR")} habitantes · prosperidade real ${r}%` ;
+  $("semana").textContent = `Semana ${S.semana} do mandato`;
+}
+
+function renderNoticias(){
+  $("noticias").innerHTML = S.noticias.map(n=>`<div class="noticia ${n.tom}">${n.txt}</div>`).join("");
+}
+
+function cartaAtual(){
+  // a carta de crise é dinâmica: entra na frente do deck assim que o gatilho dispara
+  if(S.criseDisparada && !S.flags.criseVista) return DECK.find(c=>c.id==="a1-11");
+  while(S.deckPos < DECK.length){
+    const c = DECK[S.deckPos];
+    if(c.tipo==="crise"){ S.deckPos++; continue; } // nunca servida pelo ponteiro
+    if(c.cond && !c.cond(S)){ S.deckPos++; continue; }
+    return c;
+  }
+  return null;
+}
+
+function renderCarta(){
+  const c = cartaAtual();
+  const el = $("carta");
+  if(!c){ renderFim(); return; }
+  el.className = "carta " + (c.tipo||"");
+  el.innerHTML = `
+    <div class="quem">${c.quem}</div>
+    <h2>${c.titulo}</h2>
+    <p>${c.texto}</p>
+    <div class="opcoes">${c.opcoes.map((o,i)=>{
+      const semLucidez = o.lucidez && S.lucidez < o.lucidez;
+      return `<button class="opcao${o.destaque?" destaque":""}" data-i="${i}" ${semLucidez?"disabled":""}>
+        ${o.rotulo}${o.custo?`<span class="custo">${o.custo}${semLucidez?" · você ainda não tem Lucidez suficiente":""}</span>`:""}
+      </button>`;}).join("")}
+    </div>`;
+  el.querySelectorAll(".opcao").forEach(b=>b.addEventListener("click",()=>escolher(c, c.opcoes[b.dataset.i])));
+}
+
+function escolher(carta, op){
+  if(op.abrirAula){ S.flags.criseVista = true; renderAula(); return; }
+  aplicar(op.ef||{});
+  agendar(op.ag);
+  if(op.news) noticia(op.news[0], op.news[1]);
+  if(op.aoEscolher) op.aoEscolher(S);
+  if(carta.tipo==="prometedor" && (op.ef&&op.ef.aprovBase)) S.caiuNaTentacao = true;
+  if(carta.tipo==="crise") S.flags.criseVista = true;
+  if(op.eleicao){ apurarEleicao(); return; }
+  if(carta.tipo!=="crise") S.deckPos++; // a carta de crise não pertence ao ponteiro
+  passarSemana();
+  salvar();
+  renderTudo();
+}
+
+/* ---------- aula ---------- */
+function renderAula(){
+  const el = $("carta");
+  el.className = "carta aula-carta";
+  let quizHtml = AULA.quiz.map((q,qi)=>`
+    <div class="quiz" data-q="${qi}">
+      <p>${qi+1}. ${q.p}</p>
+      ${q.ops.map((o,oi)=>`<button class="opcao" data-o="${oi}">${o}</button>`).join("")}
+    </div>`).join("");
+  el.innerHTML = `
+    <div class="quem">📚 Aula · ${AULA.fonte}</div>
+    <h2>${AULA.titulo}</h2>
+    <div class="aula-conteudo">${AULA.paragrafos.map(p=>`<p>${p}</p>`).join("")}${quizHtml}</div>`;
+  let acertos = 0, respondidas = 0;
+  el.querySelectorAll(".quiz").forEach(qEl=>{
+    const qi = +qEl.dataset.q;
+    qEl.querySelectorAll(".opcao").forEach(b=>b.addEventListener("click",()=>{
+      if(qEl.dataset.ok) return;
+      qEl.dataset.ok = "1"; respondidas++;
+      const certa = AULA.quiz[qi].certa;
+      qEl.querySelectorAll(".opcao").forEach((bb,oi)=>{
+        if(oi===certa) bb.classList.add("certa");
+        else if(+b.dataset.o===oi && oi!==certa) bb.classList.add("errada");
+      });
+      if(+b.dataset.o===certa) acertos++;
+      if(respondidas===AULA.quiz.length){
+        setTimeout(()=>concluirAula(acertos), 900);
+      }
+    }));
+  });
+}
+function concluirAula(acertos){
+  const ganho = acertos===AULA.quiz.length ? AULA.recompensa : Math.max(1, acertos);
+  S.lucidez += ganho;
+  S.painelEconomico = true;
+  noticia(`Você entendeu a engrenagem. +${ganho} de Lucidez — e o painel econômico foi instalado: agora você ENXERGA abastecimento e moradia.`,"boa");
+  passarSemana();
+  salvar();
+  renderTudo();
+}
+
+/* ---------- eleição e fim ---------- */
+function apurarEleicao(){
+  const r = realidade(S);
+  const score = S.imprensaLivre ? Math.round(S.aprovacao*0.55 + r*0.45) : S.aprovacao;
+  const venceu = score >= 50;
+  let selo, desc;
+  if(venceu && !S.caiuNaTentacao){ selo="A Cidade Que Nunca Caiu"; desc="Você recusou todas as promessas fáceis — e venceu mesmo assim. Pouquíssimos conseguem."; }
+  else if(venceu && S.flags.reformou){ selo="O Reconstrutor"; desc="Você caiu, entendeu, desfez e reconstruiu. É a história que vale ser contada."; }
+  else if(venceu && S.flags.prometeuMais){ selo="Vitória com Fatura"; desc="Você venceu prometendo o impagável. O segundo mandato começa com a conta na mesa."; }
+  else if(venceu){ selo="Reeleito"; desc="A cidade te deu mais quatro anos. Use-os melhor que os primeiros."; }
+  else { selo="Derrotado nas urnas"; desc="O Prometedor venceu. Da janela, você vai assistir ao que ele faz com a sua cidade."; }
+  S.fim = {venceu, selo, desc, score, r};
+  salvar();
+  renderTudo();
+}
+function renderFim(){
+  const f = S.fim || {venceu:false, selo:"Fim do protótipo", desc:"", score:0, r:realidade(S)};
+  const el = $("carta");
+  el.className = "carta " + (f.venceu?"":"crise");
+  el.innerHTML = `
+    <div class="quem">Apuração encerrada</div>
+    <h2>${f.venceu? "Você foi reeleito." : "Você perdeu a eleição."}</h2>
+    <div class="selo"><div class="nome">${f.selo}</div><div class="desc">${f.desc}</div></div>
+    <p class="recap">
+      Votos: <b>${f.score}%</b> · Prosperidade real: <b>${f.r}%</b> · Aprovação: <b>${S.aprovacao}%</b><br>
+      Caixa final: <b>${S.caixa}</b> · Escolaridade: <b>${S.escolaridade}%</b> · Corrupção: <b>${S.corrupcao}</b><br>
+      Imprensa: <b>${S.imprensaLivre? "livre" : "comprada"}</b> · Lucidez restante: <b>${S.lucidez}</b>
+    </p>
+    ${!f.venceu? `<p>O Prometedor assume na segunda-feira. As primeiras medidas: congelamento geral de preços, vales em dobro e o fechamento do jornal.</p>`:""}
+    <div class="opcoes">
+      <button class="opcao destaque" id="btnDeNovo">Jogar de novo${f.venceu?"":" — disputar a próxima eleição"}</button>
+    </div>`;
+  $("btnDeNovo").addEventListener("click", reiniciar);
+}
+
+function reiniciar(){
+  localStorage.removeItem(SAVE_KEY);
+  S = estadoInicial();
+  noticia("Novo mandato. A cidade te observa.","");
+  salvar();
+  renderTudo();
+}
+
+function renderTudo(){ renderMedidores(); renderCidade(); renderNoticias(); if(!S.fim) renderCarta(); else renderFim(); }
+$("btnReiniciar").addEventListener("click", ()=>{ if(confirm("Recomeçar o mandato do zero?")) reiniciar(); });
+
+if(S.noticias.length===0) noticia("Primeiro dia de mandato. A cidade te observa.","");
+renderTudo();
+</script>
+</body>
+</html>
