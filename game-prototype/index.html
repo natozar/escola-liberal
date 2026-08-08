@@ -1,6 +1,3 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cidade Livre — Protótipo Fase 1</title>
@@ -133,8 +130,7 @@
   .rodape button:hover{color:var(--tinta)}
   @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
 </style>
-</head>
-<body>
+
 <div id="app">
   <div class="medidores" id="medidores"></div>
 
@@ -178,7 +174,7 @@ function estadoInicial(){
     corrupcao: 5, lucidez: 0,
     imprensaLivre: true, painelEconomico: false,
     flags: {}, agendados: [], noticias: [],
-    deckPos: 0, criseDisparada: false, criseResolvida: false,
+    jogadas: [], criseDisparada: false, criseResolvida: false,
     caiuNaTentacao: false, fim: null,
     ultimoDelta: {}
   };
@@ -195,7 +191,7 @@ function multIgnorancia(st){ // demagogia rende menos numa cidade educada
 }
 function salvar(){ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }
 function carregar(){
-  try{ const d = JSON.parse(localStorage.getItem(SAVE_KEY)); return d && d.deckPos !== undefined ? d : null; }
+  try{ const d = JSON.parse(localStorage.getItem(SAVE_KEY)); return d && Array.isArray(d.jogadas) ? d : null; }
   catch(e){ return null; }
 }
 
@@ -374,6 +370,8 @@ const DECK = [
   opcoes:[
     {rotulo:"Rebater com números, em praça pública", custo:"Gasta 1 de Lucidez · funciona se a cidade estudou", lucidez:1,
      ef:{lucidez:-1}, aoEscolher:s=>{ if(s.escolaridade>=30){ aplicar({aprovacao:8}); noticia("Você fez as contas no quadro-negro da praça. A multidão fez as contas junto. O palanque esvaziou.","boa"); } else { aplicar({aprovacao:-6}); noticia("Você mostrou números; a multidão queria promessas. Uma cidade sem escola não confere contas.","ruim"); } }},
+    {rotulo:"Não entrar no leilão de promessas", custo:"“Prometo o que dá pra cumprir.” A multidão esfria", ef:{aprovacao:-8},
+     news:["Enquanto o outro palanque promete o impossível, você promete o possível. Menos aplauso, mais silêncio.",""]},
     {rotulo:"Prometer mais ainda", custo:"Vence hoje, paga depois", ef:{aprovBase:12, flags:{prometeuMais:true}},
      news:["Guerra de promessas: cada palanque promete o dobro do outro.",""]}
   ]},
@@ -459,16 +457,24 @@ function renderNoticias(){
   $("noticias").innerHTML = S.noticias.map(n=>`<div class="noticia ${n.tom}">${n.txt}</div>`).join("");
 }
 
+const FILLER_TEXTOS = [
+  "Reuniões, despachos, uma fita inaugurada. Nada urgente — mas as decisões passadas seguem trabalhando, a favor ou contra você.",
+  "Semana de rotina na prefeitura. A cidade segue seu curso; as consequências, também.",
+  "Sem manchetes esta semana. O que você plantou continua crescendo em silêncio."
+];
 function cartaAtual(){
   // a carta de crise é dinâmica: entra na frente do deck assim que o gatilho dispara
   if(S.criseDisparada && !S.flags.criseVista) return DECK.find(c=>c.id==="a1-11");
-  while(S.deckPos < DECK.length){
-    const c = DECK[S.deckPos];
-    if(c.tipo==="crise"){ S.deckPos++; continue; } // nunca servida pelo ponteiro
-    if(c.cond && !c.cond(S)){ S.deckPos++; continue; }
-    return c;
-  }
-  return null;
+  // deck por elegibilidade (não por ponteiro): carta pulada por condição volta quando a condição vira verdade
+  const eleg = DECK.filter(c => c.tipo!=="crise" && c.tipo!=="eleicao" && !S.jogadas.includes(c.id) && (!c.cond || c.cond(S)));
+  if(eleg.length) return eleg[0];
+  // sem carta elegível: semanas comuns até as consequências agendadas vencerem; eleição a partir da semana 14
+  if(S.semana < 14) return {
+    id:"filler", tipo:"filler", quem:"A cidade", titulo:"Uma semana comum",
+    texto: FILLER_TEXTOS[S.semana % FILLER_TEXTOS.length],
+    opcoes:[{rotulo:"Seguir a semana", custo:"", ef:{}}]
+  };
+  return S.fim ? null : DECK.find(c=>c.tipo==="eleicao");
 }
 
 function renderCarta(){
@@ -498,7 +504,7 @@ function escolher(carta, op){
   if(carta.tipo==="prometedor" && (op.ef&&op.ef.aprovBase)) S.caiuNaTentacao = true;
   if(carta.tipo==="crise") S.flags.criseVista = true;
   if(op.eleicao){ apurarEleicao(); return; }
-  if(carta.tipo!=="crise") S.deckPos++; // a carta de crise não pertence ao ponteiro
+  if(carta.tipo!=="crise" && carta.tipo!=="filler") S.jogadas.push(carta.id);
   passarSemana();
   salvar();
   renderTudo();
@@ -552,8 +558,8 @@ function apurarEleicao(){
   const venceu = score >= 50;
   let selo, desc;
   if(venceu && !S.caiuNaTentacao){ selo="A Cidade Que Nunca Caiu"; desc="Você recusou todas as promessas fáceis — e venceu mesmo assim. Pouquíssimos conseguem."; }
-  else if(venceu && S.flags.reformou){ selo="O Reconstrutor"; desc="Você caiu, entendeu, desfez e reconstruiu. É a história que vale ser contada."; }
   else if(venceu && S.flags.prometeuMais){ selo="Vitória com Fatura"; desc="Você venceu prometendo o impagável. O segundo mandato começa com a conta na mesa."; }
+  else if(venceu && S.flags.reformou){ selo="O Reconstrutor"; desc="Você caiu, entendeu, desfez e reconstruiu. É a história que vale ser contada."; }
   else if(venceu){ selo="Reeleito"; desc="A cidade te deu mais quatro anos. Use-os melhor que os primeiros."; }
   else { selo="Derrotado nas urnas"; desc="O Prometedor venceu. Da janela, você vai assistir ao que ele faz com a sua cidade."; }
   S.fim = {venceu, selo, desc, score, r};
@@ -594,5 +600,3 @@ $("btnReiniciar").addEventListener("click", ()=>{ if(confirm("Recomeçar o manda
 if(S.noticias.length===0) noticia("Primeiro dia de mandato. A cidade te observa.","");
 renderTudo();
 </script>
-</body>
-</html>
