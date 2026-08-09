@@ -1,0 +1,533 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cidade Livre — Tela-conceito</title>
+<style>
+  :root{
+    --pagina:#14161d; --tinta:#e9e4da; --tinta-suave:#9b95a8;
+    --ouro:#d9a441; --moldura:#23262f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--pagina); color:var(--tinta);
+    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center;
+    padding:28px 16px 40px;
+  }
+  .eyebrow{
+    font-size:11px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--ouro); margin-bottom:6px;
+  }
+  h1{font-size:clamp(20px,3.2vw,30px); font-weight:600; letter-spacing:-.01em}
+  h1 em{font-style:normal; color:var(--tinta-suave); font-weight:400}
+  .palco{
+    width:100%; max-width:1080px; margin-top:22px;
+    border-radius:18px; overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.5), 0 0 0 1px var(--moldura);
+    background:#000;
+  }
+  .palco svg{display:block; width:100%; height:auto}
+  .controles{
+    display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; justify-content:center;
+  }
+  .controles button{
+    font:inherit; font-size:14px; font-weight:600;
+    color:var(--tinta-suave); background:var(--moldura);
+    border:1px solid transparent; border-radius:999px;
+    padding:10px 22px; cursor:pointer; transition:all .25s;
+  }
+  .controles button:hover{color:var(--tinta)}
+  .controles button:focus-visible{outline:2px solid var(--ouro); outline-offset:2px}
+  .controles button[aria-pressed="true"]{
+    color:#1a150a; background:var(--ouro); border-color:var(--ouro);
+  }
+  .legenda{
+    margin-top:14px; max-width:640px; text-align:center;
+    font-size:14px; line-height:1.55; color:var(--tinta-suave); min-height:44px;
+  }
+  .nota{
+    margin-top:26px; font-size:12px; color:#5f5a6e; text-align:center; max-width:640px; line-height:1.6;
+  }
+
+  /* ---------- estados da cena ---------- */
+  #cena{ --sombra:.16; }
+  #cena .estado{opacity:0; transition:opacity .9s ease}
+  #cena.prospero .so-prospero,
+  #cena.crise    .so-crise,
+  #cena.abandono .so-abandono{opacity:1}
+
+  #cena.prospero{--ceu-a:#9cc6e8;--ceu-b:#ffd9a4;--sol:1;--skyline:#c3aec6;--calcada:#e4d5bb;--rua:#6b6476;--sombra:.16;--luzes:1;--lampiao:0}
+  #cena.crise   {--ceu-a:#8d9aa8;--ceu-b:#c6cacb;--sol:.14;--skyline:#9aa5b0;--calcada:#c8c5bd;--rua:#636270;--sombra:.05;--luzes:.14;--lampiao:0}
+  #cena.abandono{--ceu-a:#2c3654;--ceu-b:#8f6c94;--sol:0;--skyline:#535f7d;--calcada:#9a92a2;--rua:#454356;--sombra:.28;--luzes:0;--lampiao:1}
+
+  #mundo{transition:filter 1s ease}
+  #cena.crise    #mundo{filter:saturate(.62) brightness(.94)}
+  #cena.abandono #mundo{filter:saturate(.48) brightness(.82)}
+
+  #cena [data-luz]{opacity:var(--luzes); transition:opacity .9s ease}
+  #cena .sombra-longa{opacity:var(--sombra); transition:opacity .9s ease}
+  #cena #sol-grupo{opacity:var(--sol); transition:opacity .9s ease}
+  #cena #luz-lampiao{opacity:var(--lampiao); transition:opacity .9s ease}
+  #cena .stop-a{stop-color:var(--ceu-a); transition:stop-color .9s ease}
+  #cena .stop-b{stop-color:var(--ceu-b); transition:stop-color .9s ease}
+  #cena .skyline{fill:var(--skyline); transition:fill .9s ease}
+  #cena .calcada{fill:var(--calcada); transition:fill .9s ease}
+  #cena .rua{fill:var(--rua); transition:fill .9s ease}
+
+  /* fumaça da padaria */
+  @keyframes subir{
+    0%{transform:translate(0,0) scale(.6); opacity:0}
+    25%{opacity:.55}
+    100%{transform:translate(-14px,-64px) scale(1.25); opacity:0}
+  }
+  .fumaca circle{animation:subir 4.5s linear infinite}
+  .fumaca circle:nth-child(2){animation-delay:1.5s}
+  .fumaca circle:nth-child(3){animation-delay:3s}
+
+  /* pétalas do ipê */
+  @keyframes cair{
+    0%{transform:translate(0,0); opacity:0}
+    15%{opacity:.9}
+    100%{transform:translate(-26px,96px) rotate(40deg); opacity:0}
+  }
+  .petalas circle{animation:cair 6s ease-in infinite}
+  .petalas circle:nth-child(2){animation-delay:2s}
+  .petalas circle:nth-child(3){animation-delay:4s}
+
+  @media (prefers-reduced-motion: reduce){
+    .fumaca circle,.petalas circle{animation:none; opacity:0}
+    #cena .estado,#mundo,#cena [data-luz]{transition:none}
+  }
+</style>
+
+<p class="eyebrow">Escola Liberal · Jogo "Cidade Livre" · Fase 0</p>
+<h1>Tela-conceito <em>— Rua Principal em três estados</em></h1>
+
+<div class="palco">
+<svg id="cena" class="prospero" viewBox="0 60 1280 620" role="img"
+     aria-label="Diorama da Rua Principal de uma cidade brasileira em três estados: próspera, em crise e abandonada">
+  <defs>
+    <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="stop-a"/>
+      <stop offset="1" class="stop-b"/>
+    </linearGradient>
+    <radialGradient id="brilho-sol" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff3cf" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#fff3cf" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="brilho-lampiao" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#ffe9a8" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#ffe9a8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="vinheta" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity=".18"/>
+      <stop offset=".35" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- CÉU -->
+  <rect width="1280" height="590" fill="url(#ceu)"/>
+  <g id="sol-grupo">
+    <circle cx="1080" cy="152" r="96" fill="url(#brilho-sol)"/>
+    <circle cx="1080" cy="152" r="42" fill="#ffe9b0"/>
+  </g>
+  <g class="estado so-crise">
+    <ellipse cx="300" cy="150" rx="200" ry="38" fill="#aeb6bd"/>
+    <ellipse cx="700" cy="118"  rx="250" ry="44" fill="#a2abb4"/>
+    <ellipse cx="1080" cy="164" rx="220" ry="40" fill="#aeb6bd"/>
+  </g>
+  <g class="estado so-prospero">
+    <ellipse cx="360" cy="150" rx="90" ry="18" fill="#ffffff" opacity=".7"/>
+    <ellipse cx="800" cy="122" rx="70" ry="14" fill="#ffffff" opacity=".55"/>
+  </g>
+
+  <g id="mundo">
+    <!-- FUNDO: skyline distante + caixa d'água -->
+    <g class="skyline" opacity=".6">
+      <rect x="-10" y="440" width="90"  height="120"/>
+      <rect x="96"  y="416" width="52"  height="144"/>
+      <rect x="160" y="452" width="70"  height="108"/>
+      <rect x="248" y="404" width="46"  height="156"/>
+      <rect x="308" y="446" width="90"  height="114"/>
+      <rect x="416" y="420" width="56"  height="140"/>
+      <rect x="490" y="450" width="84"  height="110"/>
+      <rect x="592" y="410" width="48"  height="150"/>
+      <rect x="654" y="444" width="78"  height="116"/>
+      <rect x="748" y="424" width="52"  height="136"/>
+      <rect x="948" y="430" width="60"  height="130"/>
+      <rect x="1022" y="454" width="70" height="106"/>
+      <g><!-- caixa d'água -->
+        <rect x="880" y="440" width="8" height="120"/>
+        <rect x="898" y="440" width="8" height="120"/>
+        <ellipse cx="893" cy="430" rx="26" ry="17"/>
+      </g>
+    </g>
+    <g class="skyline" opacity=".32">
+      <rect x="60"  y="382" width="34" height="180"/>
+      <rect x="360" y="372" width="40" height="190"/>
+      <rect x="560" y="386" width="30" height="176"/>
+      <rect x="820" y="376" width="36" height="186"/>
+      <rect x="1120" y="390" width="32" height="172"/>
+    </g>
+
+    <!-- OBRA: esqueleto + guindaste (atrás dos prédios) -->
+    <g id="el-obra">
+      <g opacity=".92">
+        <rect x="235" y="468" width="82" height="92" fill="#8d8798"/>
+        <rect x="243" y="478" width="66" height="8"  fill="#6f6a7d"/>
+        <rect x="243" y="500" width="66" height="8"  fill="#6f6a7d"/>
+        <rect x="243" y="522" width="66" height="8"  fill="#6f6a7d"/>
+      </g>
+      <g class="estado so-prospero">
+        <rect x="262" y="244" width="9" height="224" fill="#e07a3f"/>
+        <rect x="118" y="248" width="214" height="7" fill="#e07a3f"/>
+        <rect x="306" y="234" width="30" height="16" fill="#c9662f"/>
+        <line x1="152" y1="255" x2="152" y2="330" stroke="#5a4a44" stroke-width="2.5"/>
+        <rect x="144" y="330" width="17" height="12" fill="#caa24a"/>
+      </g>
+      <g class="estado so-crise">
+        <rect x="262" y="244" width="9" height="224" fill="#a86e3f"/>
+        <rect x="118" y="248" width="214" height="7" fill="#a86e3f"/>
+        <rect x="306" y="234" width="30" height="16" fill="#8a5a34"/>
+        <line x1="152" y1="255" x2="152" y2="452" stroke="#5a5060" stroke-width="2.5"/>
+      </g>
+    </g>
+
+    <!-- ESCOLA -->
+    <g id="el-escola">
+      <polygon points="40,432 140,394 240,432" fill="#c96f4e"/>
+      <rect x="40" y="432" width="200" height="128" fill="#f4e6c4"/>
+      <rect x="40" y="432" width="200" height="10" fill="#e0cda0"/>
+      <rect x="122" y="500" width="36" height="60" rx="14" fill="#7a5b47"/>
+      <g fill="#fdf6e3" stroke="#c9b98f" stroke-width="2">
+        <rect x="58"  y="452" width="26" height="34" rx="4"/>
+        <rect x="96"  y="452" width="26" height="34" rx="4"/>
+        <rect x="158" y="452" width="26" height="34" rx="4"/>
+        <rect x="196" y="452" width="26" height="34" rx="4"/>
+      </g>
+      <g data-luz="1" fill="#ffd98f" opacity="0">
+        <rect x="60"  y="454" width="22" height="30" rx="3"/>
+        <rect x="98"  y="454" width="22" height="30" rx="3"/>
+        <rect x="160" y="454" width="22" height="30" rx="3"/>
+        <rect x="198" y="454" width="22" height="30" rx="3"/>
+      </g>
+      <rect x="86" y="416" width="108" height="15" rx="3" fill="#fdf6e3"/>
+      <text x="140" y="428" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.5" fill="#8a5c3a">ESCOLA</text>
+      <line x1="52" y1="560" x2="52" y2="352" stroke="#8d8798" stroke-width="3"/>
+      <g class="estado so-prospero">
+        <polygon points="54,354 92,362 54,372" fill="#3f9e63"/>
+      </g>
+      <g class="estado so-crise">
+        <polygon points="54,398 84,404 54,412" fill="#3f9e63" opacity=".8"/>
+        <path d="M60 540 q14 -16 28 0 q12 -12 22 2" stroke="#c85a9a" stroke-width="4" fill="none" opacity=".85"/>
+        <path d="M170 544 q16 -12 30 0" stroke="#5a7ec8" stroke-width="4" fill="none" opacity=".85"/>
+      </g>
+      <g class="estado so-abandono" fill="#6e5a3f">
+        <rect x="120" y="510" width="42" height="7" transform="rotate(-14 141 513)"/>
+        <rect x="120" y="528" width="42" height="7" transform="rotate(12 141 531)"/>
+      </g>
+    </g>
+
+    <!-- PADARIA (sobrado de esquina) -->
+    <g id="el-padaria">
+      <rect x="260" y="404" width="170" height="156" fill="#d97e6a"/>
+      <rect x="260" y="404" width="170" height="12" fill="#b65f4d"/>
+      <rect x="288" y="380" width="14" height="26" fill="#a35744"/>
+      <g class="estado so-prospero">
+        <g class="fumaca" fill="#f6efe2">
+          <circle cx="295" cy="372" r="7"/>
+          <circle cx="295" cy="372" r="7"/>
+          <circle cx="295" cy="372" r="7"/>
+        </g>
+      </g>
+      <g fill="#f6e3d2">
+        <path d="M278 434 h28 v30 h-28 z M278 434 a14 14 0 0 1 28 0"/>
+        <path d="M330 434 h28 v30 h-28 z M330 434 a14 14 0 0 1 28 0"/>
+        <path d="M382 434 h28 v30 h-28 z M382 434 a14 14 0 0 1 28 0"/>
+      </g>
+      <rect x="266" y="486" width="158" height="10" rx="3" fill="#fdf6e3"/>
+      <text x="345" y="495" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9.5" font-weight="700" letter-spacing="2.5" fill="#a3543f">PADARIA</text>
+      <g><!-- toldo listrado -->
+        <path d="M262 500 h166 l-10 18 h-146 z" fill="#f3ead8"/>
+        <path d="M276 500 l-8.5 18 h17 l8.5 -18 z M310 500 l-8.5 18 h17 l8.5 -18 z M344 500 l-8.5 18 h17 l8.5 -18 z M378 500 l-8.5 18 h17 l8.5 -18 z M412 500 l-8.5 18 h16 l6 -18 z" fill="#d96a52"/>
+      </g>
+      <rect x="270" y="520" width="110" height="40" fill="#5c4436"/>
+      <rect x="274" y="524" width="102" height="32" fill="#3d2e25"/>
+      <g data-luz="1" opacity="0">
+        <rect x="274" y="524" width="102" height="32" fill="#ffcf8f"/>
+        <rect x="282" y="534" width="20" height="8" rx="4" fill="#c98a3f"/>
+        <rect x="308" y="534" width="20" height="8" rx="4" fill="#c98a3f"/>
+        <rect x="334" y="534" width="20" height="8" rx="4" fill="#c98a3f"/>
+        <rect x="295" y="546" width="20" height="8" rx="4" fill="#c98a3f"/>
+        <rect x="321" y="546" width="20" height="8" rx="4" fill="#c98a3f"/>
+      </g>
+      <rect x="392" y="516" width="30" height="44" rx="3" fill="#7a5b47"/>
+      <g class="estado so-abandono">
+        <rect x="386" y="524" width="44" height="26" rx="3" fill="#f2ead9" transform="rotate(-7 408 537)"/>
+        <text x="408" y="541" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9" font-weight="700" letter-spacing="1" fill="#8a3d2e" transform="rotate(-7 408 537)">FECHADO</text>
+      </g>
+    </g>
+
+    <!-- MERCADO MUNICIPAL -->
+    <g id="el-mercado">
+      <rect x="450" y="420" width="200" height="140" fill="#eec95c"/>
+      <rect x="450" y="420" width="200" height="14" fill="#d4ae42"/>
+      <polygon points="450,420 550,388 650,420" fill="#c96f4e"/>
+      <rect x="484" y="404" width="132" height="13" rx="3" fill="#fdf6e3"/>
+      <text x="550" y="414" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="9.5" font-weight="700" letter-spacing="2" fill="#8a6a2e">MERCADO</text>
+      <g fill="#4a3a2c">
+        <path d="M470 560 v-70 a20 20 0 0 1 40 0 v70 z"/>
+        <path d="M530 560 v-70 a20 20 0 0 1 40 0 v70 z"/>
+        <path d="M590 560 v-70 a20 20 0 0 1 40 0 v70 z"/>
+      </g>
+      <g data-luz="1" opacity="0" fill="#ffc97f">
+        <path d="M474 560 v-66 a16 16 0 0 1 32 0 v66 z"/>
+        <path d="M534 560 v-66 a16 16 0 0 1 32 0 v66 z"/>
+        <path d="M594 560 v-66 a16 16 0 0 1 32 0 v66 z"/>
+      </g>
+      <g class="estado so-prospero">
+        <rect x="456" y="540" width="16" height="12" fill="#c85a4a"/>
+        <rect x="456" y="528" width="16" height="12" fill="#3f9e63"/>
+        <rect x="474" y="540" width="16" height="12" fill="#d9913f"/>
+        <ellipse cx="464" cy="524" rx="9" ry="4" fill="#e0703f"/>
+      </g>
+    </g>
+
+    <!-- BECO + camelô (crise) -->
+    <g id="el-beco">
+      <rect x="650" y="446" width="30" height="114" fill="#3a3344"/>
+      <g class="estado so-crise">
+        <rect x="652" y="520" width="26" height="40" fill="#2d2735"/>
+        <path d="M650 520 h30 l-4 -12 h-22 z" fill="#3f8e9e"/>
+        <rect x="655" y="530" width="8" height="7" fill="#c8b98f"/>
+        <rect x="666" y="530" width="8" height="7" fill="#c8b98f"/>
+        <rect x="660" y="540" width="8" height="7" fill="#c8b98f"/>
+      </g>
+    </g>
+
+    <!-- AGÊNCIA / BANCO -->
+    <g id="el-banco">
+      <rect x="690" y="430" width="120" height="130" fill="#e8e2d2"/>
+      <rect x="690" y="430" width="120" height="16" fill="#cfc7b2"/>
+      <text x="750" y="443" text-anchor="middle" font-family="Georgia,serif" font-size="10" font-weight="700" letter-spacing="3" fill="#6e6650">BANCO</text>
+      <g fill="#d8d2c0">
+        <rect x="700" y="456" width="12" height="104"/>
+        <rect x="744" y="456" width="12" height="104"/>
+        <rect x="788" y="456" width="12" height="104"/>
+      </g>
+      <rect x="718" y="470" width="20" height="90" fill="#3d3a30"/>
+      <rect x="762" y="470" width="20" height="90" fill="#3d3a30"/>
+      <g data-luz="1" opacity="0" fill="#ffe2a8">
+        <rect x="720" y="472" width="16" height="86"/>
+        <rect x="764" y="472" width="16" height="86"/>
+      </g>
+    </g>
+
+    <!-- PRÉDIO RESIDENCIAL -->
+    <g id="el-predio">
+      <rect x="830" y="360" width="140" height="200" fill="#9ec4b4"/>
+      <rect x="830" y="360" width="140" height="10" fill="#7fa896"/>
+      <g fill="#3e4a44">
+        <rect x="842" y="382" width="24" height="26" rx="2"/><rect x="888" y="382" width="24" height="26" rx="2"/><rect x="934" y="382" width="24" height="26" rx="2"/>
+        <rect x="842" y="428" width="24" height="26" rx="2"/><rect x="888" y="428" width="24" height="26" rx="2"/><rect x="934" y="428" width="24" height="26" rx="2"/>
+        <rect x="842" y="474" width="24" height="26" rx="2"/><rect x="888" y="474" width="24" height="26" rx="2"/><rect x="934" y="474" width="24" height="26" rx="2"/>
+      </g>
+      <g data-luz="1" opacity="0" fill="#ffd98f">
+        <rect x="844" y="384" width="20" height="22" rx="2"/><rect x="936" y="384" width="20" height="22" rx="2"/>
+        <rect x="890" y="430" width="20" height="22" rx="2"/>
+        <rect x="844" y="476" width="20" height="22" rx="2"/><rect x="936" y="476" width="20" height="22" rx="2"/>
+      </g>
+      <g class="estado so-prospero" fill="#3f9e63">
+        <ellipse cx="854" cy="412" rx="8" ry="5"/>
+        <ellipse cx="946" cy="458" rx="8" ry="5"/>
+        <ellipse cx="900" cy="504" rx="8" ry="5"/>
+      </g>
+      <g class="estado so-crise">
+        <rect x="884" y="430" width="34" height="20" rx="2" fill="#f2ead9"/>
+        <text x="901" y="443" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="7.5" font-weight="700" fill="#b03a2e">ALUGA-SE</text>
+      </g>
+      <rect x="884" y="520" width="32" height="40" rx="3" fill="#5c6e64"/>
+      <g class="estado so-abandono" fill="#6e5a3f">
+        <rect x="840" y="390" width="30" height="6" transform="rotate(-12 855 393)"/>
+        <rect x="840" y="400" width="30" height="6" transform="rotate(10 855 403)"/>
+        <rect x="932" y="390" width="30" height="6" transform="rotate(9 947 393)"/>
+        <rect x="932" y="482" width="30" height="6" transform="rotate(-11 947 485)"/>
+      </g>
+    </g>
+
+    <!-- BANCA DE JORNAL -->
+    <g id="el-banca">
+      <rect x="988" y="508" width="64" height="52" rx="4" fill="#2f7d5b"/>
+      <path d="M982 508 h76 a38 20 0 0 0 -76 0" fill="#256648"/>
+      <rect x="994" y="518" width="52" height="30" fill="#1e3f31"/>
+      <g class="estado so-prospero">
+        <rect x="996" y="522" width="10" height="14" fill="#d96a52"/>
+        <rect x="1008" y="522" width="10" height="14" fill="#eec95c"/>
+        <rect x="1020" y="522" width="10" height="14" fill="#5a7ec8"/>
+        <rect x="1032" y="522" width="10" height="14" fill="#c85a9a"/>
+      </g>
+      <g class="estado so-crise">
+        <rect x="1008" y="522" width="24" height="14" fill="#b9b5ac"/>
+        <rect x="1010" y="525" width="20" height="2.5" fill="#6e6a60"/>
+        <rect x="1010" y="530" width="20" height="1.5" fill="#8a867c"/>
+      </g>
+      <g class="estado so-abandono">
+        <rect x="994" y="518" width="52" height="30" fill="#55504a"/>
+        <line x1="994" y1="524" x2="1046" y2="524" stroke="#3d3934" stroke-width="2"/>
+        <line x1="994" y1="532" x2="1046" y2="532" stroke="#3d3934" stroke-width="2"/>
+        <line x1="994" y1="540" x2="1046" y2="540" stroke="#3d3934" stroke-width="2"/>
+      </g>
+    </g>
+
+    <!-- PRAÇA: poste, banco, ipê -->
+    <g id="el-praca">
+      <rect x="1060" y="546" width="220" height="14" fill="#7ba06a"/>
+      <g class="estado so-abandono" fill="#6a7a4a">
+        <path d="M1066 546 l6 -14 l6 14 z M1082 546 l5 -10 l5 10 z M1210 546 l7 -16 l7 16 z M1240 546 l5 -11 l5 11 z"/>
+      </g>
+      <line x1="1075" y1="560" x2="1075" y2="462" stroke="#4a4552" stroke-width="4"/>
+      <path d="M1075 462 q0 -14 16 -14" stroke="#4a4552" stroke-width="4" fill="none"/>
+      <circle cx="1093" cy="448" r="6" fill="#d8d4c8"/>
+      <g id="luz-lampiao">
+        <circle cx="1093" cy="452" r="46" fill="url(#brilho-lampiao)"/>
+        <circle cx="1093" cy="448" r="6" fill="#ffe9a8"/>
+      </g>
+      <g><!-- banco de praça -->
+        <rect x="1104" y="534" width="46" height="6" rx="2" fill="#8a5c3a"/>
+        <rect x="1104" y="524" width="46" height="5" rx="2" fill="#8a5c3a"/>
+        <rect x="1108" y="540" width="5" height="20" fill="#5c4436"/>
+        <rect x="1141" y="540" width="5" height="20" fill="#5c4436"/>
+      </g>
+      <g><!-- ipê-amarelo: a assinatura -->
+        <path d="M1196 560 c-4 -34 -10 -52 -22 -74 M1196 560 c2 -38 8 -60 22 -82 M1196 560 c-1 -30 4 -48 -2 -66"
+              stroke="#5c4436" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <g class="estado so-prospero">
+          <circle cx="1168" cy="470" r="30" fill="#ffc94a"/>
+          <circle cx="1206" cy="452" r="34" fill="#ffd166"/>
+          <circle cx="1238" cy="480" r="26" fill="#ffc94a"/>
+          <circle cx="1198" cy="490" r="24" fill="#f4b83a"/>
+          <g class="petalas" fill="#ffd166">
+            <circle cx="1180" cy="486" r="3.4"/>
+            <circle cx="1216" cy="478" r="3.4"/>
+            <circle cx="1236" cy="492" r="3.4"/>
+          </g>
+        </g>
+        <g class="estado so-crise">
+          <circle cx="1178" cy="472" r="18" fill="#d9b04a" opacity=".75"/>
+          <circle cx="1214" cy="462" r="16" fill="#cfa848" opacity=".65"/>
+        </g>
+        <g class="estado so-abandono">
+          <path d="M1174 486 c-8 -8 -12 -14 -14 -24 M1218 478 c8 -10 10 -18 10 -28 M1194 494 c-2 -10 0 -16 -4 -22"
+                stroke="#5c4436" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- luz dourada varrendo a cena (só na prosperidade) -->
+    <g class="estado so-prospero" pointer-events="none">
+      <polygon points="1120,175 1080,140 40,560 480,560" fill="#ffb066" opacity=".09"/>
+      <rect x="0" y="496" width="1280" height="64" fill="#ff9d5c" opacity=".1"/>
+    </g>
+
+    <!-- CALÇADA + SOMBRAS LONGAS -->
+    <rect class="calcada" x="0" y="556" width="1280" height="30"/>
+    <g class="sombra-longa" fill="#2b2440">
+      <polygon points="40,560 240,560 150,584 -40,584"/>
+      <polygon points="260,560 430,560 340,584 180,584"/>
+      <polygon points="450,560 650,560 560,584 370,584"/>
+      <polygon points="690,560 810,560 730,584 610,584"/>
+      <polygon points="830,560 970,560 890,584 750,584"/>
+      <polygon points="1160,560 1240,560 1150,586 1080,586"/>
+    </g>
+
+    <!-- RUA -->
+    <rect class="rua" x="0" y="584" width="1280" height="136"/>
+    <rect x="0" y="584" width="1280" height="4" fill="#000" opacity=".18"/>
+    <g fill="#cfc7b8" opacity=".5">
+      <rect x="60"  y="648" width="60" height="6" rx="3"/>
+      <rect x="220" y="648" width="60" height="6" rx="3"/>
+      <rect x="380" y="648" width="60" height="6" rx="3"/>
+      <rect x="540" y="648" width="60" height="6" rx="3"/>
+      <rect x="700" y="648" width="60" height="6" rx="3"/>
+      <rect x="1020" y="648" width="60" height="6" rx="3"/>
+      <rect x="1180" y="648" width="60" height="6" rx="3"/>
+    </g>
+    <g fill="#d8d2c4" opacity=".55">
+      <rect x="466" y="592" width="14" height="120" transform="skewX(-16)"/>
+      <rect x="496" y="592" width="14" height="120" transform="skewX(-16)"/>
+      <rect x="526" y="592" width="14" height="120" transform="skewX(-16)"/>
+    </g>
+
+    <!-- PESSOAS -->
+    <g fill="#3d3542">
+      <g class="estado so-prospero">
+        <g><circle cx="350" cy="562" r="6.5"/><path d="M344 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="512" cy="562" r="6.5"/><path d="M506 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="528" cy="563" r="4.5"/><path d="M523 568 h10 l-2 19 h-6 z"/></g>
+        <g><circle cx="1116" cy="518" r="5"/><path d="M1110 524 h12 l-1 12 h-10 z"/></g>
+        <g><circle cx="1134" cy="518" r="5"/><path d="M1128 524 h12 l-1 12 h-10 z"/></g>
+        <g><circle cx="120" cy="566" r="4"/><path d="M116 571 h8 l-1.5 16 h-5 z"/></g>
+        <g><circle cx="136" cy="566" r="4"/><path d="M132 571 h8 l-1.5 16 h-5 z"/></g>
+        <g><circle cx="990" cy="562" r="6.5"/><path d="M984 568 h14 l-2.5 26 h-9 z"/></g>
+      </g>
+      <g class="estado so-crise">
+        <g><circle cx="404" cy="562" r="6.5"/><path d="M398 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="384" cy="562" r="6.5"/><path d="M378 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="364" cy="562" r="6.5"/><path d="M358 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="344" cy="562" r="6.5"/><path d="M338 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="324" cy="562" r="6.5"/><path d="M318 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="304" cy="562" r="6.5"/><path d="M298 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="726" cy="562" r="6.5"/><path d="M720 568 h14 l-2.5 26 h-9 z"/></g>
+        <g><circle cx="744" cy="562" r="6.5"/><path d="M738 568 h14 l-2.5 26 h-9 z"/></g>
+      </g>
+    </g>
+
+    <!-- CAMINHÃO DE MUDANÇA (abandono) -->
+    <g class="estado so-abandono">
+      <rect x="820" y="598" width="112" height="58" rx="4" fill="#c8c2b4"/>
+      <rect x="820" y="598" width="112" height="12" fill="#aaa494"/>
+      <text x="876" y="634" text-anchor="middle" font-family="Segoe UI,sans-serif" font-size="11" font-weight="700" letter-spacing="1.5" fill="#8a8474">MUDANÇAS</text>
+      <path d="M932 614 h30 a8 8 0 0 1 8 8 v34 h-38 z" fill="#8a5c3a"/>
+      <rect x="938" y="620" width="18" height="14" rx="2" fill="#c9dce8"/>
+      <circle cx="852" cy="660" r="12" fill="#2d2a33"/><circle cx="852" cy="660" r="5" fill="#8d8798"/>
+      <circle cx="946" cy="660" r="12" fill="#2d2a33"/><circle cx="946" cy="660" r="5" fill="#8d8798"/>
+      <rect x="808" y="606" width="14" height="34" fill="#6e5a3f"/>
+      <rect x="798" y="614" width="14" height="26" fill="#7a6548"/>
+    </g>
+
+    <!-- vinheta cinematográfica -->
+    <rect width="1280" height="720" fill="url(#vinheta)" pointer-events="none"/>
+  </g>
+</svg>
+</div>
+
+<div class="controles" role="group" aria-label="Estado da cidade">
+  <button data-estado="prospero" aria-pressed="true">🌇 Próspera</button>
+  <button data-estado="crise" aria-pressed="false">📉 Em crise</button>
+  <button data-estado="abandono" aria-pressed="false">🌑 Abandonada</button>
+</div>
+<p class="legenda" id="legenda"></p>
+
+<p class="nota">
+  Fase 0 do jogo "Cidade Livre" — ver <strong>GDD-JOGO-CIDADE.md</strong> e <strong>SPEC-FASE-0-JOGO-CIDADE.md</strong>.
+  Cena vetorial (SVG puro, sem imagens externas): é este arquivo que evolui para o diorama jogável.
+  Elementos: escola · obra/guindaste · padaria · mercado · beco · banco · prédio residencial · banca · praça com ipê-amarelo.
+</p>
+
+<script>
+  const legendas = {
+    prospero: "Hora dourada: comércio aceso, obra ativa, feira no mercado, ipê em flor. A cidade que dá orgulho — e que o jogador vai temer perder.",
+    crise: "O céu fecha: fila na porta da padaria, prateleiras vazias, camelô no beco, um jornal só na banca, ALUGA-SE no prédio. O custo invisível ficou visível.",
+    abandono: "Anoitece: tábuas nas janelas, FECHADO na porta, caminhão de mudança levando uma família. Só o poste da praça continua aceso."
+  };
+  const cena = document.getElementById('cena');
+  const legenda = document.getElementById('legenda');
+  const botoes = document.querySelectorAll('.controles button');
+  function irPara(estado){
+    cena.setAttribute('class', estado);
+    legenda.textContent = legendas[estado];
+    botoes.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.estado === estado)));
+  }
+  botoes.forEach(b => b.addEventListener('click', () => irPara(b.dataset.estado)));
+  irPara('prospero');
+</script>

@@ -1,9 +1,9 @@
-// Escola Liberal PWA — Service Worker v118
+// Escola Liberal PWA — Service Worker v179
 // Estratégia: Network-first (navigation + Vite bundles) + Stale-While-Revalidate (other assets) + Cache-first (fonts)
 // © Escola Liberal — escolaliberal.com.br — Lei 9.610/98 — distribuicao nao autorizada e crime
-const SW_VERSION = 'v174';
-const CACHE_NAME = 'escola-liberal-v174';
-const STATIC_CACHE = 'escola-static-v174';
+const SW_VERSION = 'v179';
+const CACHE_NAME = 'escola-liberal-v179';
+const STATIC_CACHE = 'escola-static-v179';
 const FONT_CACHE = 'escola-fonts-v1';
 
 // Core assets — cached on install (only stable filenames that exist in dist root)
@@ -26,6 +26,14 @@ const CORE_ASSETS = [
   './lessons/integrity.json',
   './cert.html',
   './institucional.html',
+  './jogo.html',
+  './assets/jogo/crise.jpg',
+  './assets/jogo/solucao.jpg',
+  './assets/jogo/vitoria.jpg',
+  './assets/jogo/derrota.jpg',
+  './assets/jogo/promessa.jpg',
+  './assets/jogo/mercado-paralelo.jpg',
+  './assets/jogo/moradia-crise.jpg',
   './manifest.json',
   './blog-marketing.css',
   './blog-marketing.js'
