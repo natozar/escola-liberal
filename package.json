@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/gen-integrity.mjs",
+    "prebuild": "node -e \"const{existsSync}=require('fs'),{execSync}=require('child_process');['scripts/slim-index.mjs','scripts/gen-integrity.mjs'].forEach(s=>existsSync(s)?execSync('node '+s,{stdio:'inherit'}):console.warn('prebuild: pulando script privado ausente:',s))\"",
     "build": "vite build",
     "integrity": "node scripts/gen-integrity.mjs",
     "preview": "vite preview",
@@ -17,7 +17,8 @@
     "blog:generate:dry": "node scripts/generate-blog.js --count=1 --dry-run",
     "blog:publish": "node scripts/publish-blog.js",
     "blog:verify-sitemap": "node scripts/verify-sitemap.mjs",
-    "blog:status": "node -e \"const d=require('./blog/keywords.json');const s=k=>d.keywords.filter(x=>x.status===k).length;console.log('Keywords:',d.keywords.length,'| Pendentes:',s('pending'),'| Rascunhos:',s('drafted'),'| Publicados:',s('published'))\""
+    "blog:status": "node -e \"const d=require('./blog/keywords.json');const s=k=>d.keywords.filter(x=>x.status===k).length;console.log('Keywords:',d.keywords.length,'| Pendentes:',s('pending'),'| Rascunhos:',s('drafted'),'| Publicados:',s('published'))\"",
+    "slim": "node scripts/slim-index.mjs"
   },
   "repository": {
     "type": "git",
