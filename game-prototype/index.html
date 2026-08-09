@@ -61,6 +61,18 @@
   .fila{font-size:11px; letter-spacing:-2px; height:14px; overflow:hidden; transition:opacity .6s}
   .rodape-cidade{display:flex; justify-content:space-between; margin-top:7px; font-size:11px; color:var(--tinta-3)}
 
+  /* ---------- momentos visuais (imagem do problema / da solução) ---------- */
+  .momento{border-radius:12px; overflow:hidden; background:#0e1117; border:1px solid var(--borda)}
+  .momento img{width:100%; display:block; aspect-ratio:16/9; object-fit:cover}
+  .momento .fallback{
+    aspect-ratio:16/9; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:8px; font-size:42px; letter-spacing:2px;
+    background:radial-gradient(120% 90% at 50% 10%, #2a2433 0%, #14121c 70%);
+  }
+  .momento .fallback span{font-size:10.5px; letter-spacing:.06em; color:var(--tinta-3); text-transform:uppercase}
+  .momento.tem-img .fallback{display:none}
+  .momento figcaption{font-size:11.5px; color:var(--tinta-3); padding:7px 10px; text-align:center; font-style:italic}
+
   /* ---------- noticiário ---------- */
   .noticias{min-height:38px; display:flex; flex-direction:column; gap:4px}
   .noticia{
@@ -334,6 +346,7 @@ const DECK = [
   ]},
 { id:"a1-11", quem:"A cidade", tipo:"crise", titulo:"As prateleiras vazias",
   cond:s=>s.criseDisparada && !s.criseResolvida,
+  momento:{img:"crise.jpg", emoji:"🥖 🧍🧍🧍🧍", legenda:"Sexta-feira, 7h da manhã. A fila da padaria dobra o quarteirão — e a prateleira atrás do balcão está vazia."},
   texto:"A fila da padaria dobra o quarteirão. O mercado racionou o arroz. Achar casa para alugar, nem pagando. Ninguém na cidade sabe explicar por quê — e todos olham para você.",
   aula:true,
   opcoes:[
@@ -347,8 +360,8 @@ const DECK = [
   opcoes:[
     {rotulo:"Descongelar preços e aluguéis", custo:"Gasta 2 de Lucidez · protestos imediatos", lucidez:2, ef:{lucidez:-2, aprovacao:-10, flags:{reformou:true}},
      ag:[
-       {em:3, ef:{abastecimento:18}, msg:"As prateleiras estão voltando. Preço livre chamou mercadoria de volta.", tom:"boa"},
-       {em:6, ef:{abastecimento:12, moradia:16}, msg:"As construtoras retomaram as obras. Placas de ALUGA-SE reapareceram — desta vez de verdade.", tom:"boa"}],
+       {em:2, ef:{abastecimento:18}, msg:"As prateleiras estão voltando. Preço livre chamou mercadoria de volta.", tom:"boa"},
+       {em:3, ef:{abastecimento:14, moradia:16, flags:{recuperou:true}}, msg:"As construtoras retomaram as obras. Placas de ALUGA-SE reapareceram — desta vez de verdade.", tom:"boa"}],
      news:["Prefeitura revoga congelamentos. Protesto na porta, prateleira enchendo atrás.","boa"],
      aoEscolher:s=>{s.criseResolvida=true}},
     {rotulo:"Manter tudo como está", custo:"A espiral continua", ef:{},
@@ -465,6 +478,13 @@ const FILLER_TEXTOS = [
 function cartaAtual(){
   // a carta de crise é dinâmica: entra na frente do deck assim que o gatilho dispara
   if(S.criseDisparada && !S.flags.criseVista) return DECK.find(c=>c.id==="a1-11");
+  // momento da recuperação: a cidade respira depois da reforma surtir efeito
+  if(S.flags.reformou && (S.flags.recuperou || S.abastecimento>=60) && !S.flags.vistaSolucao) return {
+    id:"m-solucao", tipo:"filler", quem:"A cidade", titulo:"As prateleiras voltaram",
+    momento:{img:"solucao.jpg", emoji:"🥖 🌅", legenda:"A mesma padaria, semanas depois: prateleira cheia, porta aberta, fila nenhuma."},
+    texto:"Sem cerimônia, sem manchete: o pão voltou à prateleira e a fila sumiu. A cidade nem percebeu o dia exato em que a normalidade voltou — ela simplesmente voltou.",
+    opcoes:[{rotulo:"Seguir governando", custo:"", ef:{}, aoEscolher:s=>{s.flags.vistaSolucao=true}, destaque:true}]
+  };
   // deck por elegibilidade (não por ponteiro): carta pulada por condição volta quando a condição vira verdade
   const eleg = DECK.filter(c => c.tipo!=="crise" && c.tipo!=="eleicao" && !S.jogadas.includes(c.id) && (!c.cond || c.cond(S)));
   if(eleg.length) return eleg[0];
@@ -477,6 +497,14 @@ function cartaAtual(){
   return S.fim ? null : DECK.find(c=>c.tipo==="eleicao");
 }
 
+function momentoHtml(m){
+  if(!m) return "";
+  return `<figure class="momento">
+    <img src="img/${m.img}" alt="" onload="this.parentElement.classList.add('tem-img')" onerror="this.remove()">
+    <div class="fallback">${m.emoji}<span>imagem entra aqui · img/${m.img}</span></div>
+    <figcaption>${m.legenda}</figcaption>
+  </figure>`;
+}
 function renderCarta(){
   const c = cartaAtual();
   const el = $("carta");
@@ -485,6 +513,7 @@ function renderCarta(){
   el.innerHTML = `
     <div class="quem">${c.quem}</div>
     <h2>${c.titulo}</h2>
+    ${momentoHtml(c.momento)}
     <p>${c.texto}</p>
     <div class="opcoes">${c.opcoes.map((o,i)=>{
       const semLucidez = o.lucidez && S.lucidez < o.lucidez;
@@ -573,6 +602,9 @@ function renderFim(){
   el.innerHTML = `
     <div class="quem">Apuração encerrada</div>
     <h2>${f.venceu? "Você foi reeleito." : "Você perdeu a eleição."}</h2>
+    ${momentoHtml(f.venceu
+      ? {img:"vitoria.jpg", emoji:"🏛️ 🌅", legenda:"A Rua Principal na manhã seguinte: comércio abrindo, obra retomada, a cidade seguindo em frente."}
+      : {img:"derrota.jpg", emoji:"🏛️ 🌧️", legenda:"Da janela da prefeitura, você assiste ao comício da vitória do Prometedor."})}
     <div class="selo"><div class="nome">${f.selo}</div><div class="desc">${f.desc}</div></div>
     <p class="recap">
       Votos: <b>${f.score}%</b> · Prosperidade real: <b>${f.r}%</b> · Aprovação: <b>${S.aprovacao}%</b><br>
