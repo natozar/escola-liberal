@@ -371,6 +371,10 @@ if('serviceWorker' in navigator){
       <div class="ni-icon" style="background:rgba(91,213,155,.1);color:#5bd59b">🍋</div>
       <div><div class="ni-txt">Mini-Jogo</div><div class="ni-sub">Barraquinha de Limonada</div></div>
     </div>
+    <div class="ni" onclick="location.href='jogo.html'" id="nCidadeLivre" role="button" tabindex="0" onkeydown="if(event.key==='Enter')location.href='jogo.html'">
+      <div class="ni-icon" style="background:rgba(217,164,65,.12);color:#d9a441">🏛️</div>
+      <div><div class="ni-txt">Cidade Livre</div><div class="ni-sub">Governe uma cidade — novo!</div></div>
+    </div>
     <div class="ni" onclick="showBackupMenu()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')showBackupMenu()">
       <div class="ni-icon" style="background:var(--sage-muted);color:var(--sage-light)">💾</div>
       <div><div class="ni-txt">Backup</div><div class="ni-sub">Exportar / Importar</div></div>
@@ -775,6 +779,11 @@ if('serviceWorker' in navigator){
   <div class="practice-item" onclick="togglePracticeMenu();goGame()" role="button" tabindex="0">
     <div class="practice-item-icon" style="background:rgba(91,213,155,.1);color:#5bd59b">🍋</div>
     <div class="practice-item-info"><div class="practice-item-name">Mini-Jogo</div><div class="practice-item-sub">Barraquinha de Limonada</div></div>
+  </div>
+  <div class="practice-item" onclick="location.href='jogo.html'" role="button" tabindex="0">
+    <div class="practice-item-icon" style="background:rgba(217,164,65,.12);color:#d9a441">🏛️</div>
+    <div class="practice-item-info"><div class="practice-item-name">Cidade Livre</div><div class="practice-item-sub">Governe uma cidade e aprenda na prática</div></div>
+    <span class="practice-item-badge">novo</span>
   </div>
 </div>
 
