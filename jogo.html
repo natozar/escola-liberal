@@ -167,13 +167,15 @@
   <div class="carta" id="carta"></div>
 
   <div class="rodape">
-    <a href="app.html" style="color:inherit;text-decoration:none">← Voltar ao app</a>
+    <a href="https://escolaliberal.com.br/app.html" style="color:inherit;text-decoration:none">← Escola Liberal</a>
     <button id="btnReiniciar">Recomeçar</button>
   </div>
 </div>
 
 <script>
-/* Age gate 18+ — mesma regra de todas as camadas da plataforma */
+/* Age gate 18+ — mesma regra de todas as camadas da plataforma.
+   Verificado no app -> passa direto. Sem verificação -> autodeclaração
+   (mesmo fallback aceito pela plataforma quando Serpro indisponível). */
 (function(){
   try{
     var st = JSON.parse(localStorage.getItem('escola_v2')||'{}');
@@ -181,8 +183,17 @@
       document.documentElement.innerHTML = '<body style="background:#151820;color:#e8e4da;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;padding:24px"><div><h1 style="font-size:20px">Conteúdo para maiores de 18 anos</h1><p style="color:#a49eb0;margin-top:8px">A Escola Liberal é uma plataforma exclusiva para adultos.</p></div></body>';
       throw new Error('age_blocked');
     }
-    if(!st.ageGroup){ location.replace('app.html'); throw new Error('needs_onboarding'); }
-  }catch(e){ if(e.message==='age_blocked'||e.message==='needs_onboarding') throw e; }
+    if(st.ageGroup === 'adult' || localStorage.getItem('jogo_age_ok') === '1') return;
+    document.addEventListener('DOMContentLoaded', function(){
+      var ov = document.createElement('div');
+      ov.id = 'ageGate';
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(10,12,18,.97);z-index:99;display:flex;align-items:center;justify-content:center;padding:24px';
+      ov.innerHTML = '<div style="max-width:420px;text-align:center"><div style="font-size:42px">🏛️</div><h2 style="margin:10px 0 6px;color:#e8e4da">Cidade Livre é 18+</h2><p style="color:#a49eb0;font-size:14px;line-height:1.55">A Escola Liberal é uma plataforma exclusiva para adultos. Confirme sua idade para assumir o mandato.</p><button id="ageSim" style="margin-top:18px;width:100%;padding:14px;border-radius:12px;border:1px solid #7ec8c9;background:#1e222d;color:#e8e4da;font-size:15px;font-weight:600;cursor:pointer">Tenho 18 anos ou mais</button><button id="ageNao" style="margin-top:8px;width:100%;padding:12px;border-radius:12px;border:1px solid #333a4a;background:none;color:#6b6578;font-size:13px;cursor:pointer">Sou menor de 18</button></div>';
+      document.body.appendChild(ov);
+      document.getElementById('ageSim').onclick = function(){ localStorage.setItem('jogo_age_ok','1'); ov.remove(); };
+      document.getElementById('ageNao').onclick = function(){ ov.innerHTML = '<div style="max-width:420px;text-align:center;color:#e8e4da"><h2>Conteúdo para maiores de 18 anos</h2><p style="color:#a49eb0;margin-top:8px">Volte quando completar 18 — a cidade espera por você.</p></div>'; };
+    });
+  }catch(e){ if(e.message==='age_blocked') throw e; }
 })();
 </script>
 <script>
@@ -201,7 +212,7 @@ function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a
 function estadoInicial(){
   return {
     seed: 20260808,
-    semana: 1,
+    semana: 1, mandato: 1,
     aprovacao: 55, caixa: 100, escolaridade: 20,
     moradia: 70, abastecimento: 80, produtividade: 60,
     corrupcao: 5, lucidez: 0,
@@ -258,6 +269,10 @@ function passarSemana(){
     S.criseDisparada = true;
     if(!S.imprensaLivre){ S.aprovacao = clamp(S.aprovacao-18,0,100); noticia("A verdade vazou: ninguém mais acredita no Diário Oficial. Confiança desabou.","ruim"); }
   }
+  // gatilho da crise fiscal do 2º mandato
+  if(S.mandato>=2 && !S.flags.crise2Disparada && (S.caixa<0 || S.produtividade<48)){
+    S.flags.crise2Disparada = true;
+  }
 }
 
 /* ============================================================
@@ -265,6 +280,7 @@ function passarSemana(){
    ============================================================ */
 const DECK = [
 { id:"a1-01", quem:"Prefeitura", titulo:"A cratera da Rua Principal",
+  momento:{img:"cratera.jpg", emoji:"🕳️", legenda:"A cratera da Rua Principal: pequena no orçamento, enorme na paciência de quem passa."},
   texto:"A cratera da Rua Principal engoliu mais um pneu esta semana. O conserto custa caro — e adiar é sempre uma opção.",
   opcoes:[
     {rotulo:"Consertar agora", custo:"−15 do caixa", ef:{caixa:-15, aprovacao:6},
@@ -294,6 +310,7 @@ const DECK = [
      news:["Pedido dos feirantes foi arquivado.",""]}
   ]},
 { id:"a1-04", quem:"Prefeitura", titulo:"O teto da escola",
+  momento:{img:"escola-teto.jpg", emoji:"🏫 💧", legenda:"A sala vazia, os baldes no chão. Ninguém vota em telhado — mas todo futuro estuda embaixo de um."},
   texto:"O teto da escola municipal goteja sobre as carteiras. Consertar não rende manchete, e o retorno demora anos.",
   opcoes:[
     {rotulo:"Consertar e equipar a escola", custo:"−18 do caixa · retorno lento", ef:{caixa:-18},
@@ -336,6 +353,7 @@ const DECK = [
      news:["O Prometedor promete tabelar tudo “quando for a vez do povo”.",""]}
   ]},
 { id:"a1-08", quem:"O Prometedor", tipo:"prometedor", titulo:"“Imprima vales!”",
+  momento:{img:"vales.jpg", emoji:"🖨️ 💵", legenda:"Papel novo, carimbo oficial. Riqueza que a máquina não consegue imprimir."},
   texto:"O caixa apertou. “Simples: emita vales-compra municipais. Todo comércio será OBRIGADO a aceitar. Dinheiro novo, problema velho resolvido.”",
   opcoes:[
     {rotulo:"Emitir os vales", custo:"+40 no caixa… de papel", ef:{aprovBase:8, caixa:40, flags:{vales:true}},
@@ -347,6 +365,7 @@ const DECK = [
      news:["Prefeitura anuncia corte de cargos e contratos.",""]}
   ]},
 { id:"a1-09", quem:"O Prometedor", tipo:"prometedor", titulo:"“Crie o seu jornal”",
+  momento:{img:"banca-jornal.jpg", emoji:"📰", legenda:"A banca no fim da tarde. Onde havia dez jornais discordando, pode sobrar um concordando."},
   texto:"O jornal da cidade publicou: “Prefeitura gasta mais do que arrecada”. O Prometedor sussurra: “Crie o Diário Oficial Popular. Notícia boa, feita por nós. E anuncie só nele.”",
   opcoes:[
     {rotulo:"Criar o Diário Oficial Popular", custo:"−8 do caixa · só notícia boa daqui pra frente", ef:{aprovBase:10, caixa:-8, imprensaLivre:false},
@@ -356,6 +375,7 @@ const DECK = [
   ]},
 { id:"a1-10", quem:"O Prometedor", tipo:"prometedor", titulo:"“Estatize a padaria!”",
   cond:s=>s.flags.padariaFechou,
+  momento:{img:"padaria-povo.jpg", emoji:"🥖 🎀", legenda:"A fita da inauguração ainda na porta — e a fila de sempre, agora com outro dono: todos e ninguém."},
   texto:"A padaria que fechou virou símbolo. Multidão na porta: “Estatize! Padaria do Povo: pão barato, emprego garantido, gestão do povo!”",
   opcoes:[
     {rotulo:"Criar a Padaria do Povo", custo:"−20 do caixa + folha de pagamento", ef:{aprovBase:12, caixa:-20},
@@ -415,14 +435,110 @@ const DECK = [
 { id:"a1-15", quem:"A cidade", tipo:"eleicao", titulo:"Dia de eleição",
   texto:"As urnas abrem às 8h. A cidade inteira — a fila da padaria, a feira, a escola — decide se você continua.",
   opcoes:[{rotulo:"Aguardar a apuração", custo:"", ef:{}, eleicao:true, destaque:true}]
-}
+},
+
+/* ============ MANDATO 2 ============ */
+{ id:"m2-01", quem:"Cidade Livre", titulo:"O segundo mandato",
+  cond:s=>s.mandato===2,
+  momento:{img:"vitoria.jpg", emoji:"🏛️", legenda:"A mesma Rua Principal, quatro anos depois. Agora ela sabe quem você é."},
+  texto:"A faixa da posse ainda está pendurada. Desta vez ninguém te dá o benefício da dúvida: a cidade conhece suas escolhas — e o Prometedor também. Ele não desistiu.",
+  opcoes:[{rotulo:"Começar o segundo mandato", custo:"", ef:{}, destaque:true}]},
+
+{ id:"m2-02", quem:"A cidade", titulo:"A conta chegou",
+  cond:s=>s.mandato===2 && s.flags.prometeuMais,
+  momento:{img:"promessa.jpg", emoji:"🎤 📜", legenda:"O vídeo do comício roda de novo na cidade inteira: “aluguel ZERO, comida tabelada, vales em DOBRO”."},
+  texto:"Você venceu prometendo o impagável — e a cidade não esqueceu. Uma comissão de moradores entrega a lista das promessas na porta da prefeitura, diante das câmeras.",
+  opcoes:[
+    {rotulo:"Tentar cumprir tudo", custo:"−45 do caixa · o buraco fiscal abre", ef:{caixa:-45},
+     ag:[{em:3, ef:{abastecimento:-8, moradia:-6}, msg:"Cumprir promessa impagável tem preço: cortes em tudo que funcionava.", tom:"ruim"}],
+     news:["Prefeitura anuncia pacote para cumprir promessas de campanha.",""]},
+    {rotulo:"Admitir que era impagável", custo:"−14 de aprovação · honestidade tem preço", ef:{aprovacao:-14, flags:{admitiu:true}},
+     news:["“Eu prometi o que não dava. Peço desculpas.” A cidade ouviu em silêncio.",""]}
+  ]},
+
+{ id:"m2-03", quem:"A cidade", titulo:"A escola dá frutos",
+  cond:s=>s.mandato===2 && s.escolaridade>=32,
+  momento:{img:"escola-frutos.jpg", emoji:"🏫 ✨", legenda:"A sala reformada, cheia. Uma geração que confere as contas antes de aplaudir."},
+  texto:"O investimento silencioso do primeiro mandato apareceu: a escola está cheia, os alunos fazem contas — e no mercado, o camelô reclama que “agora todo mundo confere o troco”.",
+  opcoes:[{rotulo:"Visitar a escola", custo:"", ef:{aprovacao:4, produtividade:6}, destaque:true,
+     news:["Nova geração formada: a cidade que estuda produz mais — e se engana menos.","boa"]}]},
+
+{ id:"m2-04", quem:"O Prometedor", tipo:"prometedor", titulo:"“Dobre o imposto do comércio!”",
+  cond:s=>s.mandato===2,
+  texto:"O caixa do segundo mandato aperta. O Prometedor, agora vereador, propõe: “Dobre o imposto dos comerciantes! Eles são ricos — o povo não paga nada!”",
+  opcoes:[
+    {rotulo:"Dobrar o imposto", custo:"+35 no caixa · “o rico paga”", ef:{aprovBase:8, caixa:35, flags:{impostou:true}},
+     ag:[
+       {em:4, ef:{produtividade:-12}, msg:"Três lojas da Rua Principal fecharam. Imposto dobrado, movimento pela metade.", tom:"ruim"},
+       {em:6, ef:{caixa:-25, abastecimento:-6}, msg:"A arrecadação CAIU: loja fechada não paga imposto nenhum.", tom:"ruim"}],
+     news:["Câmara aprova o Imposto da Justiça sob aplausos.","boa"]},
+    {rotulo:"Recusar e cortar custos", custo:"−10 do caixa · vaias na Câmara", ef:{aprovacao:-6, caixa:-10},
+     news:["Prefeitura corta cargos comissionados em vez de subir imposto.",""]}
+  ]},
+
+{ id:"m2-05", quem:"O Prometedor", tipo:"prometedor", titulo:"“A obra do século!”",
+  cond:s=>s.mandato===2,
+  momento:{img:"estadio-obra.jpg", emoji:"🏟️", legenda:"O canteiro maior que o bairro — e o orçamento maior que o canteiro."},
+  texto:"“Um ESTÁDIO! Emprego na obra, orgulho pro povo, seu nome na placa. Que prefeito pequeno conserta esgoto — prefeito GRANDE constrói monumento!”",
+  opcoes:[
+    {rotulo:"Construir o estádio", custo:"−60 do caixa · seu nome na placa", ef:{aprovBase:16, caixa:-60},
+     ag:[
+       {em:4, ef:{corrupcao:8}, msg:"Primeiro aditivo de contrato: +40% no custo. “Imprevistos”, diz a construtora.", tom:"ruim"},
+       {em:6, ef:{caixa:-25, aprovacao:-6}, msg:"Obra parada na metade. A cidade tem um esqueleto de concreto e uma dívida com nome.", tom:"ruim"}],
+     news:["Lançada a pedra fundamental do Estádio Municipal. Festa e fogos.","boa"]},
+    {rotulo:"Recusar: “esgoto antes de monumento”", custo:"−7 de aprovação · sem manchete", ef:{aprovacao:-7},
+     ag:[{em:5, ef:{produtividade:5}, msg:"O dinheiro do estádio virou rede de esgoto em dois bairros. Ninguém deu manchete — mas ninguém mais adoece por água suja.", tom:"boa"}],
+     news:["Prefeitura recusa estádio: “primeiro o básico”.",""]}
+  ]},
+
+{ id:"m2-06", quem:"Prefeitura", titulo:"O Alvará Zero",
+  cond:s=>s.mandato===2,
+  texto:"A equipe propõe estender o alvará simplificado da feira para TODA atividade da cidade: abrir negócio em 24 horas, sem taxa. Os fiscais ameaçam greve.",
+  opcoes:[
+    {rotulo:"Liberar geral: Alvará Zero", custo:"Greve dos fiscais · aposta na liberdade", ef:{aprovacao:-4},
+     ag:[
+       {em:4, ef:{produtividade:10}, msg:"47 negócios novos em um mês. O balcão da prefeitura virou fila de gente ABRINDO empresa.", tom:"boa"},
+       {em:6, ef:{caixa:15, abastecimento:6}, msg:"Mais negócio aberto, mais arrecadação — sem subir um centavo de imposto.", tom:"boa"}],
+     news:["Alvará Zero sancionado: abrir negócio agora leva um dia.","boa"]},
+    {rotulo:"Manter como está", custo:"Paz com os fiscais", ef:{},
+     news:["Proposta do Alvará Zero arquivada.",""]}
+  ]},
+
+{ id:"m2-crise", quem:"A cidade", tipo:"crise", titulo:"O dinheiro que derrete",
+  cond:s=>s.flags.crise2Disparada && !s.flags.crise2Resolvida,
+  aulaId:"inflacao", marcaVista:"crise2Vista",
+  momento:{img:"vales.jpg", emoji:"💸 🔥", legenda:"O papel sai quente da máquina — e esfria no bolso de quem trabalha."},
+  texto:"O caixa quebrou de novo e os preços dispararam. No mercado, remarcam os cartazes duas vezes por semana. O padeiro resume: “o dinheiro tá derretendo na mão”.",
+  opcoes:[
+    {rotulo:"Entender o que aconteceu", custo:"Abrir a aula “Dinheiro Impresso Não É Riqueza”", ef:{}, abrirAula:true, destaque:true},
+    {rotulo:"Ignorar e seguir governando", custo:"A crise continua sem resposta", ef:{aprovacao:-6},
+     news:["Sem explicação, a cidade inventa a sua: “é ganância”, “é azar”, “é o mundo”.","ruim"]}
+  ]},
+
+{ id:"m2-reforma", quem:"Prefeitura", titulo:"Arrumar a casa",
+  cond:s=>s.flags.crise2Disparada,
+  momento:{img:"comercio-fechado.jpg", emoji:"🏚️", legenda:"A Rua Principal com as portas fechadas: cada uma era um contribuinte, um emprego, um vizinho."},
+  texto:"Você sabe o caminho: caixa saudável vem de produção, não de papel. Arrumar a casa significa revogar o que sufoca — e aguentar a gritaria.",
+  opcoes:[
+    {rotulo:"Revogar impostos e cortar na carne", custo:"Gasta 2 de Lucidez · protestos de quem vivia do caixa", lucidez:2,
+     ef:{lucidez:-2, aprovacao:-8, caixa:-10, flags:{reformou2:true}},
+     ag:[
+       {em:2, ef:{produtividade:14}, msg:"As portas da Rua Principal estão reabrindo, uma por semana.", tom:"boa"},
+       {em:4, ef:{caixa:35, abastecimento:10}, msg:"A arrecadação voltou — não por imposto maior, mas por cidade viva.", tom:"boa"}],
+     news:["Pacote de reconstrução: menos imposto, menos cargo, mais alvará.","boa"],
+     aoEscolher:s=>{s.flags.crise2Resolvida=true}},
+    {rotulo:"Empurrar com a barriga", custo:"A espiral continua", ef:{},
+     ag:[{em:3, ef:{caixa:-15, produtividade:-6}, msg:"Mais uma semana de portas fechando. O buraco não espera.", tom:"ruim"}],
+     news:["Prefeitura estuda “novas fontes de receita”.",""]}
+  ]}
 ];
 
 /* ============================================================
    AULA — "Por que Controle de Preços Falha" (módulo real: supply)
    Resumo destilado; no app real abre o módulo completo offline.
    ============================================================ */
-const AULA = {
+const AULAS = {
+ precos: {
   titulo:"Por que Controle de Preços Falha",
   fonte:"Disciplina Oferta e Demanda · módulo real da Escola Liberal",
   paragrafos:[
@@ -437,7 +553,27 @@ const AULA = {
     {p:"Se a lei obriga a vender abaixo do custo, o que acontece com a oferta?",
      ops:["Aumenta, porque todos podem comprar","Nada — a lei garante o produto","Diminui: quem produz no prejuízo para de produzir"], certa:2}
   ],
+  instalaPainel:true,
   recompensa:3
+ },
+ inflacao: {
+  titulo:"Dinheiro Impresso Não É Riqueza",
+  fonte:"Disciplina O que é Dinheiro? · módulo real da Escola Liberal",
+  paragrafos:[
+    "Dinheiro é um <strong>vale-troca</strong>: ele vale o que a cidade produz. Se a produção é a mesma e o papel dobra, cada papel passa a valer <strong>metade</strong> — os preços sobem para cobrar a diferença.",
+    "Imprimir vales parece receita: o caixa engorda hoje. Mas nenhum pão novo foi assado, nenhum tijolo novo assentado. O papel novo só <strong>dilui</strong> o valor do papel velho — inclusive o do salário de quem menos tem.",
+    "A inflação é o único imposto que não passa por votação: cobra de todos, todo dia, sem recibo. E quando a confiança quebra, nem o papel oficial ninguém aceita mais.",
+    "Caixa saudável vem de <strong>produção</strong>: mais negócios abertos, mais gente trabalhando, mais troca voluntária. O resto é ilusão com data de vencimento."
+  ],
+  quiz:[
+    {p:"Se a cidade imprime o dobro de vales sem produzir mais, o que acontece?",
+     ops:["Todos ficam duas vezes mais ricos","Os preços sobem — cada vale passa a valer menos","Nada, papel é papel"], certa:1},
+    {p:"De onde vem um caixa municipal saudável de verdade?",
+     ops:["Da impressão de mais vales","De multas e fiscais","Da produção: mais negócios e mais trocas na cidade"], certa:2}
+  ],
+  instalaPainel:false,
+  recompensa:3
+ }
 };
 
 /* ============================================================
@@ -476,7 +612,9 @@ function renderCidade(){
   const el = $("cidade");
   el.className = "cidade " + (r>=60?"estado-prospero": r>=40?"estado-alerta":"estado-crise");
   const altura = v => 34 + Math.round((v==null? r : v)*0.45);
-  $("skyline").innerHTML = PREDIOS.map(p=>{
+  // território: a cidade que prospera ganha um bairro novo no 2º mandato
+  const lista = (S.mandato>=2 && r>=55) ? PREDIOS.concat([{emoji:"🏬", nome:"bairro novo", chave:"produtividade"}]) : PREDIOS;
+  $("skyline").innerHTML = lista.map(p=>{
     const v = p.chave? S[p.chave] : null;
     const fechado = (p.nome==="padaria" && S.flags.padariaFechou && !S.criseResolvida);
     const fila = (p.nome==="padaria"||p.nome==="mercado") && S.abastecimento<50 && !fechado;
@@ -507,8 +645,9 @@ function cartaAtual(){
     texto:"Você acaba de assumir a prefeitura. A cidade funciona, o comércio abre cedo, a obra avança. Cada decisão sua vai deixar isso melhor — ou pior. E ninguém vai te contar qual foi o momento exato em que tudo mudou.",
     opcoes:[{rotulo:"Assumir o mandato", custo:"", ef:{}, aoEscolher:s=>{s.flags.viuCapa=true}, destaque:true}]
   };
-  // a carta de crise é dinâmica: entra na frente do deck assim que o gatilho dispara
+  // cartas de crise são dinâmicas: entram na frente do deck assim que o gatilho dispara
   if(S.criseDisparada && !S.flags.criseVista) return DECK.find(c=>c.id==="a1-11");
+  if(S.flags.crise2Disparada && !S.flags.crise2Vista) return DECK.find(c=>c.id==="m2-crise");
   // momento da recuperação: a cidade respira depois da reforma surtir efeito
   if(S.flags.reformou && (S.flags.recuperou || S.abastecimento>=60) && !S.flags.vistaSolucao) return {
     id:"m-solucao", tipo:"filler", quem:"A cidade", titulo:"As prateleiras voltaram",
@@ -519,8 +658,8 @@ function cartaAtual(){
   // deck por elegibilidade (não por ponteiro): carta pulada por condição volta quando a condição vira verdade
   const eleg = DECK.filter(c => c.tipo!=="crise" && c.tipo!=="eleicao" && !S.jogadas.includes(c.id) && (!c.cond || c.cond(S)));
   if(eleg.length) return eleg[0];
-  // sem carta elegível: semanas comuns até as consequências agendadas vencerem; eleição a partir da semana 14
-  if(S.semana < 14) return {
+  // sem carta elegível: semanas comuns até as consequências agendadas vencerem; eleição ao fim de cada mandato
+  if(S.semana < 14*S.mandato) return {
     id:"filler", tipo:"filler", quem:"A cidade", titulo:"Uma semana comum",
     texto: FILLER_TEXTOS[S.semana % FILLER_TEXTOS.length],
     opcoes:[{rotulo:"Seguir a semana", custo:"", ef:{}}]
@@ -558,13 +697,13 @@ function renderCarta(){
 }
 
 function escolher(carta, op){
-  if(op.abrirAula){ S.flags.criseVista = true; renderAula(); return; }
+  if(op.abrirAula){ S.flags[carta.marcaVista||"criseVista"] = true; renderAula(carta.aulaId||"precos"); return; }
   aplicar(op.ef||{});
   agendar(op.ag);
   if(op.news) noticia(op.news[0], op.news[1]);
   if(op.aoEscolher) op.aoEscolher(S);
   if(carta.tipo==="prometedor" && (op.ef&&op.ef.aprovBase)) S.caiuNaTentacao = true;
-  if(carta.tipo==="crise") S.flags.criseVista = true;
+  if(carta.tipo==="crise") S.flags[carta.marcaVista||"criseVista"] = true;
   if(op.eleicao){ apurarEleicao(); return; }
   if(carta.tipo!=="crise" && carta.tipo!=="filler") S.jogadas.push(carta.id);
   passarSemana();
@@ -573,7 +712,9 @@ function escolher(carta, op){
 }
 
 /* ---------- aula ---------- */
-function renderAula(){
+function renderAula(aulaId){
+  const AULA = AULAS[aulaId] || AULAS.precos;
+  S.aulaAtual = aulaId;
   const el = $("carta");
   el.className = "carta aula-carta";
   let quizHtml = AULA.quiz.map((q,qi)=>`
@@ -598,16 +739,20 @@ function renderAula(){
       });
       if(+b.dataset.o===certa) acertos++;
       if(respondidas===AULA.quiz.length){
-        setTimeout(()=>concluirAula(acertos), 900);
+        setTimeout(()=>concluirAula(acertos, AULA), 900);
       }
     }));
   });
 }
-function concluirAula(acertos){
+function concluirAula(acertos, AULA){
   const ganho = acertos===AULA.quiz.length ? AULA.recompensa : Math.max(1, acertos);
   S.lucidez += ganho;
-  S.painelEconomico = true;
-  noticia(`Você entendeu a engrenagem. +${ganho} de Lucidez — e o painel econômico foi instalado: agora você ENXERGA abastecimento e moradia.`,"boa");
+  if(AULA.instalaPainel && !S.painelEconomico){
+    S.painelEconomico = true;
+    noticia(`Você entendeu a engrenagem. +${ganho} de Lucidez — e o painel econômico foi instalado: agora você ENXERGA abastecimento e moradia.`,"boa");
+  } else {
+    noticia(`Mais uma engrenagem exposta. +${ganho} de Lucidez.`,"boa");
+  }
   passarSemana();
   salvar();
   renderTudo();
@@ -618,13 +763,23 @@ function apurarEleicao(){
   const r = realidade(S);
   const score = S.imprensaLivre ? Math.round(S.aprovacao*0.55 + r*0.45) : S.aprovacao;
   const venceu = score >= 50;
+  // vitória no 1º mandato: o jogo continua — a posse do 2º vem com as contas do 1º
+  if(venceu && S.mandato === 1){
+    S.mandato = 2;
+    noticia(`Reeleito com ${score}% dos votos. O segundo mandato começa agora — e as promessas do primeiro vêm junto.`,"boa");
+    passarSemana();
+    salvar();
+    renderTudo();
+    return;
+  }
   let selo, desc;
-  if(venceu && !S.caiuNaTentacao){ selo="A Cidade Que Nunca Caiu"; desc="Você recusou todas as promessas fáceis — e venceu mesmo assim. Pouquíssimos conseguem."; }
-  else if(venceu && S.flags.prometeuMais){ selo="Vitória com Fatura"; desc="Você venceu prometendo o impagável. O segundo mandato começa com a conta na mesa."; }
-  else if(venceu && S.flags.reformou){ selo="O Reconstrutor"; desc="Você caiu, entendeu, desfez e reconstruiu. É a história que vale ser contada."; }
-  else if(venceu){ selo="Reeleito"; desc="A cidade te deu mais quatro anos. Use-os melhor que os primeiros."; }
+  if(venceu && !S.caiuNaTentacao && S.escolaridade>=35 && r>=62){ selo="O Estadista"; desc="Dois mandatos, nenhuma promessa fácil, uma cidade educada e próspera. É disso que a história se lembra."; }
+  else if(venceu && !S.caiuNaTentacao){ selo="A Cidade Que Nunca Caiu"; desc="Você recusou todas as promessas fáceis — e venceu mesmo assim. Pouquíssimos conseguem."; }
+  else if(venceu && S.flags.prometeuMais && !S.flags.reformou2){ selo="Vitória com Fatura"; desc="Você venceu prometendo o impagável. A conta continua na mesa."; }
+  else if(venceu && (S.flags.reformou || S.flags.reformou2)){ selo="O Reconstrutor"; desc="Você caiu, entendeu, desfez e reconstruiu. É a história que vale ser contada."; }
+  else if(venceu){ selo="Dois Mandatos"; desc="A cidade te manteve no cargo até o fim. O que você deixou de pé fala por você."; }
   else { selo="Derrotado nas urnas"; desc="O Prometedor venceu. Da janela, você vai assistir ao que ele faz com a sua cidade."; }
-  S.fim = {venceu, selo, desc, score, r};
+  S.fim = {venceu, selo, desc, score, r, mandato:S.mandato};
   salvar();
   renderTudo();
 }
