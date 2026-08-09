@@ -811,6 +811,24 @@ Deploy → SW novo detectado (polling 60s)
 
 ---
 
+## Jogo "Cidade Livre" (jogo.html) — 2026-08-08/09
+
+Jogo educacional de gestão de cidade, em produção. O jogador governa uma cidade brasileira fictícia; medidas coletivistas dão aprovação imediata e cobram o custo semanas depois (fila de efeitos agendados). Na crise, uma AULA real do currículo abre no momento da dor; concluí-la gera "Lucidez", que paga as reformas.
+
+- **Arquitetura:** página standalone `jogo.html` (HTML+CSS+JS inline, zero deps), save em localStorage `escola_jogo_cidade_v1`, PRNG mulberry32 com seed. 17 fotos em `assets/jogo/*.jpg` (2016×1152, geradas com pipeline local ComfyUI+RealVisXL em `C:\Users\bibla\AI\`). Tudo no CORE_ASSETS do SW.
+- **Estrutura:** capa → mandato 1 (15 cartas: tentações do "Prometedor", crise das prateleiras, aula `supply`, reforma, eleição sem. 14) → mandato 2 (cobrança das promessas, crise fiscal, aula `money`, eleição sem. 28) → Epílogo "O Legado" (aula instituições + 5 decisões institucionais + botão viral de desafio no WhatsApp). 6 finais; selo máximo "O Estadista".
+- **Age gate 18+:** ageGroup do `escola_v2` quando existe; senão autodeclaração (`jogo_age_ok`) — mesmo fallback Serpro.
+- **XP:** deposita em `escola_jogo_xp_pendente` (aula +40, reeleição +60, final +80/150, legado +50, trava por flag); `src/core/xp.js` importa no boot via `addXP` oficial (teto 500/import).
+- **Entradas:** callout no hero da LP, sidebar e menu Praticar do app.
+- **Regra editorial:** zero político/partido real; arquétipos fictícios ("o Prometedor"); mesma régua da disciplina Voto.
+- **Subdomínio:** repo `natozar/cidade-livre` (LP própria + cópia do jogo, CNAME jogo.escolaliberal.com.br) — Pages ativo; falta registro DNS no Registro.br.
+- **GDD/spec:** `GDD-JOGO-CIDADE.md`, `SPEC-FASE-0-JOGO-CIDADE.md`; matéria-prima p/ atos futuros: `game-content/` (LOCAL, não versionado) gerada por `scripts/gen-cartas-jogo.mjs` (LOCAL).
+
+### ⚠️ CORREÇÃO DE INFRA (2026-08-09)
+O GitHub Pages serve a **branch main crua** (build_type legacy) — NÃO o `dist/` do CI. Consequências: produção roda ES modules nativos sem minificação e **sem watermark forense** (o pipeline anti-cloning só roda no build local). O job "deploy" do ci.yml foi removido (falhava sempre e gerava e-mails); `prebuild` tolera scripts privados ausentes no CI. Migrar Pages para deploy via Actions (servindo dist) é decisão pendente do Renato.
+
+---
+
 ## Admin Panel (admin.html)
 
 ### Acesso
