@@ -4953,7 +4953,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 1,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -4962,7 +4962,8 @@
       "votoLesson": 0,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-16T13:39:47.290Z"
     },
     {
       "slug": "voto-o-que-faz-um-vereador",
@@ -4980,7 +4981,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 2,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -4989,7 +4990,8 @@
       "votoLesson": 1,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-17T13:17:09.253Z"
     },
     {
       "slug": "voto-o-que-faz-um-prefeito",
@@ -5007,7 +5009,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 3,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5016,7 +5018,8 @@
       "votoLesson": 2,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-18T13:03:04.693Z"
     },
     {
       "slug": "voto-diferenca-deputado-estadual-e-federal",
@@ -5034,7 +5037,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 4,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5043,7 +5046,8 @@
       "votoLesson": 3,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-19T13:05:37.640Z"
     },
     {
       "slug": "voto-o-que-faz-um-senador",
@@ -5061,7 +5065,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 5,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5070,7 +5074,8 @@
       "votoLesson": 4,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-20T13:55:14.389Z"
     },
     {
       "slug": "voto-o-que-faz-governador-e-presidente",
@@ -5088,7 +5093,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 6,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5097,7 +5102,8 @@
       "votoLesson": 5,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-21T13:27:28.880Z"
     },
     {
       "slug": "voto-competencia-de-cada-cargo-eleitoral",
@@ -5115,7 +5121,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 7,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5124,7 +5130,8 @@
       "votoLesson": 6,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-22T13:39:46.922Z"
     },
     {
       "slug": "voto-titulo-de-eleitor-e-justificativa",
@@ -5142,7 +5149,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 8,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5151,7 +5158,8 @@
       "votoLesson": 7,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-23T13:45:28.805Z"
     },
     {
       "slug": "voto-como-funciona-a-urna-eletronica",
@@ -5169,7 +5177,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 9,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5178,7 +5186,8 @@
       "votoLesson": 8,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-24T13:25:52.638Z"
     },
     {
       "slug": "voto-como-funciona-o-sistema-proporcional",
@@ -5196,7 +5205,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 10,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5205,7 +5214,8 @@
       "votoLesson": 9,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-25T13:13:49.284Z"
     },
     {
       "slug": "voto-como-avaliar-o-passado-de-um-candidato",
@@ -5223,7 +5233,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 11,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5232,7 +5242,8 @@
       "votoLesson": 0,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-26T13:08:48.804Z"
     },
     {
       "slug": "voto-como-pesquisar-candidato-no-tse",
@@ -5250,7 +5261,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 12,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5259,7 +5270,8 @@
       "votoLesson": 1,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-27T14:21:16.047Z"
     },
     {
       "slug": "voto-como-ver-votacao-de-deputado",
@@ -5277,7 +5289,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 13,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5286,7 +5298,8 @@
       "votoLesson": 2,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-28T13:53:00.381Z"
     },
     {
       "slug": "voto-como-cobrar-promessa-de-campanha",
@@ -5304,7 +5317,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 14,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5313,7 +5326,8 @@
       "votoLesson": 3,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-29T13:57:57.769Z"
     },
     {
       "slug": "voto-patrimonio-de-candidato-declarado",
@@ -5331,7 +5345,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 15,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5340,7 +5354,8 @@
       "votoLesson": 4,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-30T13:47:11.524Z"
     },
     {
       "slug": "voto-o-que-sao-emendas-parlamentares",
@@ -5358,7 +5373,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 16,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5367,7 +5382,8 @@
       "votoLesson": 5,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-07-31T13:51:51.362Z"
     },
     {
       "slug": "voto-presenca-e-produtividade-de-parlamentar",
@@ -5385,7 +5401,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 17,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5394,7 +5410,8 @@
       "votoLesson": 6,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-01T13:07:19.055Z"
     },
     {
       "slug": "voto-troca-de-partido-politico",
@@ -5412,7 +5429,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 18,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5421,7 +5438,8 @@
       "votoLesson": 7,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-02T13:09:05.004Z"
     },
     {
       "slug": "voto-quem-financia-campanha-eleitoral",
@@ -5439,7 +5457,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 19,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5448,7 +5466,8 @@
       "votoLesson": 8,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-03T14:27:44.034Z"
     },
     {
       "slug": "voto-como-pesquisar-sobre-um-candidato",
@@ -5466,7 +5485,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 20,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5475,7 +5494,8 @@
       "votoLesson": 9,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-04T13:58:29.602Z"
     },
     {
       "slug": "voto-de-onde-vem-o-dinheiro-publico",
@@ -5493,7 +5513,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 21,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5502,7 +5522,8 @@
       "votoLesson": 0,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-05T13:55:50.735Z"
     },
     {
       "slug": "voto-o-custo-invisivel-das-promessas",
@@ -5520,7 +5541,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 22,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5529,7 +5550,8 @@
       "votoLesson": 1,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-06T13:53:08.436Z"
     },
     {
       "slug": "voto-como-funciona-o-orcamento-publico",
@@ -5547,7 +5569,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 23,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5556,7 +5578,8 @@
       "votoLesson": 2,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-07T12:51:39.381Z"
     },
     {
       "slug": "voto-como-identificar-promessa-impossivel",
@@ -5574,7 +5597,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 24,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5583,7 +5606,8 @@
       "votoLesson": 3,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-08T12:36:28.895Z"
     },
     {
       "slug": "voto-competencia-do-cargo-e-promessa",
