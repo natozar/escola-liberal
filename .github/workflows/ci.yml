@@ -86,19 +86,12 @@ jobs:
         with:
           path: dist
 
-  deploy:
-    if: github.event_name == 'push'
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    outputs:
-      page_url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+  # NOTA (2026-08-09): o job "deploy" foi removido — o GitHub Pages deste
+  # repositório está em modo LEGACY (serve a branch main diretamente), então
+  # actions/deploy-pages sempre falhava e disparava e-mail de erro a cada
+  # push. O deploy real acontece pelo próprio Pages ao receber o push.
+  # Migrar para deploy via Actions (servindo dist/ minificado) é uma decisão
+  # de infra pendente com o Renato.
 
   # ============================================================
   # QA AGENT — Automated post-deploy quality gate
@@ -106,7 +99,7 @@ jobs:
   # ============================================================
   qa:
     if: github.event_name == 'push'
-    needs: deploy
+    needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
