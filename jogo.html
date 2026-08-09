@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
@@ -204,7 +204,7 @@
   .recap b{color:var(--tinta)}
 
   .rodape{display:flex; justify-content:space-between; align-items:center; font-size:11px; color:var(--tinta-3)}
-  .rodape a{transition:color .2s}
+  .rodape a{color:inherit;text-decoration:none;transition:color .2s}
   .rodape a:hover{color:var(--tinta-2)}
   .rodape button{
     font:inherit; font-size:11px; color:var(--tinta-3); background:none;
@@ -233,8 +233,8 @@
   <div class="carta" id="carta"></div>
 
   <div class="rodape">
-    <a href="https://escolaliberal.com.br/app.html" style="color:inherit;text-decoration:none">← Escola Liberal</a>
-    <button id="btnReiniciar">Recomeçar</button>
+    <a href="https://escolaliberal.com.br/app.html">← Escola Liberal</a>
+    <button id="btnReiniciar" type="button">Recomeçar</button>
   </div>
 </div>
 
@@ -591,7 +591,11 @@ const DECK = [
   cond:s=>s.mandato===3,
   momento:{img:"vitoria.jpg", emoji:"🏛️", legenda:"A Rua Principal no seu último ano de mandato. A pergunta agora é outra: e quando você sair?"},
   texto:"Oito anos. Você conheceu a sedução, a conta e a reconstrução. O próximo prefeito pode ser um Prometedor — e tudo que depende de VOCÊ morre com o mandato. O que depende de INSTITUIÇÃO, fica.",
-  opcoes:[{rotulo:"Construir o que fica", custo:"", ef:{}, destaque:true}]},
+  aulaId:"instituicoes", marcaVista:"aulaInstVista",
+  opcoes:[
+    {rotulo:"Construir o que fica", custo:"", ef:{}, destaque:true},
+    {rotulo:"Antes, entender por quê", custo:"Abrir a aula “Por Que Instituições Importam” · +Lucidez", ef:{}, abrirAula:true}
+  ]},
 
 { id:"m3-escola", quem:"O Legado", titulo:"A Escola Técnica Municipal",
   cond:s=>s.mandato===3,
@@ -639,7 +643,7 @@ const DECK = [
 
 { id:"m3-lei", quem:"O Legado", titulo:"A Lei da Cidade Livre",
   cond:s=>s.mandato===3,
-  momento:{img:"comercio-fechado.jpg", emoji:"📜", legenda:"Cada porta fechada desta foto foi uma escolha de governo. A lei existe para tornar essa escolha mais difícil."},
+  momento:{img:"assinatura.jpg", emoji:"📜", legenda:"A última assinatura do mandato — a única feita para limitar quem assina."},
   texto:"O pacote final: alvará em 24h como direito, teto de imposto municipal, proibição de tabelamento por decreto. O Prometedor promete revogar tudo “no primeiro dia”. Com estatuto qualificado, ele vai precisar de 2/3 da Câmara.",
   opcoes:[
     {rotulo:"Aprovar com quórum blindado", custo:"Sua última batalha na Câmara", ef:{aprovacao:-5, flags:{leg_lei:true}},
@@ -703,6 +707,24 @@ const AULAS = {
      ops:["Todos ficam duas vezes mais ricos","Os preços sobem — cada vale passa a valer menos","Nada, papel é papel"], certa:1},
     {p:"De onde vem um caixa municipal saudável de verdade?",
      ops:["Da impressão de mais vales","De multas e fiscais","Da produção: mais negócios e mais trocas na cidade"], certa:2}
+  ],
+  instalaPainel:false,
+  recompensa:3
+ },
+ instituicoes: {
+  titulo:"Por Que Instituições Importam",
+  fonte:"Disciplina Cidadania · módulo real da Escola Liberal",
+  paragrafos:[
+    "Um bom governante é sorte. Uma boa <strong>instituição</strong> é projeto: a regra que continua funcionando quando a sorte acaba — e quando quem assume é exatamente quem você temia.",
+    "Instituição forte é a que <strong>limita o poder de quem está dentro dela</strong>. Um portal de contas abertas não pergunta quem é o prefeito. Um estatuto de imprensa não protege só os seus aliados. É por isso que custa caro aprovar: quem assina abre mão do próprio poder.",
+    "Países não enriquecem por ter mais recursos, e sim por ter <strong>regras estáveis</strong>: propriedade garantida, contrato que vale, imprensa que fiscaliza. Onde a regra muda com o humor do governante, ninguém planta o que demora a colher.",
+    "A medida final de um governo não é a manchete de hoje — é <strong>o que continua de pé no dia em que ele vai embora</strong>."
+  ],
+  quiz:[
+    {p:"O que protege a cidade quando um mau governante assume?",
+     ops:["A sorte de ele mudar de ideia","Instituições que limitam o poder — de qualquer um","As promessas de campanha dele"], certa:1},
+    {p:"Por que blindar uma lei com quórum de 2/3?",
+     ops:["Para dificultar que o próximo governo a revogue por capricho","Para parecer mais solene","Para agradar a Câmara"], certa:0}
   ],
   instalaPainel:false,
   recompensa:3
@@ -794,7 +816,7 @@ function cartaAtual(){
   // epílogo esgotado: a despedida
   if(S.mandato >= 3) return {
     id:"m3-fim", tipo:"filler", quem:"O Legado", titulo:"A cidade depois de você",
-    momento:{img:"solucao.jpg", emoji:"🌅", legenda:"Segunda-feira de manhã, sem você no gabinete. A padaria abre do mesmo jeito."},
+    momento:{img:"gabinete-vazio.jpg", emoji:"📦", legenda:"O gabinete na última sexta-feira. As caixas são suas; as instituições, da cidade."},
     texto:"O mandato acaba na sexta-feira. Na segunda, a cidade acorda e funciona — ou não — por causa do que você deixou de pé. É assim que se mede um governo: pelo dia em que ele vai embora.",
     opcoes:[{rotulo:"Ver o que você deixou", custo:"", ef:{}, fimLegado:true, destaque:true}]
   };
@@ -822,18 +844,19 @@ function renderCarta(){
   const el = $("carta");
   if(!c){ renderFim(); return; }
   el.className = "carta " + (c.tipo||"");
+  const ops = c.opcoes.filter(o=>!(o.abrirAula && c.marcaVista && S.flags[c.marcaVista] && c.tipo!=="crise"));
   el.innerHTML = `
     <div class="quem">${c.quem}</div>
     <h2>${c.titulo}</h2>
     ${momentoHtml(c.momento)}
     <p>${c.texto}</p>
-    <div class="opcoes">${c.opcoes.map((o,i)=>{
+    <div class="opcoes">${ops.map((o,i)=>{
       const semLucidez = o.lucidez && S.lucidez < o.lucidez;
       return `<button class="opcao${o.destaque?" destaque":""}" data-i="${i}" ${semLucidez?"disabled":""}>
         ${o.rotulo}${o.custo?`<span class="custo">${o.custo}${semLucidez?" · você ainda não tem Lucidez suficiente":""}</span>`:""}
       </button>`;}).join("")}
     </div>`;
-  el.querySelectorAll(".opcao").forEach(b=>b.addEventListener("click",()=>escolher(c, c.opcoes[b.dataset.i])));
+  el.querySelectorAll(".opcao").forEach(b=>b.addEventListener("click",()=>escolher(c, ops[b.dataset.i])));
 }
 
 function escolher(carta, op){
