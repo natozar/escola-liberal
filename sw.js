@@ -1,9 +1,9 @@
-// Escola Liberal PWA — Service Worker v202
+// Escola Liberal PWA — Service Worker v203
 // Estratégia: Network-first (navigation + Vite bundles) + Stale-While-Revalidate (other assets) + Cache-first (fonts)
 // © Escola Liberal — escolaliberal.com.br — Lei 9.610/98 — distribuicao nao autorizada e crime
-const SW_VERSION = 'v202';
-const CACHE_NAME = 'escola-liberal-v202';
-const STATIC_CACHE = 'escola-static-v202';
+const SW_VERSION = 'v203';
+const CACHE_NAME = 'escola-liberal-v203';
+const STATIC_CACHE = 'escola-static-v203';
 const FONT_CACHE = 'escola-fonts-v1';
 
 // Core assets — cached on install (only stable filenames that exist in dist root)

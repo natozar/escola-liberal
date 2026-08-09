@@ -586,6 +586,68 @@ const DECK = [
      news:["Sem explicação, a cidade inventa a sua: “é ganância”, “é azar”, “é o mundo”.","ruim"]}
   ]},
 
+/* ============ EPÍLOGO — O LEGADO ============ */
+{ id:"m3-01", quem:"O Legado", titulo:"O que fica de pé sem você",
+  cond:s=>s.mandato===3,
+  momento:{img:"vitoria.jpg", emoji:"🏛️", legenda:"A Rua Principal no seu último ano de mandato. A pergunta agora é outra: e quando você sair?"},
+  texto:"Oito anos. Você conheceu a sedução, a conta e a reconstrução. O próximo prefeito pode ser um Prometedor — e tudo que depende de VOCÊ morre com o mandato. O que depende de INSTITUIÇÃO, fica.",
+  opcoes:[{rotulo:"Construir o que fica", custo:"", ef:{}, destaque:true}]},
+
+{ id:"m3-escola", quem:"O Legado", titulo:"A Escola Técnica Municipal",
+  cond:s=>s.mandato===3,
+  momento:{img:"escola-frutos.jpg", emoji:"🏫", legenda:"Uma geração que faz as contas não precisa de você para desconfiar do almoço grátis."},
+  texto:"A obra mais barata e mais lenta da lista: uma escola técnica com estatuto próprio, imune a troca de governo. Nenhuma placa com seu nome. Nenhum voto a mais. Só uma cidade mais difícil de enganar — para sempre.",
+  opcoes:[
+    {rotulo:"Fundar com estatuto blindado", custo:"−30 do caixa · o retorno é de outra geração", ef:{caixa:-30, escolaridade:10, flags:{leg_escola:true}},
+     news:["Escola Técnica fundada com conselho independente. Nenhum político indica diretor.","boa"]},
+    {rotulo:"Deixar para o próximo", custo:"O caixa agradece", ef:{},
+     news:["Projeto da Escola Técnica arquivado.",""]}
+  ]},
+
+{ id:"m3-imprensa", quem:"O Legado", titulo:"O Estatuto da Imprensa",
+  cond:s=>s.mandato===3,
+  momento:{img:"banca-jornal.jpg", emoji:"📰", legenda:"O jornal que te criticou oito anos é o mesmo que vai fiscalizar quem vier depois."},
+  texto:"Uma lei simples: nenhuma verba pública compra espaço editorial, nenhum prefeito fecha jornal. Vale contra você — e contra todos os que vierem. O Prometedor na Câmara chama de “lei mordaça ao contrário”.",
+  opcoes:[
+    {rotulo:"Sancionar o Estatuto", custo:"Você abre mão de se defender com verba", ef:{aprovacao:-3, flags:{leg_imprensa:true}},
+     news:["Estatuto da Imprensa Livre sancionado. Aplausos de quem te criticava.","boa"]},
+    {rotulo:"Vetar", custo:"Flexibilidade para o futuro", ef:{},
+     news:["Estatuto vetado: “instrumento a calibrar”, diz a nota.",""]}
+  ]},
+
+{ id:"m3-contas", quem:"O Legado", titulo:"O Portal das Contas Abertas",
+  cond:s=>s.mandato===3,
+  momento:{img:"estadio-obra.jpg", emoji:"🔍", legenda:"Toda obra, todo aditivo, todo centavo — público, em tempo real, para sempre."},
+  texto:"Cada contrato da prefeitura publicado na internet no dia da assinatura, com auditoria cidadã. Teria impedido metade dos seus próprios erros. O próximo prefeito vai te odiar por isso.",
+  opcoes:[
+    {rotulo:"Lançar o Portal", custo:"−15 do caixa · transparência não tem volta", ef:{caixa:-15, corrupcao:-6, flags:{leg_contas:true}},
+     news:["Contas Abertas no ar. Primeiro efeito: dois fornecedores desistiram do sobrepreço sozinhos.","boa"]},
+    {rotulo:"Adiar", custo:"Menos dor de cabeça agora", ef:{},
+     news:["Portal de transparência fica “para estudos”.",""]}
+  ]},
+
+{ id:"m3-concessao", quem:"O Legado", titulo:"As estradas por concessão",
+  cond:s=>s.mandato===3,
+  momento:{img:"cratera.jpg", emoji:"🛣️", legenda:"A cratera da Rua Principal nunca mais depende do humor do orçamento."},
+  texto:"Manutenção das vias por concessão com meta de qualidade: quem cuida mal, perde o contrato. Tira das mãos do próximo prefeito o poder de deixar a cidade esburacar por vingança — ou incompetência.",
+  opcoes:[
+    {rotulo:"Licitar a concessão", custo:"“Entregou as ruas!”, grita a oposição", ef:{aprovacao:-4, produtividade:6, flags:{leg_concessao:true}},
+     news:["Concessão assinada com metas públicas de qualidade e multa por buraco.","boa"]},
+    {rotulo:"Manter na prefeitura", custo:"Controle direto", ef:{},
+     news:["Manutenção de vias segue por administração direta.",""]}
+  ]},
+
+{ id:"m3-lei", quem:"O Legado", titulo:"A Lei da Cidade Livre",
+  cond:s=>s.mandato===3,
+  momento:{img:"comercio-fechado.jpg", emoji:"📜", legenda:"Cada porta fechada desta foto foi uma escolha de governo. A lei existe para tornar essa escolha mais difícil."},
+  texto:"O pacote final: alvará em 24h como direito, teto de imposto municipal, proibição de tabelamento por decreto. O Prometedor promete revogar tudo “no primeiro dia”. Com estatuto qualificado, ele vai precisar de 2/3 da Câmara.",
+  opcoes:[
+    {rotulo:"Aprovar com quórum blindado", custo:"Sua última batalha na Câmara", ef:{aprovacao:-5, flags:{leg_lei:true}},
+     news:["Lei da Cidade Livre aprovada por quórum qualificado. Revogar custará 2/3.","boa"]},
+    {rotulo:"Deixar como decreto simples", custo:"Mais fácil agora, frágil depois", ef:{},
+     news:["Pacote aprovado como decreto — o próximo prefeito revoga com uma canetada.",""]}
+  ]},
+
 { id:"m2-reforma", quem:"Prefeitura", titulo:"Arrumar a casa",
   cond:s=>s.flags.crise2Disparada,
   momento:{img:"comercio-fechado.jpg", emoji:"🏚️", legenda:"A Rua Principal com as portas fechadas: cada uma era um contribuinte, um emprego, um vizinho."},
@@ -729,6 +791,13 @@ function cartaAtual(){
   // deck por elegibilidade (não por ponteiro): carta pulada por condição volta quando a condição vira verdade
   const eleg = DECK.filter(c => c.tipo!=="crise" && c.tipo!=="eleicao" && !S.jogadas.includes(c.id) && (!c.cond || c.cond(S)));
   if(eleg.length) return eleg[0];
+  // epílogo esgotado: a despedida
+  if(S.mandato >= 3) return {
+    id:"m3-fim", tipo:"filler", quem:"O Legado", titulo:"A cidade depois de você",
+    momento:{img:"solucao.jpg", emoji:"🌅", legenda:"Segunda-feira de manhã, sem você no gabinete. A padaria abre do mesmo jeito."},
+    texto:"O mandato acaba na sexta-feira. Na segunda, a cidade acorda e funciona — ou não — por causa do que você deixou de pé. É assim que se mede um governo: pelo dia em que ele vai embora.",
+    opcoes:[{rotulo:"Ver o que você deixou", custo:"", ef:{}, fimLegado:true, destaque:true}]
+  };
   // sem carta elegível: semanas comuns até as consequências agendadas vencerem; eleição ao fim de cada mandato
   if(S.semana < 14*S.mandato) return {
     id:"filler", tipo:"filler", quem:"A cidade", titulo:"Uma semana comum",
@@ -775,6 +844,7 @@ function escolher(carta, op){
   if(op.aoEscolher) op.aoEscolher(S);
   if(carta.tipo==="prometedor" && (op.ef&&op.ef.aprovBase)) S.caiuNaTentacao = true;
   if(carta.tipo==="crise") S.flags[carta.marcaVista||"criseVista"] = true;
+  if(op.fimLegado){ fecharLegado(); return; }
   if(op.eleicao){ apurarEleicao(); return; }
   if(carta.tipo!=="crise" && carta.tipo!=="filler") S.jogadas.push(carta.id);
   passarSemana();
@@ -852,8 +922,26 @@ function apurarEleicao(){
   else if(venceu && (S.flags.reformou || S.flags.reformou2)){ selo="O Reconstrutor"; desc="Você caiu, entendeu, desfez e reconstruiu. É a história que vale ser contada."; }
   else if(venceu){ selo="Dois Mandatos"; desc="A cidade te manteve no cargo até o fim. O que você deixou de pé fala por você."; }
   else { selo="Derrotado nas urnas"; desc="O Prometedor venceu. Da janela, você vai assistir ao que ele faz com a sua cidade."; }
-  if(venceu) xpApp(selo==="O Estadista" ? 150 : 80, "xpFim");
+  if(venceu){
+    // vitória final: entra o Epílogo — O Legado (o que fica de pé sem você)
+    xpApp(selo==="O Estadista" ? 150 : 80, "xpFim");
+    S.seloFinal = {selo, desc, score, r};
+    S.mandato = 3;
+    noticia(`Vitória final com ${score}% dos votos. A Constituição não permite um terceiro mandato — agora só importa o que fica de pé sem você.`,"boa");
+    passarSemana();
+    salvar();
+    renderTudo();
+    return;
+  }
   S.fim = {venceu, selo, desc, score, r, mandato:S.mandato};
+  salvar();
+  renderTudo();
+}
+function fecharLegado(){
+  const f = S.seloFinal || {selo:"Dois Mandatos", desc:"", score:0, r:realidade(S)};
+  const legados = ["leg_escola","leg_imprensa","leg_contas","leg_concessao","leg_lei"].filter(k=>S.flags[k]);
+  xpApp(50, "xpLegado");
+  S.fim = {venceu:true, selo:f.selo, desc:f.desc, score:f.score, r:realidade(S), mandato:2, legados};
   salvar();
   renderTudo();
 }
@@ -863,7 +951,7 @@ function renderFim(){
   el.className = "carta " + (f.venceu?"":"crise");
   el.innerHTML = `
     <div class="quem">Apuração encerrada</div>
-    <h2>${f.venceu? "Você foi reeleito." : "Você perdeu a eleição."}</h2>
+    <h2>${f.legados? "Oito anos. Missão cumprida." : f.venceu? "Você foi reeleito." : "Você perdeu a eleição."}</h2>
     ${momentoHtml(f.venceu
       ? {img:"vitoria.jpg", emoji:"🏛️ 🌅", legenda:"A Rua Principal na manhã seguinte: comércio abrindo, obra retomada, a cidade seguindo em frente."}
       : {img:"derrota.jpg", emoji:"🏛️ 🌧️", legenda:"Da janela da prefeitura, você assiste ao comício da vitória do Prometedor."})}
@@ -874,8 +962,15 @@ function renderFim(){
       Imprensa: <b>${S.imprensaLivre? "livre" : "comprada"}</b> · Lucidez restante: <b>${S.lucidez}</b>
     </p>
     ${!f.venceu? `<p>O Prometedor assume na segunda-feira. As primeiras medidas: congelamento geral de preços, vales em dobro e o fechamento do jornal.</p>`:""}
+    ${f.legados && f.legados.length? `<p class="recap" style="text-align:center">Instituições que ficaram de pé: <b>${f.legados.length} de 5</b><br>${
+      [["leg_escola","🏫 Escola Técnica"],["leg_imprensa","📰 Estatuto da Imprensa"],["leg_contas","🔍 Contas Abertas"],["leg_concessao","🛣️ Concessão das Vias"],["leg_lei","📜 Lei da Cidade Livre"]]
+      .filter(x=>f.legados.includes(x[0])).map(x=>x[1]).join(" · ") || "nenhuma"
+    }</p>`:""}
     <div class="opcoes">
-      <button class="opcao destaque" id="btnDeNovo">Jogar de novo${f.venceu?"":" — disputar a próxima eleição"}</button>
+      ${f.venceu? `<a class="opcao destaque" style="text-decoration:none;text-align:center" target="_blank" rel="noopener"
+        href="https://wa.me/?text=${encodeURIComponent(`🏛️ Governei a Cidade Livre por 8 anos e terminei como “${f.selo}”${f.legados&&f.legados.length?` — deixando ${f.legados.length} instituições de pé`:""}. Aguenta governar melhor? https://escolaliberal.com.br/jogo.html`)}"
+        >Desafiar um amigo no WhatsApp</a>`:""}
+      <button class="opcao" id="btnDeNovo">Jogar de novo${f.venceu?"":" — disputar a próxima eleição"}</button>
     </div>`;
   $("btnDeNovo").addEventListener("click", reiniciar);
 }
