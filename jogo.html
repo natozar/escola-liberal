@@ -317,6 +317,11 @@ function aplicar(ef, origem){
   S.ultimoDelta = {aprovacao:S.aprovacao-antes.aprovacao, caixa:S.caixa-antes.caixa};
 }
 function agendar(lista){ for(const a of (lista||[])) S.agendados.push({...a}); }
+function xpApp(n, chave){ // deposita XP pro perfil do app (creditado pela via oficial no proximo boot)
+  if(S.flags[chave]) return; S.flags[chave]=true;
+  try{ const p=parseInt(localStorage.getItem('escola_jogo_xp_pendente')||'0',10)||0;
+       localStorage.setItem('escola_jogo_xp_pendente', String(p+n)); }catch(e){}
+}
 function noticia(txt, tom){ S.noticias.unshift({txt, tom:tom||""}); S.noticias = S.noticias.slice(0,2); }
 
 function passarSemana(){
@@ -819,6 +824,7 @@ function concluirAula(acertos, AULA){
   } else {
     noticia(`Mais uma engrenagem exposta. +${ganho} de Lucidez.`,"boa");
   }
+  xpApp(40, "xpAula_"+S.aulaAtual);
   passarSemana();
   salvar();
   renderTudo();
@@ -832,6 +838,7 @@ function apurarEleicao(){
   // vitória no 1º mandato: o jogo continua — a posse do 2º vem com as contas do 1º
   if(venceu && S.mandato === 1){
     S.mandato = 2;
+    xpApp(60, "xpEleicao1");
     noticia(`Reeleito com ${score}% dos votos. O segundo mandato começa agora — e as promessas do primeiro vêm junto.`,"boa");
     passarSemana();
     salvar();
@@ -845,6 +852,7 @@ function apurarEleicao(){
   else if(venceu && (S.flags.reformou || S.flags.reformou2)){ selo="O Reconstrutor"; desc="Você caiu, entendeu, desfez e reconstruiu. É a história que vale ser contada."; }
   else if(venceu){ selo="Dois Mandatos"; desc="A cidade te manteve no cargo até o fim. O que você deixou de pé fala por você."; }
   else { selo="Derrotado nas urnas"; desc="O Prometedor venceu. Da janela, você vai assistir ao que ele faz com a sua cidade."; }
+  if(venceu) xpApp(selo==="O Estadista" ? 150 : 80, "xpFim");
   S.fim = {venceu, selo, desc, score, r, mandato:S.mandato};
   salvar();
   renderTudo();

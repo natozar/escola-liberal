@@ -66,3 +66,16 @@ window.toast=toast;
 window.streak=streak;
 window.LEVEL_NAMES=LEVEL_NAMES;
 window.getLevelInfo=getLevelInfo;
+
+// XP ganho no jogo Cidade Livre (jogo.html deposita em chave propria;
+// o app credita pela via oficial addXP — teto de 500 por importacao)
+window.addEventListener('load',()=>{setTimeout(()=>{try{
+  const pend=parseInt(localStorage.getItem('escola_jogo_xp_pendente')||'0',10)||0;
+  if(pend>0 && window.S && window.addXP){
+    const ganho=Math.min(pend,500);
+    localStorage.setItem('escola_jogo_xp_pendente','0');
+    window.addXP(ganho);
+    if(window.toast)window.toast(`🏛️ +${ganho} XP — Cidade Livre`);
+    if(window.save)window.save();
+  }
+}catch(e){}},2500)});
