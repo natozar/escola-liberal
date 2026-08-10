@@ -8,7 +8,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('Quiz e Gamificação', () => {
 
   async function openFirstLesson(page) {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
       const btn = onboard.locator('button');
@@ -63,7 +63,7 @@ test.describe('Quiz e Gamificação', () => {
   });
 
   test('XP exibido no dashboard é número válido', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
       const btn = onboard.locator('button');
@@ -79,7 +79,7 @@ test.describe('Quiz e Gamificação', () => {
   });
 
   test('Conquistas renderizam sem erro', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
       const btn = onboard.locator('button');

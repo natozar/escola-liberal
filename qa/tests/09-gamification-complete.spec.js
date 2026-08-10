@@ -21,7 +21,7 @@ test.describe('Gamificação Completa', () => {
       localStorage.setItem('escolalib_install_v2', '1');
       localStorage.setItem('escolalib_cookie_consent', 'all');
     });
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(3000);
     await page.evaluate(() => {
       var sp = document.getElementById('splash'); if (sp) sp.style.display = 'none';
@@ -84,7 +84,7 @@ test.describe('Gamificação Completa', () => {
       }));
     });
 
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#mcards', { timeout: 10000 });
 
     // Streak should have incremented (studied yesterday, now today)
@@ -113,7 +113,7 @@ test.describe('Gamificação Completa', () => {
       }));
     });
 
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#mcards', { timeout: 10000 });
 
     // Check achievements section
@@ -189,7 +189,7 @@ test.describe('Gamificação Completa', () => {
       localStorage.removeItem('escola_missions');
     }, done);
 
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#mcards', { timeout: 10000 });
 
     // Check if any mission has a claim button
@@ -256,7 +256,7 @@ test.describe('Gamificação Completa', () => {
       }));
     });
 
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#mcards', { timeout: 10000 });
 
     // Add enough XP to level up (lvl 1 needs 100 XP)

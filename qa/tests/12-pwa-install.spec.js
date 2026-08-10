@@ -84,7 +84,7 @@ test.describe('PWA Installability', () => {
   });
 
   test('Service Worker registra e ativa', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(5000); // Give SW time to install and activate
 
     const swInfo = await page.evaluate(async () => {
@@ -113,7 +113,7 @@ test.describe('PWA Installability', () => {
   });
 
   test('SW cacheia assets core no install', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     // Wait for SW to fully install and populate caches
     await page.waitForTimeout(5000);
 
@@ -148,7 +148,7 @@ test.describe('PWA Installability', () => {
   });
 
   test('Core assets estão no cache', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     // Wait for SW to fully install and populate caches
     await page.waitForTimeout(5000);
 
@@ -195,7 +195,7 @@ test.describe('PWA Installability', () => {
   });
 
   test('index.json (lessons index) está no cache', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     // Wait for SW to fully install and populate caches
     await page.waitForTimeout(5000);
 
@@ -223,7 +223,7 @@ test.describe('PWA Installability', () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
 
     // Verify the app handles beforeinstallprompt without error
     // We can't actually trigger this event in Playwright, but we can verify
@@ -244,7 +244,7 @@ test.describe('PWA Installability', () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
 
     // Test dismissInstall (should work even without prompt)
     await page.evaluate(() => {

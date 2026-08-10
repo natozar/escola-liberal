@@ -20,7 +20,7 @@ for (const page of PAGES) {
     const errors = [];
     p.on('pageerror', err => errors.push(err.message));
 
-    const response = await p.goto(page.path, { waitUntil: 'networkidle' });
+    const response = await p.goto(page.path, { waitUntil: 'domcontentloaded' });
 
     // Página retorna 200
     expect(response?.status()).toBe(200);
@@ -47,7 +47,7 @@ test('lessons.json carrega corretamente', async ({ page }) => {
 });
 
 test('Service Worker registra sem erro', async ({ page }) => {
-  await page.goto('/app.html', { waitUntil: 'networkidle' });
+  await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
   const sw = await page.evaluate(() => navigator.serviceWorker?.controller?.scriptURL || null);
   // SW pode não ativar imediatamente, mas não deve haver erro
 });

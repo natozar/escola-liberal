@@ -8,7 +8,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('Dashboard → Módulos → Aulas', () => {
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     // Pular onboarding se aparecer
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
@@ -141,7 +141,7 @@ test.describe('Dashboard → Módulos → Aulas', () => {
 
     for (let i = 0; i < totalModules; i++) {
       // Voltar ao dashboard
-      await page.goto('/app.html', { waitUntil: 'networkidle' });
+      await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
       const onboard = page.locator('#onboard');
       if (await onboard.isVisible({ timeout: 1000 }).catch(() => false)) {
         const btn = onboard.locator('button');

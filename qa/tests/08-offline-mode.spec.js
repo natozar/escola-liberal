@@ -11,7 +11,7 @@ test.describe('Offline Mode', () => {
   // These tests are best run against the production URL or a local HTTPS server.
 
   test('App carrega e SW registra antes de testar offline', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
 
     // Wait for SW to install and activate
     const swReady = await page.evaluate(async () => {
@@ -29,7 +29,7 @@ test.describe('Offline Mode', () => {
     test.slow(); // offline tests need extra time
 
     // Load page online first to populate cache
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#mcards', { timeout: 15000 });
 
     // Wait for SW cache to be populated
@@ -59,7 +59,7 @@ test.describe('Offline Mode', () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     // Skip onboarding if present
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
@@ -99,7 +99,7 @@ test.describe('Offline Mode', () => {
     test.slow();
 
     // Load app first to register SW
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(3000);
 
     // Go offline
@@ -129,7 +129,7 @@ test.describe('Offline Mode', () => {
   test('localStorage persiste dados offline', async ({ page, context }) => {
     test.slow();
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
 
     // Set some state
     await page.evaluate(() => {
@@ -157,7 +157,7 @@ test.describe('Offline Mode', () => {
   });
 
   test('Indicador online/offline aparece', async ({ page, context }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1000);
 
     // Go offline

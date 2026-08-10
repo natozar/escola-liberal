@@ -20,7 +20,7 @@ test.describe('Multi-Perfil', () => {
       localStorage.removeItem('escola_profiles');
       localStorage.removeItem('escola_pin');
     });
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(3000);
     await page.evaluate(() => {
       var sp = document.getElementById('splash'); if (sp) sp.style.display = 'none';
@@ -97,7 +97,7 @@ test.describe('Multi-Perfil', () => {
       }));
     });
 
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#mcards', { timeout: 10000 });
 
     // Current should be Perfil1
@@ -135,7 +135,7 @@ test.describe('Multi-Perfil', () => {
       }));
     });
 
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#mcards', { timeout: 10000 });
 
     const parentDone = await page.evaluate(() => Object.keys(window.S.done).length);
@@ -234,7 +234,7 @@ test.describe('Multi-Perfil', () => {
       localStorage.removeItem('escola_pin');
     });
 
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForSelector('#mcards', { timeout: 10000 });
 
     // Open parent dashboard directly (skip PIN)

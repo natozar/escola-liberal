@@ -14,7 +14,7 @@ test.describe('Edge Cases & Caminhos sem volta', () => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
 
     // Deve carregar mesmo sem dados salvos
     const mcards = page.locator('#mcards');
@@ -33,7 +33,7 @@ test.describe('Edge Cases & Caminhos sem volta', () => {
       localStorage.setItem('escola_v2', '{corrupted data!!!');
     });
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
 
     const mcards = page.locator('#mcards');
     await expect(mcards).toBeVisible({ timeout: 10000 });
@@ -45,7 +45,7 @@ test.describe('Edge Cases & Caminhos sem volta', () => {
   });
 
   test('Navegar diretamente para hash module funciona', async ({ page }) => {
-    await page.goto('/app.html#module-1', { waitUntil: 'networkidle' });
+    await page.goto('/app.html#module-1', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1000);
 
     // Deve ter aberto o módulo 0 (module-1 = index 0)
@@ -56,7 +56,7 @@ test.describe('Edge Cases & Caminhos sem volta', () => {
   });
 
   test('Duplo clique rápido em módulo não quebra', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
       const btn = onboard.locator('button');
@@ -77,7 +77,7 @@ test.describe('Edge Cases & Caminhos sem volta', () => {
   });
 
   test('Busca com string vazia não quebra', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
       const btn = onboard.locator('button');
@@ -107,7 +107,7 @@ test.describe('Edge Cases & Caminhos sem volta', () => {
     await page.goto('about:blank');
     await page.evaluate(() => localStorage.removeItem('escolalib_cookie_consent'));
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
 
     const banner = page.locator('#cookieBanner');
     if (await banner.isVisible().catch(() => false)) {
@@ -135,7 +135,7 @@ test.describe('Edge Cases & Caminhos sem volta', () => {
   });
 
   test('Múltiplos hideAllViews não causam estado inconsistente', async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
       const btn = onboard.locator('button');

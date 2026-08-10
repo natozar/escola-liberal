@@ -20,7 +20,7 @@ test.describe('Paywall Flow', () => {
       localStorage.setItem('escolalib_install_v2', '1');
       localStorage.setItem('escolalib_cookie_consent', 'all');
     });
-    await page.reload({ waitUntil: 'networkidle' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     // Wait for app to fully boot (ES modules + async _boot + lessons load)
     await page.waitForTimeout(3000);
     await page.evaluate(() => {
@@ -149,7 +149,7 @@ test.describe('Paywall Flow', () => {
   });
 
   test('Perfil page tem seção de planos', async ({ page }) => {
-    const response = await page.goto('/perfil.html', { waitUntil: 'networkidle' });
+    const response = await page.goto('/perfil.html', { waitUntil: 'domcontentloaded' });
     expect(response?.status()).toBe(200);
 
     // Check for pricing/plans section

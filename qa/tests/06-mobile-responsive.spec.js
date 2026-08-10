@@ -10,7 +10,7 @@ test.describe('Mobile Responsivo', () => {
   test.use({ viewport: { width: 390, height: 844 } }); // iPhone 14
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     const onboard = page.locator('#onboard');
     if (await onboard.isVisible({ timeout: 2000 }).catch(() => false)) {
       const btn = onboard.locator('button');

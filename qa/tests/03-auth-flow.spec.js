@@ -8,7 +8,7 @@ const { test, expect } = require('@playwright/test');
 test.describe('Auth Page', () => {
 
   test.beforeEach(async ({ page }) => {
-    await page.goto('/auth.html', { waitUntil: 'networkidle' });
+    await page.goto('/auth.html', { waitUntil: 'domcontentloaded' });
   });
 
   test('Página de auth carrega corretamente', async ({ page }) => {

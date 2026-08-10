@@ -29,7 +29,7 @@ async function setupApp(page) {
     localStorage.setItem('escola_last_version', '99.0.0');
     localStorage.setItem('escolalib_install_v2', '1');
   });
-  await page.reload({ waitUntil: 'networkidle', timeout: 15000 }).catch(() => {});
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 15000 }).catch(() => {});
   await page.waitForTimeout(1500);
 }
 
@@ -164,7 +164,7 @@ for (const device of VIEWPORTS) {
         localStorage.removeItem('escola_v2');
         localStorage.removeItem('escola_last_version');
       });
-      await page.reload({ waitUntil: 'networkidle', timeout: 10000 }).catch(() => {});
+      await page.reload({ waitUntil: 'domcontentloaded', timeout: 10000 }).catch(() => {});
       await page.waitForTimeout(2000);
       const onboard = page.locator('#onboard');
       const visible = await onboard.isVisible({ timeout: 3000 }).catch(() => false);
@@ -181,7 +181,7 @@ for (const device of VIEWPORTS) {
 
     // ======== BLOCO 6: Contact Page ========
     test('B6: Contact — no WhatsApp, has phone DDI', async ({ page }) => {
-      await page.goto('/contato.html', { waitUntil: 'networkidle', timeout: 10000 });
+      await page.goto('/contato.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
       const html = await page.content();
       expect(html).not.toContain('wa.me');
       const phone = page.locator('#cPhone');
@@ -234,7 +234,7 @@ for (const device of VIEWPORTS) {
     });
 
     test('B8: Input font-size >= 16px (no iOS zoom)', async ({ page }) => {
-      await page.goto('/contato.html', { waitUntil: 'networkidle', timeout: 10000 });
+      await page.goto('/contato.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
       const inputs = page.locator('input[type="text"], input[type="email"], textarea');
       const count = await inputs.count();
       for (let i = 0; i < Math.min(count, 5); i++) {
@@ -272,7 +272,7 @@ for (const device of VIEWPORTS) {
     });
 
     test('B12: Zero prohibited terms in contato', async ({ page }) => {
-      await page.goto('/contato.html', { waitUntil: 'networkidle', timeout: 10000 });
+      await page.goto('/contato.html', { waitUntil: 'domcontentloaded', timeout: 10000 });
       const html = await page.content();
       expect(html).not.toContain('wa.me');
       expect(html).not.toContain('seus filhos');

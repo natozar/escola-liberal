@@ -15,7 +15,7 @@ test.describe('Links e Assets', () => {
       }
     });
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
 
     if (failed.length > 0) {
@@ -33,7 +33,7 @@ test.describe('Links e Assets', () => {
       }
     });
 
-    await page.goto('/auth.html', { waitUntil: 'networkidle' });
+    await page.goto('/auth.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
 
     if (failed.length > 0) {
@@ -51,7 +51,7 @@ test.describe('Links e Assets', () => {
       }
     });
 
-    await page.goto('/index.html', { waitUntil: 'networkidle' });
+    await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
 
     if (failed.length > 0) {
@@ -87,7 +87,7 @@ test.describe('Links e Assets', () => {
       }
     });
 
-    await page.goto('/app.html', { waitUntil: 'networkidle' });
+    await page.goto('/app.html', { waitUntil: 'domcontentloaded' });
 
     console.log('📦 Resources carregados:');
     console.table(resources);
