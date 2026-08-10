@@ -400,6 +400,7 @@ function iniciarVitalicio(){
   S.modo = "vitalicio";
   S.seed = seedDaSemana();
   S.flags.viuCapa = true;
+  S.flags.escolherPerk = true; // escolha de vantagem no início da run
   S._rng = null; // recriada por rngRun()
   META.runs++; salvarMeta();
   noticia("Cidade da Semana #"+S.seed+". Governe até caírem as máscaras — ou você.","");
@@ -412,6 +413,7 @@ function rngRun(){
 /* ---------- a cidade como tabuleiro: lotes administráveis ---------- */
 function lotesIniciais(){
   return [
+    {id:"pref",    nome:"prefeitura",    emoji:"🏛️", tipo:"pref",    nivel:1, estado:"bom"},
     {id:"rua",     nome:"Rua Principal", emoji:"🛣️", tipo:"rua",     nivel:1, estado:"ruim"},
     {id:"escola",  nome:"escola",        emoji:"🏫", tipo:"escola",  nivel:1, estado:"bom"},
     {id:"padaria", nome:"padaria",       emoji:"🥖", tipo:"padaria", nivel:1, estado:"bom"},
@@ -1026,7 +1028,10 @@ const CONSTRUCOES = {
   vazio: [
     {id:"fabrica",nome:"🏭 Galpão industrial", custo:20, desc:"Leilão com contrapartida: empregos e barulho", semanal:{produtividade:3}, umaVez:{aprovacao:-2}},
     {id:"mercadinho",nome:"🛒 Mercado de bairro",custo:15, desc:"Leilão: abastecimento perto de casa", semanal:{abastecimento:2}},
-    {id:"vila",   nome:"🏘️ Vila residencial", custo:15, desc:"Leilão: moradia nova no centro", semanal:{moradia:2}}
+    {id:"vila",   nome:"🏘️ Vila residencial", custo:15, desc:"Leilão: moradia nova no centro", semanal:{moradia:2}},
+    {id:"posto",  nome:"🏥 Posto de saúde",   custo:25, desc:"PPP de saúde: gestão privada, meta pública", semanal:{aprovacao:1}},
+    {id:"biblio", nome:"📚 Biblioteca",       custo:20, desc:"Concessão cultural: leitura de graça, gestão por instituto", semanal:{escolaridade:1}},
+    {id:"eventos",nome:"🎪 Centro de eventos",custo:25, desc:"Leilão: shows e feiras — a cidade no mapa", semanal:{caixa:2, produtividade:1}}
   ]
 };
 
@@ -1035,6 +1040,16 @@ function acoesDoLote(l){
   const eq = equipeLivre();
   const semEq = eq? "" : ` · equipe ocupada (${Math.max(...S.equipes.map(e=>e.ocupada))} sem)`;
   if(l.estado==="obra"){ acs.push({rot:"🔨 Obra em andamento", custo:`faltam ${l.obraSemanas} semana(s)`, off:true}); return acs; }
+  if(l.tipo==="pref"){
+    const livres = S.equipes.filter(e=>e.ocupada<=0).length;
+    acs.push({rot:`👷 Equipes de obras: ${S.equipes.length} (${livres} livre${livres!==1?"s":""})`, custo:"o recurso mais disputado da cidade", off:true});
+    if(S.equipes.length<2){
+      acs.push({rot:"➕ Contratar 2ª equipe de obras", custo:"−60 do caixa · duas obras ao mesmo tempo", off:S.caixa<60,
+        run:()=>{ S.caixa-=60; S.equipes.push({ocupada:0, loteId:null}); sfx("ding"); fecharLote(); salvar(); renderTudo();
+                  noticia("2ª equipe de obras contratada: a cidade agora anda em duas frentes.","boa"); }});
+    }
+    return acs;
+  }
   if(l.estado==="ruim"){
     acs.push({rot:"🔧 Enviar equipe de obras", custo:`−8 do caixa · 2 semanas${semEq}`, off:!eq||S.caixa<8,
       run:()=>iniciarObra(l, 2, 8, {produtividade:2}, `${l.nome} recuperada: a cidade sente na hora.`)});
@@ -1059,6 +1074,7 @@ function acoesDoLote(l){
 }
 function iniciarObra(l, semanas, custo, efeitoFim, msgFim, extra){
   const eq = equipeLivre(); if(!eq || S.caixa<custo) return;
+  if(S.flags.perkMestre) semanas = Math.max(1, semanas-1);
   S.caixa -= custo;
   l.estado = "obra"; l.obraSemanas = semanas; l.obraTotal = semanas;
   l._fim = {efeitoFim, msgFim, ...(extra||{})}; // serializável: sobrevive ao save
@@ -1170,7 +1186,11 @@ function gameOverVitalicio(causa){
   const score = S.semana - 1;
   const novoRecorde = score > (META.melhorScore||0);
   if(novoRecorde) META.melhorScore = score;
+  const destravou = [];
+  if(score>=20 && !META.sobreviveu20){ META.sobreviveu20=true; destravou.push("💰 Caixa Reserva"); }
+  if(score>=40 && !META.sobreviveu40){ META.sobreviveu40=true; destravou.push("👷 Mestre de Obras"); }
   salvarMeta();
+  if(destravou.length) noticia(`🎖️ Conquista destravada: ${destravou.join(" e ")} — disponível como vantagem nas próximas runs.`,"boa");
   const causas = {
     impeachment: "A Câmara abriu o processo com a praça cheia. Aprovação no chão não paga a conta de ninguém — nem a sua.",
     falencia: "A cidade quebrou. Fornecedor não entrega, servidor não recebe, e a caneta que assinava mágica ficou sem tinta.",
@@ -1351,6 +1371,22 @@ function cartaAtual(){
   };
   // VITALÍCIO: eleição a cada 14 semanas; senão, carta sorteada do deck procedural
   if(S.modo==="vitalicio"){
+    if(S.flags.escolherPerk){
+      const PERKS = [
+        {id:"termometro", cond:META.campanhaVencida,      rot:"🌡️ Termômetro de Hazlitt", desc:"Começa enxergando: painel econômico instalado desde a semana 1", aplica:s=>{s.painelEconomico=true}},
+        {id:"reserva",    cond:META.sobreviveu20,          rot:"💰 Caixa Reserva",          desc:"Governo herdado com gordura: +30 no caixa inicial", aplica:s=>{s.caixa+=30}},
+        {id:"mestre",     cond:META.sobreviveu40,          rot:"👷 Mestre de Obras",        desc:"Toda obra leva 1 semana a menos", aplica:s=>{s.flags.perkMestre=true}}
+      ];
+      const opcoes = PERKS.map(p=>({
+        rotulo:p.rot, custo: p.cond? p.desc : "🔒 "+({termometro:"vença a campanha",reserva:"sobreviva 20 semanas",mestre:"sobreviva 40 semanas"})[p.id],
+        ef:{}, bloqueada:!p.cond, semSemana:true,
+        aoEscolher:s=>{ s.flags.escolherPerk=false; p.aplica(s); }
+      }));
+      opcoes.push({rotulo:"Sem vantagem — na raça", custo:"o jeito clássico", ef:{}, semSemana:true, aoEscolher:s=>{s.flags.escolherPerk=false}});
+      return { id:"perks", tipo:"filler", quem:"Prefeito Vitalício", titulo:"Escolha sua vantagem",
+        texto:"Cada queda ensina. As conquistas das suas runs anteriores viram vantagens permanentes — leve UMA para esta cidade.",
+        opcoes };
+    }
     if(S.criseDisparada && !S.flags.criseVista) return DECK.find(c=>c.id==="a1-11");
     if(S.semana>1 && S.semana%14===0 && !S.flags["elei_"+S.semana]) return {
       id:"elei-v"+S.semana, tipo:"eleicao", quem:"A cidade", titulo:"Eleição — mandato "+(Math.floor(S.semana/14)+1),
@@ -1420,15 +1456,17 @@ function renderCarta(){
 }
 
 function escolher(carta, op){
+  // guardas ANTES de qualquer efeito (ordem importa: nada aplica duas vezes)
+  if(op.bloqueada) return;
+  if(op.vitalicio){ iniciarVitalicio(); return; }
   if(op.abrirAula){ S.flags[carta.marcaVista||"criseVista"] = true; renderAula(carta.aulaId||"precos"); return; }
+  sfx("click");
   aplicar(op.ef||{});
   agendar(op.ag);
   if(op.news) noticia(op.news[0], op.news[1]);
   if(op.aoEscolher) op.aoEscolher(S);
   if(carta.tipo==="prometedor" && (op.ef&&op.ef.aprovBase)) S.caiuNaTentacao = true;
-  if(op.bloqueada) return;
-  if(op.vitalicio){ iniciarVitalicio(); return; }
-  sfx("click");
+  if(op.semSemana){ salvar(); renderTudo(); return; } // decisão que não consome semana (ex.: perk)
   if(carta.tipo==="crise") S.flags[carta.marcaVista||"criseVista"] = true;
   if(op.fimLegado){ fecharLegado(); return; }
   if(op.eleicao){ apurarEleicao(); return; }

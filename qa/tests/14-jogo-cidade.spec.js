@@ -104,9 +104,12 @@ test.describe('Cidade Livre — subdomínio', () => {
 // ============================================================
 test.describe('Cidade Livre — tabuleiro de gestão', () => {
 
-  test('a cidade renderiza 8 lotes clicáveis', async ({ page }) => {
+  test('a cidade renderiza 9 lotes clicáveis (com prefeitura)', async ({ page }) => {
     await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.predio.lote')).toHaveCount(8);
+    await page.evaluate(() => { localStorage.removeItem('escola_jogo_cidade_v1'); location.reload(); });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('.predio.lote')).toHaveCount(9);
+    await expect(page.locator('.predio.lote', { hasText: 'prefeitura' })).toHaveCount(1);
     await expect(page.locator('.predio.lote', { hasText: 'lote vazio' })).toHaveCount(2);
   });
 
