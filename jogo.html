@@ -212,6 +212,41 @@
     transition:color .2s, border-color .2s;
   }
   .rodape button:hover{color:var(--tinta); border-color:var(--borda-forte)}
+  /* ---------- lotes administráveis ---------- */
+  .cidade .skyline{display:grid; grid-template-columns:repeat(4,1fr); gap:7px; align-items:stretch}
+  .predio.lote{
+    font:inherit; font-size:19px; cursor:pointer; min-height:62px;
+    display:flex; flex-direction:column; justify-content:flex-end; align-items:center;
+    padding:14px 2px 4px; border-radius:12px; border-bottom:1px solid var(--borda);
+    transition:transform .12s var(--ease), border-color .2s, background .3s;
+  }
+  .predio.lote:hover{transform:translateY(-2px); border-color:rgba(232,176,75,.5)}
+  .predio.lote:active{transform:scale(.96)}
+  .predio.lote:focus-visible{outline:2px solid var(--ouro); outline-offset:2px}
+  .predio.lote.ruim{border-color:rgba(229,107,98,.5); background:linear-gradient(180deg, rgba(229,107,98,.16), rgba(229,107,98,.05))!important}
+  .predio.lote.obra{border-color:rgba(232,176,75,.5)}
+  .lote-badge{
+    position:absolute; top:4px; right:5px; font-size:9.5px; font-weight:800;
+    color:var(--ouro); letter-spacing:.02em;
+  }
+  .lote-badge.ruim{animation:pulsar 1.2s ease-in-out infinite}
+  @keyframes pulsar{0%,100%{opacity:1} 50%{opacity:.35}}
+
+  /* ---------- painel do lote (bottom sheet) ---------- */
+  #loteSheet{position:fixed; inset:0; z-index:60}
+  #loteSheet .ls-pano{position:absolute; inset:0; background:rgba(5,6,10,.6); backdrop-filter:blur(3px)}
+  #loteSheet .ls-caixa{
+    position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+    width:100%; max-width:530px;
+    background:linear-gradient(180deg, #1c2029, #14161d);
+    border:1px solid var(--borda-forte); border-bottom:none;
+    border-radius:20px 20px 0 0; padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+    box-shadow:0 -12px 48px rgba(0,0,0,.5);
+    animation:subirSheet .3s var(--ease);
+  }
+  @keyframes subirSheet{from{transform:translate(-50%,30px); opacity:0} to{transform:translate(-50%,0); opacity:1}}
+  #loteSheet .ls-tit{font-size:16px; font-weight:750; margin-bottom:12px; letter-spacing:-.01em}
+
   /* ---------- suco ---------- */
   @keyframes tremer{
     0%,100%{transform:none} 15%{transform:translate(-6px,2px) rotate(-.4deg)}
@@ -315,7 +350,8 @@ function estadoInicial(){
     jogadas: [], criseDisparada: false, criseResolvida: false,
     caiuNaTentacao: false, fim: null,
     ultimoDelta: {}, streak: 0, semanasAprovBaixa: 0,
-    vistas: [], aulasDadas: []
+    vistas: [], aulasDadas: [],
+    lotes: lotesIniciais(), equipes: [{ocupada:0, loteId:null}]
   };
 }
 function iniciarVitalicio(){
@@ -332,7 +368,21 @@ function rngRun(){
   // determinística por seed+semana: mesma cidade da semana pra todo mundo
   return mulberry32(S.seed*7919 + S.semana*104729);
 }
+/* ---------- a cidade como tabuleiro: lotes administráveis ---------- */
+function lotesIniciais(){
+  return [
+    {id:"rua",     nome:"Rua Principal", emoji:"🛣️", tipo:"rua",     nivel:1, estado:"ruim"},
+    {id:"escola",  nome:"escola",        emoji:"🏫", tipo:"escola",  nivel:1, estado:"bom"},
+    {id:"padaria", nome:"padaria",       emoji:"🥖", tipo:"padaria", nivel:1, estado:"bom"},
+    {id:"mercado", nome:"mercado",       emoji:"🏪", tipo:"mercado", nivel:1, estado:"bom"},
+    {id:"moradia", nome:"moradia",       emoji:"🏢", tipo:"moradia", nivel:1, estado:"bom"},
+    {id:"praca",   nome:"praça",         emoji:"🌳", tipo:"praca",   nivel:1, estado:"bom"},
+    {id:"vazio1",  nome:"lote vazio",    emoji:"🟫", tipo:"vazio",   nivel:0, estado:"bom"},
+    {id:"vazio2",  nome:"lote vazio",    emoji:"🟫", tipo:"vazio",   nivel:0, estado:"bom"}
+  ];
+}
 let S = carregar() || estadoInicial();
+if(!S.lotes){ S.lotes = lotesIniciais(); S.equipes = [{ocupada:0, loteId:null}]; }
 
 /* ---------- suco: som sintetizado + tremida de tela ---------- */
 let _audio = null;
@@ -399,6 +449,8 @@ function passarSemana(){
   const vencidos = [];
   S.agendados = S.agendados.filter(a=>{ a.em--; if(a.em<=0){vencidos.push(a); return false} return true; });
   for(const a of vencidos){ aplicar(a.ef, "agendado"); if(a.msg) noticia(a.msg, a.tom||"ruim"); }
+  // administração manual: obras andam, contribuições chegam, cidade degrada
+  tickLotes();
   // corrupção silenciosa sem imprensa livre
   if(!S.imprensaLivre){ S.corrupcao = clamp(S.corrupcao+2,0,100); S.caixa -= 4; }
   // aprovação persegue a realidade só se a imprensa mede a realidade
@@ -887,6 +939,128 @@ function sortearCartaV(){
       ag:(o.ag||[]).map(a=>({em:a.em, ef:matEf(a.ef, fator), msg:a.msg, tom:a.tom})) }))
   };
 }
+/* ============================================================
+   ADMINISTRAÇÃO MANUAL — ações sobre os lotes (estilo SimCity)
+   Equipe de obras é recurso escasso: alocar É a decisão.
+   ============================================================ */
+function lote(id){ return S.lotes.find(l=>l.id===id); }
+function equipeLivre(){ return S.equipes.find(e=>e.ocupada<=0); }
+
+const CONSTRUCOES = {
+  praca:  [
+    {id:"cafe",   nome:"☕ Café na praça",     custo:0,  desc:"Concessão: o café paga aluguel e traz gente", semanal:{caixa:2}, umaVez:{aprovacao:3}},
+    {id:"feira",  nome:"🧺 Feira permanente",  custo:0,  desc:"Concessão aos feirantes: comida fresca todo dia", semanal:{abastecimento:1}, umaVez:{aprovacao:2}},
+    {id:"estacio",nome:"🅿️ Estacionamento",   custo:0,  desc:"Concessão: rende mais, charme menos", semanal:{caixa:3}, umaVez:{aprovacao:-3}}
+  ],
+  vazio: [
+    {id:"fabrica",nome:"🏭 Galpão industrial", custo:20, desc:"Leilão com contrapartida: empregos e barulho", semanal:{produtividade:3}, umaVez:{aprovacao:-2}},
+    {id:"mercadinho",nome:"🛒 Mercado de bairro",custo:15, desc:"Leilão: abastecimento perto de casa", semanal:{abastecimento:2}},
+    {id:"vila",   nome:"🏘️ Vila residencial", custo:15, desc:"Leilão: moradia nova no centro", semanal:{moradia:2}}
+  ]
+};
+
+function acoesDoLote(l){
+  const acs = [];
+  const eq = equipeLivre();
+  const semEq = eq? "" : ` · equipe ocupada (${Math.max(...S.equipes.map(e=>e.ocupada))} sem)`;
+  if(l.estado==="obra"){ acs.push({rot:"🔨 Obra em andamento", custo:`faltam ${l.obraSemanas} semana(s)`, off:true}); return acs; }
+  if(l.estado==="ruim"){
+    acs.push({rot:"🔧 Enviar equipe de obras", custo:`−8 do caixa · 2 semanas${semEq}`, off:!eq||S.caixa<8,
+      run:()=>iniciarObra(l, 2, 8, {produtividade:2}, `${l.nome} recuperada: a cidade sente na hora.`)});
+  }
+  if(l.tipo==="escola" && l.nivel<3 && l.estado==="bom"){
+    const custo = l.nivel===1? 25 : 40;
+    acs.push({rot:`📚 Ampliar a escola (nível ${l.nivel+1})`, custo:`−${custo} do caixa · 3 semanas${semEq} · +escolaridade contínua`, off:!eq||S.caixa<custo,
+      run:()=>iniciarObra(l, 3, custo, {escolaridade:4}, "Escola ampliada: mais turmas, mais futuro conferindo as contas.", {nivelUp:true})});
+  }
+  if(l.tipo==="praca" && !l.construcao && l.estado==="bom"){
+    for(const c of CONSTRUCOES.praca)
+      acs.push({rot:c.nome, custo:`${c.custo? "−"+c.custo+" do caixa · ":""}concessão privada · ${c.desc}`, off:S.caixa<c.custo,
+        run:()=>construir(l, c)});
+  }
+  if(l.tipo==="vazio" && !l.construcao){
+    for(const c of CONSTRUCOES.vazio)
+      acs.push({rot:c.nome, custo:`−${c.custo} do caixa · leilão · 3 semanas de obra · ${c.desc}`, off:!eq||S.caixa<c.custo,
+        run:()=>{ iniciarObra(l, 3, c.custo, c.umaVez||{}, `${c.nome} inaugurado no antigo terreno vazio.`, {constr:c}); }});
+  }
+  if(!acs.length) acs.push({rot:"✅ Funcionando bem", custo:"nada a fazer aqui por enquanto", off:true});
+  return acs;
+}
+function iniciarObra(l, semanas, custo, efeitoFim, msgFim, extra){
+  const eq = equipeLivre(); if(!eq || S.caixa<custo) return;
+  S.caixa -= custo;
+  l.estado = "obra"; l.obraSemanas = semanas;
+  l._fim = {efeitoFim, msgFim, ...(extra||{})}; // serializável: sobrevive ao save
+  eq.ocupada = semanas; eq.loteId = l.id;
+  sfx("click"); fecharLote(); salvar(); renderTudo();
+  noticia(`Equipe de obras alocada: ${l.nome} (${semanas} semanas).`,"");
+}
+function construir(l, c){
+  if(S.caixa < c.custo) return;
+  S.caixa -= c.custo;
+  aplicarConstrucao(l, c);
+  if(c.umaVez) aplicar(c.umaVez);
+  sfx("ding"); fecharLote(); salvar(); renderTudo();
+  noticia(`${c.nome} — contrato assinado. A cidade decide com os pés se você acertou.`,"boa");
+}
+function aplicarConstrucao(l, c){
+  l.construcao = c.id; l.semanal = c.semanal || null;
+  l.emoji = c.nome.split(" ")[0]; l.nome = c.nome.replace(/^\S+\s/,"");
+  l.tipo = l.tipo==="praca" ? "praca" : "constr";
+}
+function tickLotes(){
+  // obras andam; equipe libera; contribuições semanais chegam; rua ruim cobra
+  for(const eq of S.equipes) if(eq.ocupada>0) eq.ocupada--;
+  for(const l of S.lotes){
+    if(l.estado==="obra"){
+      l.obraSemanas--;
+      if(l.obraSemanas<=0){
+        l.estado="bom";
+        if(l._fim){
+          if(l._fim.nivelUp) l.nivel++;
+          if(l._fim.constr) aplicarConstrucao(l, l._fim.constr);
+          aplicar(l._fim.efeitoFim||{});
+          noticia("🔨 "+(l._fim.msgFim||"Obra concluída."),"boa"); sfx("ding");
+          l._fim=null;
+        }
+      }
+    }
+    if(l.semanal && l.estado==="bom") aplicar(l.semanal);
+    if(l.tipo==="rua" && l.estado==="ruim"){ S.aprovacao = clamp(S.aprovacao-1,0,100); }
+  }
+  // degradação: a cidade nunca fica pronta (mais agressiva no vitalício)
+  const rnd = rngRun();
+  const chance = S.modo==="vitalicio" ? 0.12 : 0.06;
+  if(rnd() < chance){
+    const alvos = S.lotes.filter(l=>l.estado==="bom" && ["rua","moradia","padaria","mercado"].includes(l.tipo));
+    if(alvos.length){
+      const l = alvos[Math.floor(rnd()*alvos.length)];
+      l.estado = "ruim";
+      noticia(`⚠️ ${l.nome} precisa de manutenção — a cidade não espera.`,"ruim");
+    }
+  }
+}
+
+/* --- painel de ações do lote (bottom sheet) --- */
+function abrirLote(idx){
+  const l = S.lotes[idx]; if(!l || S.fim) return;
+  fecharLote();
+  const ov = document.createElement("div");
+  ov.id = "loteSheet";
+  ov.innerHTML = `<div class="ls-pano"></div>
+    <div class="ls-caixa">
+      <div class="ls-tit">${l.emoji} ${l.nome} ${l.nivel>1? "· nível "+l.nivel : ""}</div>
+      <div class="opcoes">${acoesDoLote(l).map((a,i)=>
+        `<button class="opcao" data-a="${i}" ${a.off?"disabled":""} type="button">${a.rot}<span class="custo">${a.custo}</span></button>`).join("")}
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector(".ls-pano").addEventListener("click", fecharLote);
+  const acs = acoesDoLote(l);
+  ov.querySelectorAll(".opcao").forEach(b=>b.addEventListener("click",()=>{ const a=acs[b.dataset.a]; if(a && !a.off && a.run) a.run(); }));
+}
+function fecharLote(){ document.getElementById("loteSheet")?.remove(); }
+
 function gameOverVitalicio(causa){
   const score = S.semana - 1;
   const novoRecorde = score > (META.melhorScore||0);
@@ -998,18 +1172,22 @@ function renderCidade(){
   const r = realidade(S);
   const el = $("cidade");
   el.className = "cidade " + (r>=60?"estado-prospero": r>=40?"estado-alerta":"estado-crise");
-  const altura = v => 34 + Math.round((v==null? r : v)*0.45);
-  // território: a cidade que prospera ganha um bairro novo no 2º mandato
-  const lista = (S.mandato>=2 && r>=55) ? PREDIOS.concat([{emoji:"🏬", nome:"bairro novo", chave:"produtividade"}]) : PREDIOS;
-  $("skyline").innerHTML = lista.map(p=>{
-    const v = p.chave? S[p.chave] : null;
-    const fechado = (p.nome==="padaria" && S.flags.padariaFechou && !S.criseResolvida);
-    const fila = (p.nome==="padaria"||p.nome==="mercado") && S.abastecimento<50 && !fechado;
-    return `<div class="predio${fechado?" fechado":""}" style="height:${altura(v)}px">
+  $("skyline").innerHTML = S.lotes.map((l,i)=>{
+    const fechado = (l.tipo==="padaria" && S.flags.padariaFechou && !S.criseResolvida);
+    const fila = (l.tipo==="padaria"||l.tipo==="mercado") && S.abastecimento<50 && !fechado;
+    const badge = l.estado==="obra" ? `🔨${l.obraSemanas}`
+                : l.estado==="ruim" ? "⚠️"
+                : l.nivel>1 ? "✦".repeat(l.nivel-1)
+                : l.tipo==="vazio" ? "＋" : "";
+    const acionavel = !fechado;
+    return `<button type="button" class="predio lote ${l.estado}${fechado?" fechado":""}" data-lote="${i}" ${acionavel?"":"disabled"}
+      aria-label="Administrar ${l.nome}">
       <span class="tag">FECHADO</span>
+      ${badge?`<span class="lote-badge${l.estado==="ruim"?" ruim":""}">${badge}</span>`:""}
       <div class="fila" style="opacity:${fila?1:0}">🧍🧍🧍🧍</div>
-      ${p.emoji}<small>${p.nome}</small></div>`;
+      ${l.emoji}<small>${l.nome}</small></button>`;
   }).join("");
+  $("skyline").querySelectorAll("[data-lote]").forEach(b=>b.addEventListener("click",()=>abrirLote(+b.dataset.lote)));
   const pop = 12400 + Math.round((r-50)*40);
   const fogo = (S.streak||0)>=3 ? ` · 🔥×${S.streak}` : "";
   $("populacao").textContent = `👥 ${pop.toLocaleString("pt-BR")} habitantes · prosperidade real ${r}%${fogo}`;
