@@ -369,7 +369,26 @@ function carregarMeta(){
   catch(e){ return {campanhaVencida:false, melhorScore:0, runs:0}; }
 }
 let META = carregarMeta();
+// retro-conquistas: recorde antigo destrava o que merecia
+if(META.melhorScore>=20 && !META.sobreviveu20) META.sobreviveu20 = true;
+if(META.melhorScore>=30 && !META.sobreviveu30) META.sobreviveu30 = true;
+if(META.melhorScore>=50 && !META.sobreviveu50) META.sobreviveu50 = true;
 function salvarMeta(){ try{ localStorage.setItem(META_KEY, JSON.stringify(META)); }catch(e){} }
+
+/* cenários do Vitalício: cidades com economias diferentes */
+const CENARIOS = [
+  {idx:0, id:"nova",      emoji:"🏘️", nome:"Cidade Nova",       unlock:()=>true,               req:"",
+   desc:"A cidade clássica: equilibrada, honesta, sua pra moldar.", mods:{}},
+  {idx:1, id:"litoranea", emoji:"🌊", nome:"Cidade Litorânea",   unlock:()=>!!META.sobreviveu20, req:"sobreviva 20 semanas",
+   desc:"Vive do verão: caixa forte na temporada, ressaca no resto do ano.",
+   mods:{caixa:20, produtividade:-8}, tick:{cada:12, ef:{caixa:25, aprovacao:4}, msg:"🌊 Alta temporada: a cidade lotou — hotéis cheios, caixa cheio."}},
+  {idx:2, id:"mineradora", emoji:"⛏️", nome:"Cidade Mineradora", unlock:()=>!!META.sobreviveu30, req:"sobreviva 30 semanas",
+   desc:"Rica hoje. A mina não dura pra sempre — diversifique ou definhe.",
+   mods:{caixa:60, produtividade:10}, tick:{cada:4, ef:{produtividade:-2}, msg:"⛏️ A jazida rende menos a cada mês. O relógio da mina não para."}},
+  {idx:3, id:"capital",    emoji:"🏙️", nome:"A Capital",         unlock:()=>!!META.sobreviveu50, req:"sobreviva 50 semanas",
+   desc:"Grande, barulhenta, viciada em governo. Corrupção de herança.",
+   mods:{caixa:40, corrupcao:20, aprovacao:-10}, tick:{cada:4, ef:{corrupcao:1}, msg:"🏙️ A máquina da Capital se alimenta sozinha: mais um contrato suspeito herdado."}}
+];
 
 /* seed da semana: todo mundo joga a mesma cidade — ranking comparável */
 function seedDaSemana(){
@@ -403,7 +422,7 @@ function iniciarVitalicio(){
   S.flags.escolherPerk = true; // escolha de vantagem no início da run
   S._rng = null; // recriada por rngRun()
   META.runs++; salvarMeta();
-  noticia("Cidade da Semana #"+S.seed+". Governe até caírem as máscaras — ou você.","");
+  noticia("Escolha sua cidade — cada uma tem sua Cidade da Semana.","");
   salvar(); renderTudo();
 }
 function rngRun(){
@@ -541,6 +560,11 @@ function passarSemana(){
   }
   // streak de prosperidade (suco: 🔥 semanas seguidas de cidade saudável)
   S.streak = realidade(S)>=60 ? (S.streak||0)+1 : 0;
+  // regra viva do cenário (litorânea/mineradora/capital)
+  if(S.modo==="vitalicio" && S.cenarioTick && S.semana>1 && S.semana % S.cenarioTick.cada === 0){
+    aplicar(S.cenarioTick.ef);
+    noticia(S.cenarioTick.msg, S.cenarioTick.ef.caixa>0 ? "boa" : "ruim");
+  }
   // VITALÍCIO: condições de queda
   if(S.modo==="vitalicio" && !S.fim){
     S.semanasAprovBaixa = S.aprovacao<15 ? (S.semanasAprovBaixa||0)+1 : 0;
@@ -1187,8 +1211,10 @@ function gameOverVitalicio(causa){
   const novoRecorde = score > (META.melhorScore||0);
   if(novoRecorde) META.melhorScore = score;
   const destravou = [];
-  if(score>=20 && !META.sobreviveu20){ META.sobreviveu20=true; destravou.push("💰 Caixa Reserva"); }
+  if(score>=20 && !META.sobreviveu20){ META.sobreviveu20=true; destravou.push("💰 Caixa Reserva e 🌊 Cidade Litorânea"); }
+  if(score>=30 && !META.sobreviveu30){ META.sobreviveu30=true; destravou.push("⛏️ Cidade Mineradora"); }
   if(score>=40 && !META.sobreviveu40){ META.sobreviveu40=true; destravou.push("👷 Mestre de Obras"); }
+  if(score>=50 && !META.sobreviveu50){ META.sobreviveu50=true; destravou.push("🏙️ A Capital"); }
   salvarMeta();
   if(destravou.length) noticia(`🎖️ Conquista destravada: ${destravou.join(" e ")} — disponível como vantagem nas próximas runs.`,"boa");
   const causas = {
@@ -1371,6 +1397,22 @@ function cartaAtual(){
   };
   // VITALÍCIO: eleição a cada 14 semanas; senão, carta sorteada do deck procedural
   if(S.modo==="vitalicio"){
+    if(!S.cenario){
+      return { id:"cenarios", tipo:"filler", quem:"Prefeito Vitalício", titulo:"Escolha sua cidade",
+        texto:"Cada cidade tem uma economia — e um defeito de nascença. Sobreviver aqui te destrava as próximas.",
+        opcoes: CENARIOS.map(c=>({
+          rotulo:`${c.emoji} ${c.nome}`, custo: c.unlock()? c.desc : "🔒 "+c.req,
+          ef:{}, bloqueada:!c.unlock(), semSemana:true,
+          aoEscolher:s=>{
+            s.cenario = c.id;
+            s.seed = seedDaSemana()*10 + c.idx; // Cidade da Semana própria por cenário
+            if(c.tick) s.cenarioTick = c.tick;
+            aplicar(c.mods||{});
+            noticia(`${c.emoji} ${c.nome} — Cidade da Semana #${s.seed}. Boa sorte, prefeito.`,"");
+          }
+        }))
+      };
+    }
     if(S.flags.escolherPerk){
       const PERKS = [
         {id:"termometro", cond:META.campanhaVencida,      rot:"🌡️ Termômetro de Hazlitt", desc:"Começa enxergando: painel econômico instalado desde a semana 1", aplica:s=>{s.painelEconomico=true}},
@@ -1584,7 +1626,8 @@ function renderFim(){
   const el = $("carta");
   if(f.modo==="vitalicio"){
     el.className = "carta crise";
-    const zap = encodeURIComponent(`🏛️ Sobrevivi ${f.score} semanas como prefeito na Cidade da Semana #${S.seed} do Cidade Livre${f.novoRecorde?" — RECORDE novo":""}. Aguenta mais que eu? https://jogo.escolaliberal.com.br`);
+    const cen = CENARIOS.find(c=>c.id===S.cenario) || CENARIOS[0];
+    const zap = encodeURIComponent(`🏛️ Sobrevivi ${f.score} semanas como prefeito da ${cen.emoji} ${cen.nome} (Cidade da Semana #${S.seed}) no Cidade Livre${f.novoRecorde?" — RECORDE novo":""}. Aguenta mais que eu? https://jogo.escolaliberal.com.br`);
     el.innerHTML = `
       <div class="quem">Fim de governo · ${f.causa==="urnas"?"derrota nas urnas":f.causa==="falencia"?"colapso fiscal":"impeachment"}</div>
       <h2>Você caiu na semana ${f.score+1}.</h2>
