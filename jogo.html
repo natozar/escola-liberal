@@ -232,6 +232,47 @@
   .lote-badge.ruim{animation:pulsar 1.2s ease-in-out infinite}
   @keyframes pulsar{0%,100%{opacity:1} 50%{opacity:.35}}
 
+  /* ---------- a cidade viva: obra, inauguração, crescimento ---------- */
+  .predio.lote.obra{overflow:hidden}
+  .predio.lote.obra .operario{
+    position:absolute; top:2px; left:4px; font-size:13px;
+    animation:trabalhar 1s ease-in-out infinite;
+  }
+  @keyframes trabalhar{0%,100%{transform:translateY(0) rotate(-6deg)} 50%{transform:translateY(-3px) rotate(8deg)}}
+  .obra-barra{
+    position:absolute; bottom:0; left:0; height:3px; background:var(--ouro);
+    box-shadow:0 0 8px var(--ouro); transition:width .8s var(--ease); border-radius:0 2px 0 0;
+  }
+  .predio.lote.inaugura{animation:inaugurar .9s var(--ease)}
+  @keyframes inaugurar{
+    0%{transform:scale(1)} 35%{transform:scale(1.18); box-shadow:0 0 0 3px rgba(232,176,75,.7), 0 0 30px rgba(232,176,75,.5)}
+    100%{transform:scale(1)}
+  }
+  .predio.lote.revela{animation:revelar .8s var(--ease) both}
+  @keyframes revelar{
+    from{transform:scale(.3) rotate(-6deg); opacity:0}
+    60%{transform:scale(1.12)}
+    to{transform:scale(1); opacity:1}
+  }
+  .flut{
+    position:absolute; z-index:40; font-size:12.5px; font-weight:800; pointer-events:none;
+    text-shadow:0 1px 6px rgba(0,0,0,.7); animation:flutuar 1.5s var(--ease) both;
+    white-space:nowrap;
+  }
+  .flut.pos{color:var(--verde)} .flut.neg{color:var(--vermelho)} .flut.ouro{color:var(--ouro)}
+  @keyframes flutuar{
+    0%{transform:translateY(0); opacity:0} 15%{opacity:1}
+    100%{transform:translateY(-42px); opacity:0}
+  }
+  .confete{
+    position:absolute; z-index:41; width:6px; height:6px; border-radius:1px; pointer-events:none;
+    animation:cairConfete 1s var(--ease) both;
+  }
+  @keyframes cairConfete{
+    0%{transform:translate(0,0) rotate(0); opacity:1}
+    100%{transform:translate(var(--cx), var(--cy)) rotate(280deg); opacity:0}
+  }
+
   /* ---------- painel do lote (bottom sheet) ---------- */
   #loteSheet{position:fixed; inset:0; z-index:60}
   #loteSheet .ls-pano{position:absolute; inset:0; background:rgba(5,6,10,.6); backdrop-filter:blur(3px)}
@@ -408,6 +449,36 @@ function doShake(){
   if(!app) return;
   app.classList.remove("shake"); void app.offsetWidth; app.classList.add("shake");
   if(navigator.vibrate) navigator.vibrate([60,40,60]);
+}
+/* número flutuante saindo de um elemento (operar e VER o retorno) */
+function flutuarDe(el, texto, tipo){
+  if(!el) return;
+  const r = el.getBoundingClientRect();
+  const s = document.createElement("span");
+  s.className = "flut " + (tipo||"pos");
+  s.textContent = texto;
+  s.style.position = "fixed";
+  s.style.left = (r.left + r.width/2 - 14 + (Math.random()*16-8)) + "px";
+  s.style.top  = (r.top + r.height*0.25) + "px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(), 1600);
+}
+function confetarEm(el){
+  if(!el) return;
+  const r = el.getBoundingClientRect();
+  const cores = ["#e8b04b","#57c78e","#6ed6d0","#e56b62","#7a9fd4"];
+  for(let i=0;i<8;i++){
+    const c = document.createElement("span");
+    c.className = "confete";
+    c.style.position = "fixed";
+    c.style.left = (r.left + r.width/2) + "px";
+    c.style.top  = (r.top + r.height/2) + "px";
+    c.style.background = cores[i%cores.length];
+    c.style.setProperty("--cx", (Math.random()*70-35)+"px");
+    c.style.setProperty("--cy", (Math.random()*-55-15)+"px");
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 1100);
+  }
 }
 
 /* ---------- helpers ---------- */
@@ -989,7 +1060,7 @@ function acoesDoLote(l){
 function iniciarObra(l, semanas, custo, efeitoFim, msgFim, extra){
   const eq = equipeLivre(); if(!eq || S.caixa<custo) return;
   S.caixa -= custo;
-  l.estado = "obra"; l.obraSemanas = semanas;
+  l.estado = "obra"; l.obraSemanas = semanas; l.obraTotal = semanas;
   l._fim = {efeitoFim, msgFim, ...(extra||{})}; // serializável: sobrevive ao save
   eq.ocupada = semanas; eq.loteId = l.id;
   sfx("click"); fecharLote(); salvar(); renderTudo();
@@ -1008,6 +1079,8 @@ function aplicarConstrucao(l, c){
   l.emoji = c.nome.split(" ")[0]; l.nome = c.nome.replace(/^\S+\s/,"");
   l.tipo = l.tipo==="praca" ? "praca" : "constr";
 }
+const ICONE_VAR = {caixa:"💰", produtividade:"⚙️", abastecimento:"🛒", moradia:"🏠", escolaridade:"📚", aprovacao:"👍"};
+let _flutuas = []; // transiente (não vai pro save): animações pendentes por lote
 function tickLotes(){
   // obras andam; equipe libera; contribuições semanais chegam; rua ruim cobra
   for(const eq of S.equipes) if(eq.ocupada>0) eq.ocupada--;
@@ -1016,6 +1089,7 @@ function tickLotes(){
       l.obraSemanas--;
       if(l.obraSemanas<=0){
         l.estado="bom";
+        l._inaugura = true;
         if(l._fim){
           if(l._fim.nivelUp) l.nivel++;
           if(l._fim.constr) aplicarConstrucao(l, l._fim.constr);
@@ -1025,8 +1099,14 @@ function tickLotes(){
         }
       }
     }
-    if(l.semanal && l.estado==="bom") aplicar(l.semanal);
-    if(l.tipo==="rua" && l.estado==="ruim"){ S.aprovacao = clamp(S.aprovacao-1,0,100); }
+    if(l.semanal && l.estado==="bom"){
+      aplicar(l.semanal);
+      for(const k in l.semanal) if(l.semanal[k]>0) _flutuas.push({id:l.id, txt:`+${l.semanal[k]}${ICONE_VAR[k]||""}`, tipo:"pos"});
+    }
+    if(l.tipo==="rua" && l.estado==="ruim"){
+      S.aprovacao = clamp(S.aprovacao-1,0,100);
+      _flutuas.push({id:l.id, txt:"−1👍", tipo:"neg"});
+    }
   }
   // degradação: a cidade nunca fica pronta (mais agressiva no vitalício)
   const rnd = rngRun();
@@ -1039,6 +1119,31 @@ function tickLotes(){
       noticia(`⚠️ ${l.nome} precisa de manutenção — a cidade não espera.`,"ruim");
     }
   }
+  // A CIDADE CRESCE: prosperidade sustentada abre bairros novos
+  const EXPANSOES = [
+    {flag:"exp1", streak:4,  nome:"Bairro Norte",     lotes:[{id:"norte1", nome:"terreno · Norte", emoji:"🌱", tipo:"vazio", nivel:0, estado:"bom"},{id:"norte2", nome:"terreno · Norte", emoji:"🌱", tipo:"vazio", nivel:0, estado:"bom"}]},
+    {flag:"exp2", streak:8,  nome:"Bairro do Lago",   lotes:[{id:"lago1", nome:"terreno · Lago", emoji:"🌱", tipo:"vazio", nivel:0, estado:"bom"},{id:"lago2", nome:"terreno · Lago", emoji:"🌱", tipo:"vazio", nivel:0, estado:"bom"}]},
+    {flag:"exp3", streak:12, nome:"Alto da Colina",   lotes:[{id:"alto1", nome:"terreno · Colina", emoji:"🌱", tipo:"vazio", nivel:0, estado:"bom"},{id:"alto2", nome:"terreno · Colina", emoji:"🌱", tipo:"vazio", nivel:0, estado:"bom"}]}
+  ];
+  for(const ex of EXPANSOES){
+    if(!S.flags[ex.flag] && (S.streak||0) >= ex.streak){
+      S.flags[ex.flag] = true;
+      for(const nl of ex.lotes){ nl._revela = true; S.lotes.push(nl); }
+      noticia(`🏙️ A cidade cresceu: ${ex.nome} aberto para construção! Prosperidade atrai gente — e gente precisa de espaço.`,"boa");
+      sfx("recorde");
+      break;
+    }
+  }
+}
+function drenarFlutuas(){
+  if(!_flutuas.length) return;
+  const fila = _flutuas.splice(0);
+  fila.forEach((f,i)=>{
+    setTimeout(()=>{
+      const idx = S.lotes.findIndex(l=>l.id===f.id);
+      flutuarDe(document.querySelector(`[data-lote="${idx}"]`), f.txt, f.tipo);
+    }, 180*i);
+  });
 }
 
 /* --- painel de ações do lote (bottom sheet) --- */
@@ -1161,11 +1266,28 @@ function renderMedidores(){
     {rot:"Moradia", val:S.moradia+"%", pct:S.moradia, cor:S.moradia<45?"var(--vermelho)":"var(--azul)", oculto:!S.painelEconomico}
   ];
   $("medidores").innerHTML = itens.map(m=>
-    `<div class="medidor${m.oculto?" oculto":""}">
+    `<div class="medidor${m.oculto?" oculto":""}" data-med="${m.rot}">
        <div class="rotulo"><span>${m.rot}</span>${m.delta? `<span class="delta ${m.delta>0?"pos":"neg"}">${m.delta>0?"+":""}${m.delta}</span>`:""}</div>
        <div class="valor">${m.val}</div>
        <div class="barra"><i style="width:${m.pct}%;background:${m.cor}"></i></div>
      </div>`).join("");
+  // números rolando (count-up) — o valor viaja do anterior ao novo
+  window._med = window._med || {};
+  for(const m of itens){
+    const alvo = parseInt(String(m.val).replace(/[^\d-]/g,""),10);
+    const de = window._med[m.rot];
+    window._med[m.rot] = alvo;
+    if(de===undefined || de===alvo || isNaN(alvo)) continue;
+    const el = document.querySelector(`[data-med="${m.rot}"] .valor`);
+    if(!el) continue;
+    const t0 = performance.now(), dur = 550, sufixo = String(m.val).replace(/^[💡\s]*-?\d+/,"");
+    const prefixo = String(m.val).match(/^💡\s*/)? "💡 " : "";
+    (function anima(t){
+      const p = Math.min((t-t0)/dur, 1), e = 1-Math.pow(1-p,3);
+      el.textContent = prefixo + Math.round(de + (alvo-de)*e) + sufixo;
+      if(p<1) requestAnimationFrame(anima);
+    })(t0);
+  }
 }
 
 function renderCidade(){
@@ -1180,14 +1302,22 @@ function renderCidade(){
                 : l.nivel>1 ? "✦".repeat(l.nivel-1)
                 : l.tipo==="vazio" ? "＋" : "";
     const acionavel = !fechado;
-    return `<button type="button" class="predio lote ${l.estado}${fechado?" fechado":""}" data-lote="${i}" ${acionavel?"":"disabled"}
+    const pct = l.estado==="obra" && l.obraTotal ? Math.round((1 - l.obraSemanas/l.obraTotal)*100) : 0;
+    const extras = (l._revela? " revela":"") + (l._inaugura? " inaugura":"");
+    return `<button type="button" class="predio lote ${l.estado}${fechado?" fechado":""}${extras}" data-lote="${i}" ${acionavel?"":"disabled"}
       aria-label="Administrar ${l.nome}">
       <span class="tag">FECHADO</span>
+      ${l.estado==="obra"?`<span class="operario">👷</span><span class="obra-barra" style="width:${pct}%"></span>`:""}
       ${badge?`<span class="lote-badge${l.estado==="ruim"?" ruim":""}">${badge}</span>`:""}
       <div class="fila" style="opacity:${fila?1:0}">🧍🧍🧍🧍</div>
       ${l.emoji}<small>${l.nome}</small></button>`;
   }).join("");
   $("skyline").querySelectorAll("[data-lote]").forEach(b=>b.addEventListener("click",()=>abrirLote(+b.dataset.lote)));
+  // festa de inauguração + reveal de bairro novo (uma vez cada)
+  S.lotes.forEach((l,i)=>{
+    if(l._inaugura){ confetarEm(document.querySelector(`[data-lote="${i}"]`)); sfx("ding"); l._inaugura=false; }
+    if(l._revela){ setTimeout(()=>{ confetarEm(document.querySelector(`[data-lote="${i}"]`)); }, 400); l._revela=false; }
+  });
   const pop = 12400 + Math.round((r-50)*40);
   const fogo = (S.streak||0)>=3 ? ` · 🔥×${S.streak}` : "";
   $("populacao").textContent = `👥 ${pop.toLocaleString("pt-BR")} habitantes · prosperidade real ${r}%${fogo}`;
@@ -1469,7 +1599,7 @@ function reiniciar(){
   renderTudo();
 }
 
-function renderTudo(){ renderMedidores(); renderCidade(); renderNoticias(); if(!S.fim) renderCarta(); else renderFim(); }
+function renderTudo(){ renderMedidores(); renderCidade(); renderNoticias(); if(!S.fim) renderCarta(); else renderFim(); drenarFlutuas(); }
 $("btnReiniciar").addEventListener("click", ()=>{ if(confirm("Recomeçar o mandato do zero?")) reiniciar(); });
 function uiSfx(){ $("btnSfx").textContent = localStorage.getItem("jogo_sfx")==="off" ? "🔇" : "🔊"; }
 $("btnSfx").addEventListener("click", ()=>{
