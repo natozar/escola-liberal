@@ -98,3 +98,48 @@ test.describe('Cidade Livre — subdomínio', () => {
     expect(Number(res.headers()['content-length'] || 0)).toBeGreaterThan(200000);
   });
 });
+
+// ============================================================
+// Administração manual (2026-08-10): tabuleiro de lotes + Vitalício
+// ============================================================
+test.describe('Cidade Livre — tabuleiro de gestão', () => {
+
+  test('a cidade renderiza 8 lotes clicáveis', async ({ page }) => {
+    await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.predio.lote')).toHaveCount(8);
+    await expect(page.locator('.predio.lote', { hasText: 'lote vazio' })).toHaveCount(2);
+  });
+
+  test('tocar num lote abre o painel de ações', async ({ page }) => {
+    await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
+    await page.locator('.predio.lote', { hasText: 'praça' }).click();
+    await expect(page.locator('#loteSheet')).toBeVisible();
+    await expect(page.locator('#loteSheet .opcao').first()).toBeVisible();
+    // fecha tocando fora
+    await page.locator('#loteSheet .ls-pano').click();
+    await expect(page.locator('#loteSheet')).toHaveCount(0);
+  });
+
+  test('a rua começa precisando de manutenção (pressão de gestão)', async ({ page }) => {
+    await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
+    // limpa qualquer save anterior deste contexto e recomeça
+    await page.evaluate(() => { localStorage.removeItem('escola_jogo_cidade_v1'); location.reload(); });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('.predio.lote.ruim')).toHaveCount(1);
+    await page.locator('.predio.lote.ruim').click();
+    await expect(page.locator('#loteSheet .opcao', { hasText: 'equipe de obras' })).toBeVisible();
+  });
+
+  test('Prefeito Vitalício aparece bloqueado para quem não venceu a campanha', async ({ page }) => {
+    await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      localStorage.removeItem('escola_jogo_cidade_v1');
+      localStorage.removeItem('escola_jogo_meta_v1');
+      location.reload();
+    });
+    await page.waitForLoadState('domcontentloaded');
+    const trancado = page.locator('.opcao', { hasText: 'Prefeito Vitalício' });
+    await expect(trancado).toBeVisible();
+    await expect(trancado).toBeDisabled();
+  });
+});
