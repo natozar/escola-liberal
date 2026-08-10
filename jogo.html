@@ -212,6 +212,13 @@
     transition:color .2s, border-color .2s;
   }
   .rodape button:hover{color:var(--tinta); border-color:var(--borda-forte)}
+  /* ---------- suco ---------- */
+  @keyframes tremer{
+    0%,100%{transform:none} 15%{transform:translate(-6px,2px) rotate(-.4deg)}
+    30%{transform:translate(5px,-2px) rotate(.4deg)} 45%{transform:translate(-4px,1px)}
+    60%{transform:translate(3px,-1px)} 75%{transform:translate(-2px,1px)}
+  }
+  #app.shake{animation:tremer .5s var(--ease)}
   @media (prefers-reduced-motion: reduce){ *{animation:none!important; transition:none!important} }
 </style>
 </head>
@@ -234,7 +241,10 @@
 
   <div class="rodape">
     <a href="https://escolaliberal.com.br/app.html">← Escola Liberal</a>
-    <button id="btnReiniciar" type="button">Recomeçar</button>
+    <span>
+      <button id="btnSfx" type="button" aria-label="Som"></button>
+      <button id="btnReiniciar" type="button">Recomeçar</button>
+    </span>
   </div>
 </div>
 
@@ -271,13 +281,31 @@
    ============================================================ */
 
 const SAVE_KEY = "escola_jogo_cidade_v1";
+const META_KEY = "escola_jogo_meta_v1";
 
 /* PRNG determinística (mulberry32) — pronta p/ duelos por seed */
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 
+/* ---------- meta-progressão (persiste entre partidas) ---------- */
+function carregarMeta(){
+  try{ const m = JSON.parse(localStorage.getItem(META_KEY)||'{}');
+       return {campanhaVencida:false, melhorScore:0, runs:0, ...m}; }
+  catch(e){ return {campanhaVencida:false, melhorScore:0, runs:0}; }
+}
+let META = carregarMeta();
+function salvarMeta(){ try{ localStorage.setItem(META_KEY, JSON.stringify(META)); }catch(e){} }
+
+/* seed da semana: todo mundo joga a mesma cidade — ranking comparável */
+function seedDaSemana(){
+  const agora = new Date();
+  const jan1 = new Date(agora.getFullYear(),0,1);
+  const semanaISO = Math.ceil((((agora-jan1)/864e5)+jan1.getDay()+1)/7);
+  return agora.getFullYear()*100 + semanaISO;
+}
+
 function estadoInicial(){
   return {
-    seed: 20260808,
+    seed: 20260808, modo: "campanha",
     semana: 1, mandato: 1,
     aprovacao: 55, caixa: 100, escolaridade: 20,
     moradia: 70, abastecimento: 80, produtividade: 60,
@@ -286,10 +314,51 @@ function estadoInicial(){
     flags: {}, agendados: [], noticias: [],
     jogadas: [], criseDisparada: false, criseResolvida: false,
     caiuNaTentacao: false, fim: null,
-    ultimoDelta: {}
+    ultimoDelta: {}, streak: 0, semanasAprovBaixa: 0,
+    vistas: [], aulasDadas: []
   };
 }
+function iniciarVitalicio(){
+  S = estadoInicial();
+  S.modo = "vitalicio";
+  S.seed = seedDaSemana();
+  S.flags.viuCapa = true;
+  S._rng = null; // recriada por rngRun()
+  META.runs++; salvarMeta();
+  noticia("Cidade da Semana #"+S.seed+". Governe até caírem as máscaras — ou você.","");
+  salvar(); renderTudo();
+}
+function rngRun(){
+  // determinística por seed+semana: mesma cidade da semana pra todo mundo
+  return mulberry32(S.seed*7919 + S.semana*104729);
+}
 let S = carregar() || estadoInicial();
+
+/* ---------- suco: som sintetizado + tremida de tela ---------- */
+let _audio = null;
+function sfx(tipo){
+  try{
+    if(localStorage.getItem("jogo_sfx")==="off") return;
+    _audio = _audio || new (window.AudioContext||window.webkitAudioContext)();
+    const notas = { click:[[520,.05]], ding:[[660,.09],[880,.12]], crise:[[196,.18],[147,.22]],
+                    gameover:[[220,.15],[165,.2],[110,.3]], recorde:[[523,.1],[659,.1],[784,.1],[1047,.2]] };
+    let t = _audio.currentTime;
+    for(const [freq,dur] of (notas[tipo]||notas.click)){
+      const o = _audio.createOscillator(), g = _audio.createGain();
+      o.type = tipo==="crise"||tipo==="gameover" ? "sawtooth" : "sine";
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(.12, t); g.gain.exponentialRampToValueAtTime(.001, t+dur);
+      o.connect(g); g.connect(_audio.destination);
+      o.start(t); o.stop(t+dur); t += dur*.9;
+    }
+  }catch(e){}
+}
+function doShake(){
+  const app = document.getElementById("app");
+  if(!app) return;
+  app.classList.remove("shake"); void app.offsetWidth; app.classList.add("shake");
+  if(navigator.vibrate) navigator.vibrate([60,40,60]);
+}
 
 /* ---------- helpers ---------- */
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
@@ -338,11 +407,20 @@ function passarSemana(){
   // gatilho de crise
   if(!S.criseDisparada && (S.abastecimento<55 || S.moradia<55)){
     S.criseDisparada = true;
+    doShake(); sfx("crise");
     if(!S.imprensaLivre){ S.aprovacao = clamp(S.aprovacao-18,0,100); noticia("A verdade vazou: ninguém mais acredita no Diário Oficial. Confiança desabou.","ruim"); }
   }
   // gatilho da crise fiscal do 2º mandato
-  if(S.mandato>=2 && !S.flags.crise2Disparada && (S.caixa<0 || S.produtividade<48)){
+  if(S.modo==="campanha" && S.mandato>=2 && !S.flags.crise2Disparada && (S.caixa<0 || S.produtividade<48)){
     S.flags.crise2Disparada = true;
+  }
+  // streak de prosperidade (suco: 🔥 semanas seguidas de cidade saudável)
+  S.streak = realidade(S)>=60 ? (S.streak||0)+1 : 0;
+  // VITALÍCIO: condições de queda
+  if(S.modo==="vitalicio" && !S.fim){
+    S.semanasAprovBaixa = S.aprovacao<15 ? (S.semanasAprovBaixa||0)+1 : 0;
+    if(S.semanasAprovBaixa>=2){ doShake(); sfx("gameover"); gameOverVitalicio("impeachment"); return; }
+    if(S.caixa<-80){ doShake(); sfx("gameover"); gameOverVitalicio("falencia"); return; }
   }
 }
 
@@ -671,6 +749,160 @@ const DECK = [
 ];
 
 /* ============================================================
+   MODO PREFEITO VITALÍCIO — deck procedural
+   Templates sorteados por seed semanal; magnitudes escalam com o
+   tempo e variam ±20% por sorteio. Toda run é diferente.
+   ============================================================ */
+const DECKV = [
+// --- tentações do Prometedor (sedutoras; a conta vem depois) ---
+{id:"v-gasolina", quem:"O Prometedor", tipo:"prometedor", titulo:"“Subsidie a gasolina!”",
+ texto:"“Metade do preço na bomba, prefeitura paga a diferença. Motorista feliz é eleitor feliz!”",
+ op:[{r:"Subsidiar", c:"−25 do caixa por semana de festa", ef:{aprovBase:13, caixa:-25}, ag:[{em:4, ef:{caixa:-25}, msg:"O subsídio virou conta fixa: todo mundo abastece aqui — inclusive as cidades vizinhas.", tom:"ruim"}]},
+    {r:"Recusar", c:"Buzinaço na porta", ef:{aprovacao:-6}}]},
+{id:"v-tarifa-zero", quem:"O Prometedor", tipo:"prometedor", titulo:"“Ônibus de graça!”",
+ texto:"“Tarifa ZERO! Transporte é direito — a prefeitura banca. Quem é contra o povo andar?”",
+ op:[{r:"Tarifa zero", c:"−30 do caixa · lotação imediata", ef:{aprovBase:14, caixa:-30}, ag:[{em:5, ef:{produtividade:-8, caixa:-15}, msg:"Frota sucateando sem receita: menos ônibus rodando, mais gente esperando.", tom:"ruim"}]},
+    {r:"Manter tarifa com melhoria", c:"−10 do caixa em frota", ef:{aprovacao:-4, caixa:-10}, ag:[{em:5, ef:{produtividade:5}, msg:"Dois ônibus novos na linha do distrito industrial.", tom:"boa"}]}]},
+{id:"v-13-prefeitura", quem:"O Prometedor", tipo:"prometedor", titulo:"“14º salário municipal!”",
+ texto:"“Os servidores merecem! Um 14º salário — e a gratidão de todo o funcionalismo na eleição.”",
+ op:[{r:"Conceder o 14º", c:"−35 do caixa · aplauso garantido", ef:{aprovBase:10, caixa:-35}, ag:[{em:6, ef:{caixa:-35}, msg:"Direito adquirido: o 14º agora é permanente. A folha comeu o orçamento de obras.", tom:"ruim"}]},
+    {r:"Negar", c:"Greve de advertência", ef:{aprovacao:-7, produtividade:-3}}]},
+{id:"v-aluguel-social", quem:"O Prometedor", tipo:"prometedor", titulo:"“Aluguel social pra todos!”",
+ texto:"“A prefeitura paga o aluguel de quem precisa. E quem decide quem precisa? Nós, ora.”",
+ op:[{r:"Criar o programa", c:"−28 do caixa · filas de cadastro", ef:{aprovBase:12, caixa:-28}, ag:[{em:5, ef:{corrupcao:7, moradia:-6}, msg:"Denúncia: cabos eleitorais furando a fila do aluguel social. Aluguéis da cidade subiram — o programa virou piso.", tom:"ruim"}]},
+    {r:"Recusar e desburocratizar construção", c:"Vaia hoje, teto amanhã", ef:{aprovacao:-6}, ag:[{em:6, ef:{moradia:9}, msg:"Alvará simplificado: três loteamentos novos aprovados.", tom:"boa"}]}]},
+{id:"v-moeda-social", quem:"O Prometedor", tipo:"prometedor", titulo:"“A moeda da cidade!”",
+ texto:"“Lance a nossa moeda social! Circula só aqui, valoriza o comércio local. Dinheiro nosso!”",
+ op:[{r:"Lançar a moeda", c:"+20 no caixa… de papel", ef:{aprovBase:9, caixa:20}, ag:[{em:5, ef:{abastecimento:-9, caixa:-25}, msg:"Comerciantes cobram ágio pra aceitar a moedinha. O papel volta pra prefeitura pelo dobro.", tom:"ruim"}]},
+    {r:"Recusar", c:"“Prefeito sem visão!”", ef:{aprovacao:-5}}]},
+{id:"v-estatal-internet", quem:"O Prometedor", tipo:"prometedor", titulo:"“Internet estatal grátis!”",
+ texto:"“Provedor municipal, de graça! Por que pagar a empresas gananciosas pelo que é essencial?”",
+ op:[{r:"Criar o provedor", c:"−40 do caixa · manchete nacional", ef:{aprovBase:12, caixa:-40}, ag:[{em:6, ef:{produtividade:-6, caixa:-20}, msg:"Rede municipal cai toda semana; os provedores privados foram embora. Agora só tem a que não funciona.", tom:"ruim"}]},
+    {r:"Leiloar postes pra concorrência", c:"+12 no caixa", ef:{caixa:12, aprovacao:-3}, ag:[{em:5, ef:{produtividade:6}, msg:"Três operadoras brigando por cliente: preço caiu sozinho.", tom:"boa"}]}]},
+{id:"v-feriado", quem:"O Prometedor", tipo:"prometedor", titulo:"“Feriadão municipal!”",
+ texto:"“Decrete emenda de cinco dias! Povo descansado vota feliz.”",
+ op:[{r:"Decretar o feriadão", c:"A cidade para", ef:{aprovBase:8}, ag:[{em:2, ef:{produtividade:-7, caixa:-10}, msg:"Cinco dias parados: a fábrica atrasou entregas e o comércio perdeu a semana.", tom:"ruim"}]},
+    {r:"Ponto facultativo só na sexta", c:"Meio-termo sem graça", ef:{aprovacao:-2}}]},
+{id:"v-heranca", quem:"O Prometedor", tipo:"prometedor", titulo:"“Taxa dos ricos mortos!”",
+ texto:"“Imposto municipal sobre heranças grandes! Ninguém sente falta do que nunca teve.”",
+ op:[{r:"Criar a taxa", c:"+18 no caixa · justiça de palanque", ef:{aprovBase:9, caixa:18}, ag:[{em:6, ef:{produtividade:-8, caixa:-12}, msg:"As três maiores famílias empresárias mudaram domicílio fiscal. Levaram as empresas junto.", tom:"ruim"}]},
+    {r:"Recusar", c:"“Defensor de herdeiro!”", ef:{aprovacao:-5}}]},
+// --- dilemas de governo (trade-offs honestos) ---
+{id:"v-ponte", quem:"Prefeitura", titulo:"A ponte do distrito",
+ texto:"A ponte que liga o distrito rural está condenada. Interditar é seguro e impopular; reformar é caro; adiar é rezar.",
+ op:[{r:"Reformar já", c:"−30 do caixa", ef:{caixa:-30, aprovacao:3}, ag:[{em:5, ef:{produtividade:7}, msg:"Ponte nova: o leite do distrito chega em metade do tempo.", tom:"boa"}]},
+    {r:"Interditar e adiar", c:"O distrito ferve", ef:{aprovacao:-8}, ag:[{em:4, ef:{produtividade:-6}, msg:"Produção rural apodrecendo na estrada longa. O distrito fala em emancipação.", tom:"ruim"}]}]},
+{id:"v-iluminacao", quem:"Prefeitura", titulo:"Escuridão na periferia",
+ texto:"Os bairros novos não têm iluminação. A empreiteira amiga cobra caro; a licitação séria demora.",
+ op:[{r:"Licitação séria", c:"3 semanas no escuro ainda", ef:{aprovacao:-3}, ag:[{em:3, ef:{aprovacao:6, caixa:-12}, msg:"Iluminação entregue por 60% do preço da 'amiga'. A economia virou creche.", tom:"boa"}]},
+    {r:"Contratar a conhecida", c:"Rápido e caro", ef:{caixa:-25, aprovacao:4}, ag:[{em:5, ef:{corrupcao:6}, msg:"TCE questiona o contrato da iluminação: sobrepreço de 40%.", tom:"ruim"}]}]},
+{id:"v-ambulantes", quem:"Prefeitura", titulo:"Os ambulantes do centro",
+ texto:"Lojistas exigem remoção dos ambulantes; os ambulantes só querem trabalhar. A câmera da cidade está ligada.",
+ op:[{r:"Cadastro simples e áreas livres", c:"Lojistas torcem o nariz", ef:{aprovacao:-2}, ag:[{em:4, ef:{produtividade:6, caixa:8}, msg:"Ambulantes cadastrados viraram MEIs. Dois já alugaram loja.", tom:"boa"}]},
+    {r:"Operação de remoção", c:"Ordem nas ruas, revolta nas redes", ef:{aprovacao:-6, produtividade:-4}}]},
+{id:"v-escola-noturna", quem:"Prefeitura", titulo:"A escola à noite",
+ texto:"Adultos que não terminaram os estudos pedem turmas noturnas. Custa pouco, não rende manchete, demora a aparecer.",
+ op:[{r:"Abrir as turmas", c:"−12 do caixa · retorno lento", ef:{caixa:-12}, ag:[{em:7, ef:{escolaridade:8}, msg:"Primeira turma noturna formada: 40 adultos alfabetizados em contas.", tom:"boa"}]},
+    {r:"Deixar pra depois", c:"Ninguém cobra", ef:{}}]},
+{id:"v-hospital-fila", quem:"Prefeitura", titulo:"A fila do postinho",
+ texto:"A fila da saúde dobrou. O vereador quer contratar 20 parentes— digo, atendentes. O consultor sugere mutirão com clínicas privadas.",
+ op:[{r:"Mutirão com clínicas credenciadas", c:"−18 do caixa · 'privatista!'", ef:{caixa:-18, aprovacao:-2}, ag:[{em:3, ef:{aprovacao:8}, msg:"Fila zerada em três semanas. Custou menos que a folha dos 20.", tom:"boa"}]},
+    {r:"Contratar os indicados", c:"−15 do caixa · a Câmara sorri", ef:{caixa:-15, aprovBase:5}, ag:[{em:5, ef:{corrupcao:6, caixa:-10}, msg:"Dos 20 contratados, 6 nunca apareceram. A fila continua.", tom:"ruim"}]}]},
+{id:"v-radar", quem:"Prefeitura", titulo:"A indústria da multa",
+ texto:"A empresa de radares oferece: instala de graça e divide as multas. O caixa agradece; o motorista, não.",
+ op:[{r:"Aceitar a parceria", c:"+15 no caixa por semana de chuva de multas", ef:{caixa:15, aprovacao:-6}, ag:[{em:4, ef:{aprovacao:-8}, msg:"Radar escondido na descida: a cidade inteira multada. 'Indústria!', grita a rádio.", tom:"ruim"}]},
+    {r:"Só radar educativo em escola", c:"Menos caixa, mais bom senso", ef:{}, ag:[{em:3, ef:{aprovacao:4}, msg:"Velocidade caiu na porta das escolas sem revolta.", tom:"boa"}]}]},
+{id:"v-terreno-fabrica", quem:"Prefeitura", titulo:"A fábrica quer vir",
+ texto:"Uma fábrica de médio porte quer se instalar. Pede terreno municipal e agilidade — outras cidades ofereceram isenção total.",
+ op:[{r:"Ceder terreno + alvará em 48h", c:"Terreno público investido", ef:{aprovacao:2}, ag:[{em:6, ef:{produtividade:10, caixa:12}, msg:"Fábrica inaugurada: 120 empregos diretos. O terreno vazio virou salário.", tom:"boa"}]},
+    {r:"Exigir o preço cheio", c:"Princípios têm custo", ef:{}, ag:[{em:4, ef:{}, msg:"A fábrica foi pra cidade vizinha. O terreno segue criando mato.", tom:"ruim"}]}]},
+{id:"v-carnaval", quem:"Prefeitura", titulo:"O carnaval fora de época",
+ texto:"A produtora propõe um festival: prefeitura banca metade, 'retorno garantido em imagem'.",
+ op:[{r:"Bancar o festival", c:"−22 do caixa · palco e confete", ef:{caixa:-22, aprovBase:8}, ag:[{em:3, ef:{caixa:6, produtividade:2}, msg:"Hotéis cheios no fim de semana — e a conta da limpeza na segunda.", tom:""}]},
+    {r:"Só apoio logístico", c:"Festa menor, conta menor", ef:{aprovacao:-2, caixa:-5}}]},
+// --- imprensa e escândalos ---
+{id:"v-vazamento", quem:"O jornal", titulo:"O dossiê vazado",
+ texto:"Um servidor vazou planilhas de diárias suspeitas da sua equipe. O jornal te dá 24h para responder antes de publicar.",
+ op:[{r:"Abrir tudo e demitir os envolvidos", c:"Dói uma semana", ef:{aprovacao:-6, corrupcao:-8}, ag:[{em:3, ef:{aprovacao:8}, msg:"'Prefeito corta a própria carne': a manchete que valeu um mandato.", tom:"boa"}]},
+    {r:"Abafar com anúncio publicitário", c:"−15 do caixa · a matéria 'atrasa'", ef:{caixa:-15, corrupcao:5}, ag:[{em:5, ef:{aprovacao:-12}, msg:"O dossiê saiu num portal de fora — dobrado de tamanho e com a sua digital no abafa.", tom:"ruim"}]}]},
+{id:"v-fake", quem:"A cidade", titulo:"A corrente do zap",
+ texto:"Uma montagem grosseira sobre você viralizou. Metade da cidade acredita; a outra metade compartilha mesmo assim.",
+ op:[{r:"Responder com dados, com calma", c:"Verdade é lenta", ef:{aprovacao:-4}, ag:[{em:3, ef:{aprovacao:6}, msg:"A checagem circulou. Menos gente caiu na próxima montagem — escola invisível.", tom:"boa"}]},
+    {r:"Processar e gritar 'censura neles'", c:"Vira o assunto da semana", ef:{aprovBase:3}, ag:[{em:3, ef:{aprovacao:-6}, msg:"O processo deu holofote à mentira. Agora tem até camiseta.", tom:"ruim"}]}]},
+// --- oportunidades raras ---
+{id:"v-doacao", quem:"A cidade", titulo:"O filho ilustre",
+ texto:"Um empresário nascido aqui quer doar uma biblioteca — com o nome da mãe dele e gestão por instituto próprio, sem a prefeitura.",
+ op:[{r:"Aceitar como está", c:"Você não põe a mão — nem o nome", ef:{escolaridade:6, aprovacao:3}},
+    {r:"Exigir gestão municipal", c:"Controle é controle", ef:{}, ag:[{em:2, ef:{}, msg:"O empresário desistiu: 'não doo para prateleira de político'. A biblioteca foi pra outra cidade.", tom:"ruim"}]}]},
+{id:"v-cooperativa", quem:"A cidade", titulo:"A cooperativa do distrito",
+ texto:"Produtores rurais montaram uma cooperativa e pedem só uma coisa: que a prefeitura NÃO atrapalhe.",
+ op:[{r:"Não atrapalhar (e simplificar notas)", c:"Governar é também sair da frente", ef:{}, ag:[{em:5, ef:{produtividade:8, abastecimento:6}, msg:"A cooperativa dobrou a produção. Ninguém da prefeitura cortou fita — e foi melhor assim.", tom:"boa"}]},
+    {r:"Criar a Secretaria do Cooperativismo", c:"−12 do caixa · três cargos novos", ef:{caixa:-12, aprovBase:4}, ag:[{em:5, ef:{produtividade:-3}, msg:"A cooperativa agora preenche 11 formulários da secretaria que veio 'ajudar'.", tom:"ruim"}]}]}
+];
+
+/* eventos externos — sem escolha; reagem ao estado da cidade */
+const EVENTOSV = [
+{id:"e-seca", teste:s=>true, titulo:"A seca", texto:"Dois meses sem chuva. O açude baixou, o preço do alimento subiu no atacado — em toda a região.",
+ ef:{abastecimento:-10}, tom:"ruim"},
+{id:"e-boom", teste:s=>s.produtividade>=55, titulo:"O boom da safra", texto:"Safra recorde na região. Caminhões saindo o dia inteiro, contratação em alta.",
+ ef:{caixa:15, produtividade:5}, tom:"boa"},
+{id:"e-enchente", teste:s=>true, titulo:"A enchente", texto:"Chuva de uma semana em uma tarde. O bairro baixo alagou — de novo.",
+ ef:{caixa:-15, aprovacao:-5, moradia:-5}, tom:"ruim"},
+{id:"e-escandalo-regional", teste:s=>s.corrupcao>=25, titulo:"A operação da polícia", texto:"Operação regional contra desvios chegou ao seu quintal: dois secretários levados para depor.",
+ ef:{aprovacao:-10}, tom:"ruim"},
+{id:"e-migracao", teste:s=>s.produtividade>=60, titulo:"Os que chegam", texto:"A cidade vizinha afundou em tabelamentos. Os empreendedores de lá estão abrindo loja aqui.",
+ ef:{produtividade:6, moradia:-4}, tom:"boa"},
+{id:"e-onda-calor", teste:s=>true, titulo:"A onda de calor", texto:"Uma semana de 40 graus. Energia no limite, ânimos idem.",
+ ef:{produtividade:-4, aprovacao:-3}, tom:"ruim"}
+];
+
+/* materializa uma carta: escala magnitudes pela dificuldade e variância da seed */
+const CHAVES_ESCALA = ["aprovBase","aprovacao","caixa","abastecimento","moradia","produtividade","corrupcao","escolaridade"];
+function matEf(ef, fator){
+  if(!ef) return ef;
+  const o = {};
+  for(const k in ef) o[k] = (typeof ef[k]==="number" && CHAVES_ESCALA.includes(k)) ? Math.round(ef[k]*fator) || (ef[k]>0?1:-1) : ef[k];
+  return o;
+}
+function sortearCartaV(){
+  const rnd = rngRun();
+  const esc = 1 + Math.min(S.semana*0.012, 0.6);           // dificuldade sobe com o tempo
+  // evento externo ~22% das semanas (a partir da semana 4)
+  if(S.semana>3 && rnd()<0.22){
+    const aptos = EVENTOSV.filter(e=>e.teste(S) && !S.vistas.slice(-6).includes(e.id));
+    if(aptos.length){
+      const e = aptos[Math.floor(rnd()*aptos.length)];
+      S.vistas.push(e.id);
+      return { id:e.id, tipo: e.tom==="ruim"?"crise":"filler", quem:"A cidade", titulo:e.titulo, texto:e.texto,
+        opcoes:[{rotulo:"Atravessar a semana", custo:"", ef:matEf(e.ef, esc), news:[e.texto, e.tom]}] };
+    }
+  }
+  const aptas = DECKV.filter(c=>!S.vistas.slice(-10).includes(c.id));
+  const t = aptas.length? aptas[Math.floor(rnd()*aptas.length)] : DECKV[Math.floor(rnd()*DECKV.length)];
+  S.vistas.push(t.id);
+  const fator = esc * (0.8 + rnd()*0.4);
+  return {
+    id:t.id, tipo:t.tipo, quem:t.quem, titulo:t.titulo, texto:t.texto, momento:t.momento,
+    opcoes: t.op.map(o=>({ rotulo:o.r, custo:o.c||"", ef:matEf(o.ef, fator), lucidez:o.lucidez,
+      ag:(o.ag||[]).map(a=>({em:a.em, ef:matEf(a.ef, fator), msg:a.msg, tom:a.tom})) }))
+  };
+}
+function gameOverVitalicio(causa){
+  const score = S.semana - 1;
+  const novoRecorde = score > (META.melhorScore||0);
+  if(novoRecorde) META.melhorScore = score;
+  salvarMeta();
+  const causas = {
+    impeachment: "A Câmara abriu o processo com a praça cheia. Aprovação no chão não paga a conta de ninguém — nem a sua.",
+    falencia: "A cidade quebrou. Fornecedor não entrega, servidor não recebe, e a caneta que assinava mágica ficou sem tinta.",
+    urnas: "As urnas falaram. O Prometedor assume na segunda-feira — e a cidade que você segurou por " + score + " semanas agora é o laboratório dele."
+  };
+  S.fim = { modo:"vitalicio", causa, score, novoRecorde, recorde: META.melhorScore,
+            desc: causas[causa]||"", r: realidade(S) };
+  salvar(); renderTudo();
+}
+
+/* ============================================================
    AULA — "Por que Controle de Preços Falha" (módulo real: supply)
    Resumo destilado; no app real abre o módulo completo offline.
    ============================================================ */
@@ -779,8 +1011,9 @@ function renderCidade(){
       ${p.emoji}<small>${p.nome}</small></div>`;
   }).join("");
   const pop = 12400 + Math.round((r-50)*40);
-  $("populacao").textContent = `👥 ${pop.toLocaleString("pt-BR")} habitantes · prosperidade real ${r}%` ;
-  $("semana").textContent = `Semana ${S.semana} do mandato`;
+  const fogo = (S.streak||0)>=3 ? ` · 🔥×${S.streak}` : "";
+  $("populacao").textContent = `👥 ${pop.toLocaleString("pt-BR")} habitantes · prosperidade real ${r}%${fogo}`;
+  $("semana").textContent = S.modo==="vitalicio" ? `Semana ${S.semana} · Cidade #${S.seed}` : `Semana ${S.semana} do mandato`;
 }
 
 function renderNoticias(){
@@ -797,9 +1030,27 @@ function cartaAtual(){
   if(!S.flags.viuCapa) return {
     id:"capa", tipo:"filler", quem:"Cidade Livre", titulo:"A cidade é sua",
     momento:{img:"vitoria.jpg", emoji:"🏛️", legenda:"Rua Principal, 6h50 da manhã do seu primeiro dia de mandato."},
-    texto:"Você acaba de assumir a prefeitura. A cidade funciona, o comércio abre cedo, a obra avança. Cada decisão sua vai deixar isso melhor — ou pior. E ninguém vai te contar qual foi o momento exato em que tudo mudou.",
-    opcoes:[{rotulo:"Assumir o mandato", custo:"", ef:{}, aoEscolher:s=>{s.flags.viuCapa=true}, destaque:true}]
+    texto: META.campanhaVencida
+      ? "Você já provou que sabe governar. A campanha te ensinou as engrenagens — o Vitalício testa até quando você aguenta: cartas sorteadas, dificuldade crescente, e três jeitos de cair. A Cidade da Semana é a mesma para todos os prefeitos do Brasil."
+      : "Você acaba de assumir a prefeitura. A cidade funciona, o comércio abre cedo, a obra avança. Cada decisão sua vai deixar isso melhor — ou pior. E ninguém vai te contar qual foi o momento exato em que tudo mudou.",
+    opcoes: META.campanhaVencida ? [
+      {rotulo:"🏛️ Prefeito Vitalício — a Cidade da Semana", custo:`Sobreviva o máximo · recorde: ${META.melhorScore||0} semanas`, ef:{}, aoEscolher:()=>{}, vitalicio:true, destaque:true},
+      {rotulo:"Rejogar a campanha", custo:"A história completa, do primeiro dia ao legado", ef:{}, aoEscolher:s=>{s.flags.viuCapa=true}}
+    ] : [
+      {rotulo:"Assumir o mandato", custo:"", ef:{}, aoEscolher:s=>{s.flags.viuCapa=true}, destaque:true},
+      {rotulo:"🔒 Prefeito Vitalício", custo:"Vença a campanha para destravar o modo infinito", ef:{}, bloqueada:true}
+    ]
   };
+  // VITALÍCIO: eleição a cada 14 semanas; senão, carta sorteada do deck procedural
+  if(S.modo==="vitalicio"){
+    if(S.criseDisparada && !S.flags.criseVista) return DECK.find(c=>c.id==="a1-11");
+    if(S.semana>1 && S.semana%14===0 && !S.flags["elei_"+S.semana]) return {
+      id:"elei-v"+S.semana, tipo:"eleicao", quem:"A cidade", titulo:"Eleição — mandato "+(Math.floor(S.semana/14)+1),
+      texto:"As urnas de novo. A cada mandato o palanque do Prometedor cresce — e a memória da cidade encurta.",
+      opcoes:[{rotulo:"Aguardar a apuração", custo:"", ef:{}, eleicao:true, destaque:true}]
+    };
+    return sortearCartaV();
+  }
   // cartas de crise são dinâmicas: entram na frente do deck assim que o gatilho dispara
   if(S.criseDisparada && !S.flags.criseVista) return DECK.find(c=>c.id==="a1-11");
   if(S.flags.crise2Disparada && !S.flags.crise2Vista) return DECK.find(c=>c.id==="m2-crise");
@@ -852,7 +1103,8 @@ function renderCarta(){
     <p>${c.texto}</p>
     <div class="opcoes">${ops.map((o,i)=>{
       const semLucidez = o.lucidez && S.lucidez < o.lucidez;
-      return `<button class="opcao${o.destaque?" destaque":""}" data-i="${i}" ${semLucidez?"disabled":""}>
+      const inativo = semLucidez || o.bloqueada;
+      return `<button class="opcao${o.destaque?" destaque":""}" data-i="${i}" ${inativo?"disabled":""}>
         ${o.rotulo}${o.custo?`<span class="custo">${o.custo}${semLucidez?" · você ainda não tem Lucidez suficiente":""}</span>`:""}
       </button>`;}).join("")}
     </div>`;
@@ -866,6 +1118,9 @@ function escolher(carta, op){
   if(op.news) noticia(op.news[0], op.news[1]);
   if(op.aoEscolher) op.aoEscolher(S);
   if(carta.tipo==="prometedor" && (op.ef&&op.ef.aprovBase)) S.caiuNaTentacao = true;
+  if(op.bloqueada) return;
+  if(op.vitalicio){ iniciarVitalicio(); return; }
+  sfx("click");
   if(carta.tipo==="crise") S.flags[carta.marcaVista||"criseVista"] = true;
   if(op.fimLegado){ fecharLegado(); return; }
   if(op.eleicao){ apurarEleicao(); return; }
@@ -917,6 +1172,7 @@ function concluirAula(acertos, AULA){
   } else {
     noticia(`Mais uma engrenagem exposta. +${ganho} de Lucidez.`,"boa");
   }
+  sfx("ding");
   xpApp(40, "xpAula_"+S.aulaAtual);
   passarSemana();
   salvar();
@@ -928,6 +1184,14 @@ function apurarEleicao(){
   const r = realidade(S);
   const score = S.imprensaLivre ? Math.round(S.aprovacao*0.55 + r*0.45) : S.aprovacao;
   const venceu = score >= 50;
+  if(S.modo==="vitalicio"){
+    if(!venceu){ gameOverVitalicio("urnas"); return; }
+    S.flags["elei_"+S.semana] = true;
+    S.mandato++;
+    sfx("ding");
+    noticia(`Reeleito com ${score}% — mandato ${S.mandato}. O Prometedor anotou cada fraqueza sua.`,"boa");
+    passarSemana(); salvar(); renderTudo(); return;
+  }
   // vitória no 1º mandato: o jogo continua — a posse do 2º vem com as contas do 1º
   if(venceu && S.mandato === 1){
     S.mandato = 2;
@@ -964,6 +1228,7 @@ function fecharLegado(){
   const f = S.seloFinal || {selo:"Dois Mandatos", desc:"", score:0, r:realidade(S)};
   const legados = ["leg_escola","leg_imprensa","leg_contas","leg_concessao","leg_lei"].filter(k=>S.flags[k]);
   xpApp(50, "xpLegado");
+  if(!META.campanhaVencida){ META.campanhaVencida = true; salvarMeta(); }
   S.fim = {venceu:true, selo:f.selo, desc:f.desc, score:f.score, r:realidade(S), mandato:2, legados};
   salvar();
   renderTudo();
@@ -971,6 +1236,26 @@ function fecharLegado(){
 function renderFim(){
   const f = S.fim || {venceu:false, selo:"Fim do protótipo", desc:"", score:0, r:realidade(S)};
   const el = $("carta");
+  if(f.modo==="vitalicio"){
+    el.className = "carta crise";
+    const zap = encodeURIComponent(`🏛️ Sobrevivi ${f.score} semanas como prefeito na Cidade da Semana #${S.seed} do Cidade Livre${f.novoRecorde?" — RECORDE novo":""}. Aguenta mais que eu? https://jogo.escolaliberal.com.br`);
+    el.innerHTML = `
+      <div class="quem">Fim de governo · ${f.causa==="urnas"?"derrota nas urnas":f.causa==="falencia"?"colapso fiscal":"impeachment"}</div>
+      <h2>Você caiu na semana ${f.score+1}.</h2>
+      ${momentoHtml({img:"derrota.jpg", emoji:"🏛️", legenda:"Toda queda tem uma lição. A próxima run começa mais sábia."})}
+      <p>${f.desc}</p>
+      <div class="selo"><div class="nome">${f.score} semanas no poder</div>
+        <div class="desc">${f.novoRecorde? "🏆 NOVO RECORDE" : `Recorde: ${f.recorde} semanas`} · prosperidade final ${f.r}%</div></div>
+      <div class="opcoes">
+        <a class="opcao destaque" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://wa.me/?text=${zap}">Desafiar um amigo no WhatsApp</a>
+        <button class="opcao" id="btnRunDeNovo" type="button">Tentar de novo — mesma Cidade da Semana</button>
+        <button class="opcao" id="btnVoltarCampanha" type="button">Voltar à campanha</button>
+      </div>`;
+    if(f.novoRecorde) sfx("recorde");
+    $("btnRunDeNovo").addEventListener("click", iniciarVitalicio);
+    $("btnVoltarCampanha").addEventListener("click", reiniciar);
+    return;
+  }
   el.className = "carta " + (f.venceu?"":"crise");
   el.innerHTML = `
     <div class="quem">Apuração encerrada</div>
@@ -1008,6 +1293,13 @@ function reiniciar(){
 
 function renderTudo(){ renderMedidores(); renderCidade(); renderNoticias(); if(!S.fim) renderCarta(); else renderFim(); }
 $("btnReiniciar").addEventListener("click", ()=>{ if(confirm("Recomeçar o mandato do zero?")) reiniciar(); });
+function uiSfx(){ $("btnSfx").textContent = localStorage.getItem("jogo_sfx")==="off" ? "🔇" : "🔊"; }
+$("btnSfx").addEventListener("click", ()=>{
+  const off = localStorage.getItem("jogo_sfx")==="off";
+  localStorage.setItem("jogo_sfx", off ? "on" : "off");
+  uiSfx(); if(off) sfx("ding");
+});
+uiSfx();
 
 if(S.noticias.length===0) noticia("Primeiro dia de mandato. A cidade te observa.","");
 renderTudo();
