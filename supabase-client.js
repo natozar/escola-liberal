@@ -16,6 +16,31 @@ let syncEnabled = false;
 let syncQueue = [];
 let syncTimer = null;
 
+// Fila persistida: sobrevive a fechar aba / recarregar / travar offline.
+// Mesmo padrao usado em src/core/error-reporter.js (escola_error_queue).
+const SYNC_QUEUE_KEY = 'escola_sync_queue';
+
+function persistSyncQueue() {
+  try {
+    if (syncQueue.length) localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(syncQueue));
+    else localStorage.removeItem(SYNC_QUEUE_KEY);
+  } catch (e) { /* iOS private mode / quota — fila segue em memoria */ }
+}
+
+function restoreSyncQueue() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY) || '[]');
+    if (!Array.isArray(saved) || !saved.length) return;
+    // Descarta itens com mais de 30 dias (dado velho nao vale conflito)
+    const cutoff = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const fresh = saved.filter(q => q && q.type && (q.ts || 0) > cutoff);
+    // Itens ja em memoria tem prioridade sobre os restaurados
+    const types = new Set(syncQueue.map(q => q.type));
+    syncQueue = syncQueue.concat(fresh.filter(q => !types.has(q.type)));
+    console.log('[Sync] Fila restaurada:', fresh.length, 'item(ns)');
+  } catch (e) { /* JSON corrompido — ignora */ }
+}
+
 function initSupabase() {
   if (window.OFFLINE_MODE) {
     console.log('[Supabase] OFFLINE_MODE ativo — Supabase desligado');
@@ -155,6 +180,10 @@ async function onSignIn(user) {
     console.log('[Supabase] onSignIn em auth.html — ignorando (auth.html tem redirect proprio)');
     return;
   }
+  // Recupera o que ficou preso de sessoes anteriores (offline, aba fechada, crash)
+  restoreSyncQueue();
+  if (syncQueue.length) setTimeout(flushSyncQueue, 4000);
+
   // Salvar uid e dados do perfil Google/email no estado local
   if (typeof S !== 'undefined') {
     S.uid = user.id;
@@ -545,24 +574,41 @@ async function syncTimelineFromCloud() {
 // ========== SYNC DEBOUNCED (para save() hooks) ==========
 // Chamado toda vez que save() roda no app
 function queueSync(type, data) {
-  if (!syncEnabled || !currentUser) return;
+  // Sem usuario nao ha destino. Mas enfileira mesmo com syncEnabled=false
+  // (offline / sessao expirada): o flush revalida e o 'online' dispara depois.
+  if (!currentUser) return;
 
-  // Substituir item do mesmo tipo na fila
+  // Substituir item do mesmo tipo na fila (mantem a fila com no maximo 4 itens)
   syncQueue = syncQueue.filter(q => q.type !== type);
   syncQueue.push({ type, data, ts: Date.now() });
+  persistSyncQueue();
 
   // Debounce: sync a cada 3 segundos
   clearTimeout(syncTimer);
   syncTimer = setTimeout(flushSyncQueue, 3000);
 }
 
+// Mantem no maximo 1 item por tipo, preservando o mais recente
+function dedupeSyncQueue() {
+  const byType = new Map();
+  for (const q of syncQueue) {
+    const prev = byType.get(q.type);
+    if (!prev || (q.ts || 0) >= (prev.ts || 0)) byType.set(q.type, q);
+  }
+  syncQueue = [...byType.values()];
+}
+
 async function flushSyncQueue() {
-  if (!syncEnabled || !currentUser || syncQueue.length === 0) return;
+  if (!currentUser || syncQueue.length === 0) return;
+  // Offline: nao consome a fila. O listener de 'online' reagenda o flush.
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+  if (!syncEnabled) return;
 
   const queue = [...syncQueue];
   syncQueue = [];
 
-  for (const item of queue) {
+  for (let i = 0; i < queue.length; i++) {
+    const item = queue[i];
     try {
       switch (item.type) {
         case 'progress':
@@ -585,6 +631,10 @@ async function flushSyncQueue() {
         try { await sbClient.auth.refreshSession(); } catch (re) {
           console.warn('[Sync] Session refresh failed:', re.message);
           syncEnabled = false;
+          // Devolve este item E os restantes — antes, tudo daqui pra frente era perdido
+          syncQueue.push(...queue.slice(i));
+          dedupeSyncQueue();
+          persistSyncQueue();
           return;
         }
       }
@@ -592,6 +642,22 @@ async function flushSyncQueue() {
       syncQueue.push(item);
     }
   }
+  dedupeSyncQueue();
+  persistSyncQueue();
+}
+
+// Volta a ter rede: esvazia o que ficou preso offline.
+// Espelha src/core/error-reporter.js:167.
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    console.log('[Sync] Online — reagendando flush da fila');
+    setTimeout(flushSyncQueue, 2000);
+  });
+  // Ultima chance antes da aba morrer: grava o que ainda nao subiu
+  window.addEventListener('pagehide', persistSyncQueue);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') persistSyncQueue();
+  });
 }
 
 // ========== HELPERS ==========
