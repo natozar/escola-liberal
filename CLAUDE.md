@@ -853,6 +853,7 @@ O GitHub Pages serve a **branch main crua** (build_type legacy) — NÃO o `dist
 | 📱 Instalações | Métricas PWA, dispositivos, navegadores |
 | 🎯 Impacto | Dashboard executivo para pitch gov (horas, retenção, crescimento) |
 | 🛡️ Segurança | Erros JS, integridade de conteúdo, age tamper, brute-force, CSP (via error-reporter) |
+| 🏛️ Cidade Livre | Engajamento do jogo: partidas, prefeitos únicos, recorde, rejogo, cidades mais jogadas, Top 10 da semana (tabela `jogo_scores`) |
 
 ### Features especiais
 - **🖥 Modo Apresentação** — fullscreen com números grandes para projetar em reuniões
