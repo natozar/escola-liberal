@@ -180,6 +180,7 @@
     <div class="tab" data-action="switchTab" data-tab="impact">🎯 Impacto</div>
     <div class="tab" data-action="switchTab" data-tab="security">🛡️ Segurança</div>
     <div class="tab" data-action="switchTab" data-tab="jogo">🏛️ Cidade Livre</div>
+    <div class="tab" data-action="switchTab" data-tab="engaj">📈 Engajamento</div>
   </div>
 
   <div class="content">
@@ -637,6 +638,41 @@
       <div class="chart-card">
         <h3>📋 Perfil dos Alunos</h3>
         <div id="studentProfile"></div>
+      </div>
+    </div>
+
+    <!-- ENGAJAMENTO (telemetria anonima) -->
+    <div class="panel" id="panEngaj">
+      <div style="text-align:center;padding:1rem 0 1.5rem">
+        <h2 style="font-size:1.3rem;color:var(--accent)">📈 Engajamento por Disciplina</h2>
+        <p style="color:var(--muted);font-size:.82rem">Telemetria anônima (LGPD: sem PII, com consentimento) — inclui visitantes que nunca fizeram login</p>
+      </div>
+
+      <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--accent)" id="engVisit7">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Visitantes (7 dias)</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--green)" id="engVisit30">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Visitantes (30 dias)</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--blue)" id="engEventos">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Eventos Registrados</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--sage)" id="engMobile">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Mobile (%)</div></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🔻 Funil de aprendizado</h3>
+        <div id="engFunil"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🔥 Disciplinas que mais prendem <span style="color:var(--muted);font-size:.75rem;font-weight:400">(aulas abertas)</span></h3>
+        <div id="engDiscs"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🧩 Disciplinas mais difíceis <span style="color:var(--muted);font-size:.75rem;font-weight:400">(% de erro no quiz — candidatas a revisão de conteúdo)</span></h3>
+        <div id="engDificeis"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>📅 Atividade por dia (14 dias)</h3>
+        <div class="bar-chart" id="engDias" style="height:140px"></div>
       </div>
     </div>
 

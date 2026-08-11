@@ -935,6 +935,98 @@ function switchTab(id){
   if(pan)pan.classList.add('active');
   if(id==='security')loadSecurity();
   if(id==='jogo')loadJogo();
+  if(id==='engaj')loadEngaj();
+}
+
+// ============================================================
+// ENGAJAMENTO — telemetria anonima (tabela engagement_events)
+// Responde a pergunta que orienta expansao de conteudo:
+// quais disciplinas prendem e quais precisam de revisao.
+// ============================================================
+function _engCap(s){s=String(s||'—');return s.charAt(0).toUpperCase()+s.slice(1)}
+
+async function loadEngaj(){
+  if(!sb){admToast('⚠ Supabase não inicializado');return}
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v==null?'—':String(v)};
+  const vazio=t=>`<div style="color:var(--muted);font-size:.85rem;padding:.5rem">${t}</div>`;
+  try{
+    const{data,error}=await sb.from('engagement_events')
+      .select('occurred_at,event,discipline,correct,platform,anon_id')
+      .order('occurred_at',{ascending:false}).limit(5000);
+    if(error)throw error;
+    const ev=data||[];
+    if(!ev.length){
+      ['engVisit7','engVisit30','engEventos','engMobile'].forEach(i=>set(i,0));
+      ['engFunil','engDiscs','engDificeis'].forEach(i=>{const e=document.getElementById(i);if(e)e.innerHTML=vazio('Ainda sem eventos. A coleta começa quando visitantes aceitarem os cookies e navegarem pelas aulas.')});
+      const d=document.getElementById('engDias');if(d)d.innerHTML='';
+      return;
+    }
+    const agora=Date.now();
+    const dias=n=>ev.filter(e=>agora-new Date(e.occurred_at||e.created_at).getTime()<n*864e5);
+    set('engVisit7',new Set(dias(7).map(e=>e.anon_id)).size);
+    set('engVisit30',new Set(dias(30).map(e=>e.anon_id)).size);
+    set('engEventos',ev.length);
+    const comPlat=ev.filter(e=>e.platform&&e.platform!=='unknown');
+    set('engMobile',comPlat.length?Math.round(comPlat.filter(e=>e.platform==='mobile').length/comPlat.length*100):'—');
+
+    // funil por VISITANTES unicos (contar eventos daria "queda negativa":
+    // um modulo aberto gera varias aulas abertas)
+    const visitantesDe=k=>new Set(ev.filter(e=>e.event===k).map(e=>e.anon_id)).size;
+    const etapas=[['Abriu módulo','module_open'],['Abriu aula','lesson_open'],['Concluiu aula','lesson_complete']];
+    const base=visitantesDe('module_open')||1;
+    const elF=document.getElementById('engFunil');
+    if(elF)elF.innerHTML=etapas.map(([rot,k],i)=>{
+      const n=visitantesDe(k),pct=Math.round(n/base*100);
+      const antes=i?visitantesDe(etapas[i-1][1]):null;
+      const queda=antes?Math.round((1-n/(antes||1))*100):null;
+      return `<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem">
+        <div style="width:120px;font-size:.85rem">${rot}</div>
+        <div style="flex:1;background:var(--bg);border-radius:6px;height:22px;overflow:hidden"><div style="background:var(--sage);height:100%;width:${Math.min(100,pct)}%"></div></div>
+        <div style="width:150px;text-align:right;font-size:.82rem;color:var(--muted)">${n} visitantes${queda!=null&&queda>0?` <span style="color:var(--accent)">−${queda}%</span>`:''}</div></div>`;
+    }).join('');
+
+    // disciplinas que mais prendem (aulas abertas)
+    const porDisc={};
+    ev.filter(e=>e.event==='lesson_open'&&e.discipline).forEach(e=>{porDisc[e.discipline]=(porDisc[e.discipline]||0)+1});
+    const ordD=Object.entries(porDisc).sort((a,b)=>b[1]-a[1]).slice(0,12);
+    const maxD=ordD.length?ordD[0][1]:1;
+    const elD=document.getElementById('engDiscs');
+    if(elD)elD.innerHTML=ordD.length?ordD.map(([d,n])=>
+      `<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
+        <div style="width:150px;font-size:.85rem">${_jgEsc(_engCap(d))}</div>
+        <div style="flex:1;background:var(--bg);border-radius:6px;height:18px;overflow:hidden"><div style="background:var(--green);height:100%;width:${Math.round(n/maxD*100)}%"></div></div>
+        <div style="width:50px;text-align:right;font-size:.82rem;color:var(--muted)">${n}</div></div>`
+    ).join(''):vazio('Sem aberturas de aula registradas ainda.');
+
+    // disciplinas mais dificeis (% de erro no quiz, com amostra minima)
+    const quiz={};
+    ev.filter(e=>e.event==='quiz_answer'&&e.discipline&&typeof e.correct==='boolean').forEach(e=>{
+      quiz[e.discipline]=quiz[e.discipline]||{t:0,err:0};
+      quiz[e.discipline].t++; if(!e.correct)quiz[e.discipline].err++;
+    });
+    const dif=Object.entries(quiz).filter(([,v])=>v.t>=5)
+      .map(([d,v])=>[d,Math.round(v.err/v.t*100),v.t]).sort((a,b)=>b[1]-a[1]).slice(0,10);
+    const elDif=document.getElementById('engDificeis');
+    if(elDif)elDif.innerHTML=dif.length?dif.map(([d,pct,t])=>
+      `<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem">
+        <div style="width:150px;font-size:.85rem">${_jgEsc(_engCap(d))}</div>
+        <div style="flex:1;background:var(--bg);border-radius:6px;height:18px;overflow:hidden"><div style="background:${pct>=50?'var(--red,#e07460)':'var(--accent)'};height:100%;width:${pct}%"></div></div>
+        <div style="width:90px;text-align:right;font-size:.82rem;color:var(--muted)">${pct}% · n=${t}</div></div>`
+    ).join(''):vazio('Amostra insuficiente (mínimo de 5 respostas por disciplina).');
+
+    // atividade por dia (14 dias)
+    const porDia={};
+    for(let i=13;i>=0;i--){const d=new Date(agora-i*864e5);porDia[d.toISOString().slice(0,10)]={label:String(d.getDate()),count:0}}
+    ev.forEach(e=>{const k=String(e.occurred_at||'').slice(0,10);if(porDia[k])porDia[k].count++});
+    const arr=Object.values(porDia),maxDia=Math.max(1,...arr.map(d=>d.count));
+    const elDias=document.getElementById('engDias');
+    if(elDias)elDias.innerHTML=arr.map(d=>`<div class="bar-col"><div class="bar-val">${d.count||''}</div><div class="bar" style="height:${Math.max(2,d.count/maxDia*110)}px"></div><div class="bar-label">${d.label}</div></div>`).join('');
+  }catch(e){
+    const msg=(e&&e.message||'').includes('does not exist')||(e&&e.code)==='42P01'
+      ? 'Tabela engagement_events ainda não existe neste projeto.'
+      : 'Não foi possível carregar a telemetria (verifique se sua conta tem is_admin).';
+    ['engFunil','engDiscs','engDificeis'].forEach(i=>{const el=document.getElementById(i);if(el)el.innerHTML=vazio(msg)});
+  }
 }
 
 // ============================================================
