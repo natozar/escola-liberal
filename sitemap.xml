@@ -35,7 +35,7 @@
   <!-- Blog -->
   <url>
     <loc>https://escolaliberal.com.br/blog.html</loc>
-    <lastmod>2026-08-10</lastmod>
+    <lastmod>2026-08-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -118,6 +118,7 @@
   <url><loc>https://escolaliberal.com.br/blog/voto-como-identificar-promessa-impossivel.html</loc><lastmod>2026-08-08</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://escolaliberal.com.br/blog/voto-competencia-do-cargo-e-promessa.html</loc><lastmod>2026-08-09</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://escolaliberal.com.br/blog/voto-ciclo-eleitoral-e-obras-publicas.html</loc><lastmod>2026-08-10</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://escolaliberal.com.br/blog/voto-custo-de-oportunidade-no-governo.html</loc><lastmod>2026-08-11</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <!-- Offline fallback (crawlable for PWA) -->
   <url>
     <loc>https://escolaliberal.com.br/offline.html</loc>
