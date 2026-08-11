@@ -854,6 +854,7 @@ O GitHub Pages serve a **branch main crua** (build_type legacy) — NÃO o `dist
 | 🎯 Impacto | Dashboard executivo para pitch gov (horas, retenção, crescimento) |
 | 🛡️ Segurança | Erros JS, integridade de conteúdo, age tamper, brute-force, CSP (via error-reporter) |
 | 🏛️ Cidade Livre | Engajamento do jogo: partidas, prefeitos únicos, recorde, rejogo, cidades mais jogadas, Top 10 da semana (tabela `jogo_scores`) |
+| 📈 Engajamento | Telemetria anônima (tabela `engagement_events`, leitura só admin): visitantes 7/30d, funil por visitantes únicos, disciplinas que mais prendem, disciplinas mais difíceis (% erro no quiz), atividade diária |
 
 ### Features especiais
 - **🖥 Modo Apresentação** — fullscreen com números grandes para projetar em reuniões
