@@ -179,6 +179,7 @@
     <div class="tab" data-action="switchTab" data-tab="installs">📱 Instalações</div>
     <div class="tab" data-action="switchTab" data-tab="impact">🎯 Impacto</div>
     <div class="tab" data-action="switchTab" data-tab="security">🛡️ Segurança</div>
+    <div class="tab" data-action="switchTab" data-tab="jogo">🏛️ Cidade Livre</div>
   </div>
 
   <div class="content">
@@ -617,9 +618,9 @@
       </div>
 
       <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">
-        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--accent)" id="impDiscs">21</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Disciplinas Disponíveis</div></div>
-        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--green)" id="impModules">66</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Módulos Completos</div></div>
-        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--blue)" id="impTotalLessons">660</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Aulas no Currículo</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--accent)" id="impDiscs">30</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Disciplinas Disponíveis</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--green)" id="impModules">180</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Módulos Completos</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--blue)" id="impTotalLessons">1.800</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Aulas no Currículo</div></div>
         <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--sage)" id="impRetention">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Retenção 7 dias (%)</div></div>
       </div>
 
@@ -636,6 +637,43 @@
       <div class="chart-card">
         <h3>📋 Perfil dos Alunos</h3>
         <div id="studentProfile"></div>
+      </div>
+    </div>
+
+    <!-- CIDADE LIVRE (jogo) -->
+    <div class="panel" id="panJogo">
+      <div style="text-align:center;padding:1rem 0 1.5rem">
+        <h2 style="font-size:1.3rem;color:var(--accent)">🏛️ Cidade Livre — engajamento do jogo</h2>
+        <p style="color:var(--muted);font-size:.82rem">Partidas publicadas no ranking do Prefeito Vitalício · dados anônimos (apelido escolhido pelo jogador)</p>
+      </div>
+
+      <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--accent)" id="jgPartidas">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Partidas Publicadas</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--green)" id="jgJogadores">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Prefeitos Únicos</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--blue)" id="jgRecorde">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Recorde (semanas)</div></div>
+        <div class="stat" style="text-align:center;padding:1.5rem"><div style="font-size:2.5rem;font-weight:700;color:var(--sage)" id="jgMedia">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Média de Semanas</div></div>
+      </div>
+
+      <div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+        <div class="stat" style="text-align:center;padding:1.25rem"><div style="font-size:1.8rem;font-weight:700;color:var(--accent)" id="jgSemana">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Partidas esta semana</div></div>
+        <div class="stat" style="text-align:center;padding:1.25rem"><div style="font-size:1.8rem;font-weight:700;color:var(--green)" id="jgRejogo">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Partidas por prefeito</div></div>
+        <div class="stat" style="text-align:center;padding:1.25rem"><div style="font-size:1.8rem;font-weight:700;color:var(--blue)" id="jgProsp">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Prosperidade média (%)</div></div>
+        <div class="stat" style="text-align:center;padding:1.25rem"><div style="font-size:1.8rem;font-weight:700;color:var(--sage)" id="jgAulas">—</div><div style="color:var(--muted);font-size:.82rem;margin-top:.25rem">Aulas do jogo (est.)</div></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🗺️ Cidades mais jogadas</h3>
+        <div id="jgCenarios"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🏆 Top 10 — Cidade da Semana</h3>
+        <div id="jgTop"></div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🕐 Últimas partidas</h3>
+        <div id="jgUltimas"></div>
       </div>
     </div>
 

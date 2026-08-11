@@ -934,6 +934,83 @@ function switchTab(id){
   const pan=document.getElementById('pan'+id.charAt(0).toUpperCase()+id.slice(1));
   if(pan)pan.classList.add('active');
   if(id==='security')loadSecurity();
+  if(id==='jogo')loadJogo();
+}
+
+// ============================================================
+// CIDADE LIVRE — engajamento do jogo (tabela jogo_scores)
+// ============================================================
+const JG_CENARIOS={nova:{e:'🏘️',n:'Cidade Nova'},litoranea:{e:'🌊',n:'Litorânea'},mineradora:{e:'⛏️',n:'Mineradora'},capital:{e:'🏙️',n:'A Capital'}};
+function _jgEsc(s){return String(s==null?'':s).replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'})[c])}
+function _jgSemanaISO(){const d=new Date(),j=new Date(d.getFullYear(),0,1);return d.getFullYear()*100+Math.ceil((((d-j)/864e5)+j.getDay()+1)/7)}
+
+async function loadJogo(){
+  if(!sb){admToast('⚠ Supabase não inicializado');return}
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v==null?'—':String(v)};
+  try{
+    const{data,error}=await sb.from('jogo_scores').select('nick,cenario,seed,score,prosperidade,player_id,created_at').order('created_at',{ascending:false}).limit(2000);
+    if(error)throw error;
+    const linhas=data||[];
+    if(!linhas.length){
+      set('jgPartidas',0);set('jgJogadores',0);set('jgRecorde','—');set('jgMedia','—');
+      set('jgSemana',0);set('jgRejogo','—');set('jgProsp','—');set('jgAulas',0);
+      const vazio='<div style="color:var(--muted);font-size:.85rem;padding:.5rem">Nenhuma partida publicada ainda. O ranking acende quando o primeiro prefeito publicar.</div>';
+      ['jgCenarios','jgTop','jgUltimas'].forEach(i=>{const e=document.getElementById(i);if(e)e.innerHTML=vazio});
+      return;
+    }
+    const jogadores=new Set(linhas.map(l=>l.player_id));
+    const semanaAtual=_jgSemanaISO();
+    const daSemana=linhas.filter(l=>Math.floor(l.seed/10)===semanaAtual||l.seed===semanaAtual);
+    const soma=(a,f)=>a.reduce((s,x)=>s+(f(x)||0),0);
+    set('jgPartidas',linhas.length);
+    set('jgJogadores',jogadores.size);
+    set('jgRecorde',Math.max(...linhas.map(l=>l.score)));
+    set('jgMedia',(soma(linhas,l=>l.score)/linhas.length).toFixed(1));
+    set('jgSemana',daSemana.length);
+    set('jgRejogo',(linhas.length/jogadores.size).toFixed(1));
+    set('jgProsp',Math.round(soma(linhas,l=>l.prosperidade)/linhas.length));
+    // estimativa pedagógica: 1 aula concluída a cada ~14 semanas sobrevividas (crise + reforma)
+    set('jgAulas',Math.round(soma(linhas,l=>l.score)/14));
+
+    // cidades mais jogadas
+    const porCen={};
+    linhas.forEach(l=>{porCen[l.cenario]=(porCen[l.cenario]||0)+1});
+    const maxCen=Math.max(...Object.values(porCen));
+    const elCen=document.getElementById('jgCenarios');
+    if(elCen)elCen.innerHTML=Object.entries(porCen).sort((a,b)=>b[1]-a[1]).map(([c,n])=>{
+      const meta=JG_CENARIOS[c]||{e:'🏙️',n:c};
+      return `<div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem">
+        <div style="width:130px;font-size:.85rem">${meta.e} ${_jgEsc(meta.n)}</div>
+        <div style="flex:1;background:var(--bg);border-radius:6px;height:20px;overflow:hidden"><div style="background:var(--sage);height:100%;width:${Math.round(n/maxCen*100)}%"></div></div>
+        <div style="width:60px;text-align:right;font-size:.85rem;color:var(--muted)">${n}</div></div>`;
+    }).join('');
+
+    // top 10 da semana (dedupe por jogador)
+    const melhor=new Map();
+    daSemana.slice().sort((a,b)=>b.score-a.score).forEach(l=>{if(!melhor.has(l.player_id))melhor.set(l.player_id,l)});
+    const top=[...melhor.values()].slice(0,10);
+    const elTop=document.getElementById('jgTop');
+    if(elTop)elTop.innerHTML=top.length?top.map((l,i)=>{
+      const meta=JG_CENARIOS[l.cenario]||{e:'🏙️',n:l.cenario};
+      return `<div style="display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.88rem">
+        <span>${i+1}º ${_jgEsc(l.nick)} <span style="color:var(--muted)">${meta.e} ${_jgEsc(meta.n)}</span></span>
+        <b style="color:var(--accent)">${l.score} sem</b></div>`;
+    }).join(''):'<div style="color:var(--muted);font-size:.85rem">Nenhuma partida publicada nesta semana ainda.</div>';
+
+    // últimas partidas
+    const elU=document.getElementById('jgUltimas');
+    if(elU)elU.innerHTML=linhas.slice(0,12).map(l=>{
+      const meta=JG_CENARIOS[l.cenario]||{e:'🏙️',n:l.cenario};
+      return `<div style="display:flex;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid var(--border);font-size:.85rem">
+        <span>${_jgEsc(l.nick)} <span style="color:var(--muted)">${meta.e} · ${l.score} sem · ${l.prosperidade}% prosp.</span></span>
+        <span style="color:var(--muted)">${_secFmtTime(l.created_at)}</span></div>`;
+    }).join('');
+  }catch(e){
+    const msg=(e&&e.message||'').includes('does not exist')||(e&&e.code)==='42P01'
+      ? 'Tabela jogo_scores ainda não existe neste projeto.'
+      : 'Não foi possível carregar os dados do jogo.';
+    ['jgCenarios','jgTop','jgUltimas'].forEach(i=>{const el=document.getElementById(i);if(el)el.innerHTML=`<div style="color:var(--muted);font-size:.85rem">${msg}</div>`});
+  }
 }
 
 // ============================================================

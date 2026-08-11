@@ -502,6 +502,44 @@ function confetarEm(el){
   }
 }
 
+/* ---------- ranking online (PostgREST direto — sem SDK) ---------- */
+const RANK_URL = "https://hwjplecfqsckfiwxiedo.supabase.co/rest/v1/jogo_scores";
+const RANK_KEY = "sb_publishable_-_ZYfPPllImPNCKOA1ZMXQ_zYYM-P6q";
+const RANK_HDR = { apikey:RANK_KEY, Authorization:"Bearer "+RANK_KEY, "Content-Type":"application/json" };
+function playerId(){
+  let id = localStorage.getItem("jogo_player_id");
+  if(!id){ id = (crypto.randomUUID? crypto.randomUUID() : ("p-"+Date.now()+"-"+Math.random().toString(36).slice(2))); localStorage.setItem("jogo_player_id", id); }
+  return id;
+}
+function nickLimpo(v){ return String(v||"").replace(/[<>&"']/g,"").trim().slice(0,20); }
+async function enviarScore(sc){
+  const corpo = { player_id:playerId(), nick:sc.nick, cenario:sc.cenario, seed:sc.seed, score:sc.score, prosperidade:sc.prosperidade };
+  try{
+    const r = await fetch(RANK_URL, { method:"POST", headers:{...RANK_HDR, Prefer:"return=minimal"}, body:JSON.stringify(corpo) });
+    return r.ok;
+  }catch(e){
+    try{ const q = JSON.parse(localStorage.getItem("jogo_rank_fila")||"[]"); q.push(corpo);
+         localStorage.setItem("jogo_rank_fila", JSON.stringify(q.slice(-10))); }catch(_){}
+    return false;
+  }
+}
+async function drenarFilaScores(){
+  let q; try{ q = JSON.parse(localStorage.getItem("jogo_rank_fila")||"[]"); }catch(e){ return; }
+  if(!q.length) return;
+  localStorage.setItem("jogo_rank_fila","[]");
+  for(const corpo of q){
+    try{ await fetch(RANK_URL, { method:"POST", headers:{...RANK_HDR, Prefer:"return=minimal"}, body:JSON.stringify(corpo) }); }catch(e){}
+  }
+}
+async function buscarRanking(seed){
+  const r = await fetch(`${RANK_URL}?seed=eq.${seed}&select=nick,score,player_id&order=score.desc&limit=80`, { headers:RANK_HDR });
+  if(!r.ok) throw new Error("ranking indisponível");
+  const linhas = await r.json();
+  const melhor = new Map(); // dedupe: melhor score por jogador
+  for(const l of linhas) if(!melhor.has(l.player_id)) melhor.set(l.player_id, l);
+  return [...melhor.values()].slice(0, 10);
+}
+
 /* ---------- helpers ---------- */
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 function realidade(st){ // índice de prosperidade real (o que a cidade vive)
@@ -1635,6 +1673,16 @@ function renderFim(){
       <p>${f.desc}</p>
       <div class="selo"><div class="nome">${f.score} semanas no poder</div>
         <div class="desc">${f.novoRecorde? "🏆 NOVO RECORDE" : `Recorde: ${f.recorde} semanas`} · prosperidade final ${f.r}%</div></div>
+      <div id="rankBloco">
+        ${f.publicado
+          ? `<div id="rankLista" class="recap" style="text-align:center">Carregando ranking…</div>`
+          : `<div style="display:flex; gap:8px; margin:4px 0">
+               <input id="rankNick" maxlength="20" placeholder="Seu apelido no ranking" value="${nickLimpo(localStorage.getItem('jogo_nick')||'')}"
+                 style="flex:1; font:inherit; font-size:14px; padding:11px 14px; border-radius:12px; border:1px solid var(--borda-forte); background:var(--painel-2); color:var(--tinta)">
+               <button class="opcao" id="btnPublicar" type="button" style="flex:0 0 auto">🏆 Publicar</button>
+             </div>
+             <div class="recap" style="text-align:center; font-size:11px">Ranking da ${(CENARIOS.find(c=>c.id===S.cenario)||CENARIOS[0]).nome} · semana #${S.seed} · apelido público, sem dados pessoais</div>`}
+      </div>
       <div class="opcoes">
         <a class="opcao destaque" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://wa.me/?text=${zap}">Desafiar um amigo no WhatsApp</a>
         <button class="opcao" id="btnRunDeNovo" type="button">Tentar de novo — mesma Cidade da Semana</button>
@@ -1643,6 +1691,29 @@ function renderFim(){
     if(f.novoRecorde) sfx("recorde");
     $("btnRunDeNovo").addEventListener("click", iniciarVitalicio);
     $("btnVoltarCampanha").addEventListener("click", reiniciar);
+    async function mostrarRanking(){
+      const alvo = document.getElementById("rankLista"); if(!alvo) return;
+      try{
+        const top = await buscarRanking(S.seed);
+        const eu = playerId();
+        alvo.innerHTML = top.length
+          ? `<b>🏆 Top da semana</b><br>` + top.map((l,i)=>
+              `${i+1}º ${l.player_id===eu?"<b>":""}${nickLimpo(l.nick)} — ${l.score} sem${l.player_id===eu?" ← você</b>":""}`
+            ).join("<br>")
+          : "Seja o primeiro no ranking desta cidade!";
+      }catch(e){ alvo.textContent = "Ranking indisponível no momento — sua pontuação está guardada."; }
+    }
+    if(f.publicado){ mostrarRanking(); }
+    else document.getElementById("btnPublicar")?.addEventListener("click", async ()=>{
+      const nome = nickLimpo(document.getElementById("rankNick").value);
+      if(nome.length<2){ document.getElementById("rankNick").focus(); return; }
+      localStorage.setItem("jogo_nick", nome);
+      document.getElementById("btnPublicar").disabled = true;
+      await enviarScore({nick:nome, cenario:S.cenario||"nova", seed:S.seed, score:f.score, prosperidade:f.r});
+      S.fim.publicado = true; salvar();
+      document.getElementById("rankBloco").innerHTML = `<div id="rankLista" class="recap" style="text-align:center">Carregando ranking…</div>`;
+      sfx("ding"); mostrarRanking();
+    });
     return;
   }
   el.className = "carta " + (f.venceu?"":"crise");
@@ -1692,6 +1763,7 @@ uiSfx();
 
 if(S.noticias.length===0) noticia("Primeiro dia de mandato. A cidade te observa.","");
 renderTudo();
+drenarFilaScores(); // scores presos offline sobem quando a rede volta
 </script>
 </body>
 </html>
