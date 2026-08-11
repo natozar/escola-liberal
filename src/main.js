@@ -7,6 +7,7 @@
 import './core/dom.js';
 import './core/domain-guard.js';   // verifica hostname autorizado (anti-cloning)
 import './core/error-reporter.js'; // reportError, flushErrorQueue → window + handlers globais
+import { initTelemetry } from './core/telemetry.js'; // engajamento anonimo (consent-gated, offline-first)
 
 // Phase 1: Core data structures
 import './core/integrity.js';   // verifyContent, loadIntegrityManifest → window (must precede data.js)
@@ -59,3 +60,7 @@ import { boot } from './boot.js';
 
 // Run boot
 boot();
+
+// Telemetria anonima — depois do boot, nunca bloqueando.
+// Nao faz nada sem consentimento LGPD explicito (cookie-consent.js).
+setTimeout(() => { try { initTelemetry(); } catch (_) { } }, 1500);

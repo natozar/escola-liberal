@@ -56,6 +56,7 @@ function goMod(i){
   if(!M[i])return;
   try{history.pushState({view:'mod',mod:i},'')}catch(e){}
   S.cMod=i;const m=M[i];
+  if(window.trackEvent)window.trackEvent('module_open',{module:i,discipline:m.discipline});
   window.setDiscAccent(m.discipline||'economia');
   const _lf=window.getLocalizedField;
   document.getElementById('mvT').textContent=m.icon+' '+(_lf?_lf(m,'title'):m.title);
@@ -89,6 +90,7 @@ async function openL(mi,li){
   try{history.pushState({view:'lesson',mod:mi,les:li},'')}catch(e){}
   S.cMod=mi;S.cLes=li;const m=M[mi],l=m.lessons[li];
   if(typeof gtag==='function')gtag('event','lesson_open',{module:m.title,lesson:l.title,module_index:mi,lesson_index:li});
+  if(window.trackEvent)window.trackEvent('lesson_open',{module:mi,lesson:li,discipline:m.discipline});
   document.getElementById('lvProg').textContent=`${typeof t==='function'?t('lesson'):'Aula'} ${li+1}/${m.lessons.length}`;
   const _lf=window.getLocalizedField;
   let h=_lf?_lf(l,'content'):l.content;
@@ -121,6 +123,7 @@ function ans(mi,li,a){
   const l=M[mi].lessons[li],ok=a===l.quiz.c,qk=`${mi}-${li}`;
   if(S.quiz[qk]!==undefined)return;
   S.quiz[qk]=ok;
+  if(window.trackEvent)window.trackEvent('quiz_answer',{module:mi,lesson:li,discipline:M[mi].discipline,correct:ok});
   document.querySelectorAll('.qz-o').forEach((b,i)=>{b.classList.add('off');if(i===l.quiz.c){b.classList.add('ok');b.classList.add('quiz-pulse')}if(i===a&&!ok){b.classList.add('no');b.classList.add('quiz-shake')}});
   const _lfq=window.getLocalizedField;const qDisp=(_lfq?_lfq(l,'quiz'):null)||l.quiz;
   const fb=document.getElementById('qfb');fb.className='qz-fb show '+(ok?'fb-ok':'fb-no');fb.textContent=(ok?'✓ ':'✗ ')+qDisp.exp;
@@ -145,7 +148,8 @@ function nextL(){
   if(mi===null||mi===undefined||!M[mi]||!M[mi].lessons[li])return;
   const lk=`${mi}-${li}`;
   if(!S.done[lk]){S.done[lk]=true;window.addXP(M[mi].lessons[li].xp);window.toast(`+${M[mi].lessons[li].xp} XP`);window.save();window.checkSaveModal();
-    if(typeof gtag==='function')gtag('event','lesson_complete',{module:M[mi].title,lesson:M[mi].lessons[li].title,total_done:Object.keys(S.done).length})}
+    if(typeof gtag==='function')gtag('event','lesson_complete',{module:M[mi].title,lesson:M[mi].lessons[li].title,total_done:Object.keys(S.done).length});
+    if(window.trackEvent)window.trackEvent('lesson_complete',{module:mi,lesson:li,discipline:M[mi].discipline})}
   if(li<M[mi].lessons.length-1)window.openL(mi,li+1);else{
     const justCompleted=M[mi].lessons.every((_,i)=>S.done[`${mi}-${i}`]);
     window.goMod(mi);
