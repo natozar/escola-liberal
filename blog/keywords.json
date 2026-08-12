@@ -5709,7 +5709,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 28,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5718,7 +5718,8 @@
       "votoLesson": 7,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-12T12:56:38.919Z"
     },
     {
       "slug": "voto-quanto-custa-uma-promessa-de-campanha",
