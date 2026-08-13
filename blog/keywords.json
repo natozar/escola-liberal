@@ -5737,7 +5737,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 29,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5746,7 +5746,8 @@
       "votoLesson": 8,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-13T12:57:56.293Z"
     },
     {
       "slug": "voto-perguntas-para-avaliar-promessa-politica",
