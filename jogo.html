@@ -557,6 +557,51 @@ async function buscarRanking(seed){
   return [...melhor.values()].slice(0, 10);
 }
 
+/* ---------- duelo P2P por link: o convite carrega tudo, zero servidor ---------- */
+function codificarDuelo(o){
+  try{ return btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
+  catch(e){ return ""; }
+}
+function decodificarDuelo(t){
+  try{
+    const j = JSON.parse(decodeURIComponent(escape(atob(String(t).replace(/-/g,"+").replace(/_/g,"/")))));
+    const cen = CENARIOS.find(c=>c.id===j.c);
+    const seed = Math.floor(+j.s), score = Math.floor(+j.p);
+    if(!cen || !(seed>0) || !(score>=0) || score>999) return null;
+    return { s:seed, c:cen.id, p:score, n:nickLimpo(j.n)||"Um prefeito" };
+  }catch(e){ return null; }
+}
+function linkDuelo(d){ return "https://jogo.escolaliberal.com.br/jogo.html?duelo=" + codificarDuelo(d); }
+let DUELO_PENDENTE = null;
+try{
+  const _qs = new URLSearchParams(location.search);
+  if(_qs.get("duelo")){
+    const d = decodificarDuelo(_qs.get("duelo"));
+    if(d) localStorage.setItem("jogo_duelo_pendente", JSON.stringify(d));
+    history.replaceState(null, "", location.pathname); // limpa a URL; o convite sobrevive a reloads via localStorage
+  }
+  const _mem = JSON.parse(localStorage.getItem("jogo_duelo_pendente")||"null");
+  DUELO_PENDENTE = (_mem && CENARIOS.find(c=>c.id===_mem.c) && Math.floor(+_mem.s)>0 && Math.floor(+_mem.p)>=0 && Math.floor(+_mem.p)<=999)
+    ? { s:Math.floor(+_mem.s), c:_mem.c, p:Math.floor(+_mem.p), n:nickLimpo(_mem.n)||"Um prefeito" } : null;
+}catch(e){ DUELO_PENDENTE = null; }
+function descartarDuelo(){ try{ localStorage.removeItem("jogo_duelo_pendente"); }catch(e){} DUELO_PENDENTE = null; }
+function iniciarDuelo(d){
+  const cen = CENARIOS.find(c=>c.id===d.c) || CENARIOS[0];
+  S = estadoInicial();
+  S.modo = "vitalicio";
+  S.seed = d.s;               // a MESMA cidade do desafiante — mesmas cartas, mesma semana
+  S.flags.viuCapa = true;
+  S.cenario = cen.id;         // duelo destrava o cenário só para esta run
+  if(cen.tick) S.cenarioTick = cen.tick;
+  S.duelo = { nick:d.n, score:d.p };
+  S._rng = null;
+  aplicar(cen.mods||{});
+  META.runs++; salvarMeta();
+  descartarDuelo();
+  noticia(`⚔️ Duelo aceito: supere as ${d.p} semanas de ${d.n} na ${cen.emoji} ${cen.nome}. Sem vantagens — na raça.`,"");
+  salvar(); renderTudo();
+}
+
 /* ---------- helpers ---------- */
 const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
 function realidade(st){ // índice de prosperidade real (o que a cidade vive)
@@ -1279,6 +1324,10 @@ function gameOverVitalicio(causa){
   };
   S.fim = { modo:"vitalicio", causa, score, novoRecorde, recorde: META.melhorScore,
             desc: causas[causa]||"", r: realidade(S) };
+  if(S.duelo){ // duelo resolvido: placar lado a lado no fim
+    S.fim.duelo = { nick:S.duelo.nick, deles:S.duelo.score, venceu: score > S.duelo.score, empate: score === S.duelo.score };
+    if(S.fim.duelo.venceu){ META.duelosVencidos = (META.duelosVencidos||0)+1; salvarMeta(); }
+  }
   salvar(); renderTudo();
 }
 
@@ -1435,6 +1484,17 @@ const FILLER_TEXTOS = [
   "Sem manchetes esta semana. O que você plantou continua crescendo em silêncio."
 ];
 function cartaAtual(){
+  // duelo recebido por link: o convite fura a fila — inclusive sobre tela de fim
+  if(DUELO_PENDENTE){
+    const d = DUELO_PENDENTE, cen = CENARIOS.find(c=>c.id===d.c) || CENARIOS[0];
+    return { id:"duelo-convite", tipo:"filler", quem:"⚔️ Desafio recebido", titulo:`${d.n} te desafiou`,
+      momento:{img:"vitoria.jpg", emoji:"⚔️", legenda:`${cen.emoji} ${cen.nome} — cidade #${d.s}, a mesma para os dois.`},
+      texto:`<b>${d.n}</b> sobreviveu <b>${d.p} semana${d.p===1?"":"s"}</b> como prefeito da ${cen.emoji} <b>${cen.nome}</b> e duvida que você aguente mais. Mesma cidade, mesmas cartas, sem vantagens: só a sua gestão contra o placar.`,
+      opcoes:[
+        {rotulo:"⚔️ Aceitar o duelo", custo:`sobreviva mais de ${d.p} semana${d.p===1?"":"s"}`, ef:{}, duelo:true, destaque:true},
+        {rotulo:"Agora não", custo:"o convite será descartado", ef:{}, semSemana:true, aoEscolher:()=>descartarDuelo()}
+      ]};
+  }
   // capa: a primeira coisa que o jogador vê é a cidade — em foto
   if(!S.flags.viuCapa) return {
     id:"capa", tipo:"filler", quem:"Cidade Livre", titulo:"A cidade é sua",
@@ -1556,6 +1616,7 @@ function escolher(carta, op){
   // guardas ANTES de qualquer efeito (ordem importa: nada aplica duas vezes)
   if(op.bloqueada) return;
   if(op.vitalicio){ iniciarVitalicio(); return; }
+  if(op.duelo){ if(DUELO_PENDENTE) iniciarDuelo(DUELO_PENDENTE); return; }
   if(op.abrirAula){ S.flags[carta.marcaVista||"criseVista"] = true; renderAula(carta.aulaId||"precos"); return; }
   sfx("click");
   aplicar(op.ef||{});
@@ -1682,12 +1743,23 @@ function renderFim(){
   if(f.modo==="vitalicio"){
     el.className = "carta crise";
     const cen = CENARIOS.find(c=>c.id===S.cenario) || CENARIOS[0];
-    const zap = encodeURIComponent(`🏛️ Sobrevivi ${f.score} semanas como prefeito da ${cen.emoji} ${cen.nome} (Cidade da Semana #${S.seed}) no Cidade Livre${f.novoRecorde?" — RECORDE novo":""}. Aguenta mais que eu? https://jogo.escolaliberal.com.br`);
+    // todo fim de run gera um convite JOGÁVEL: mesma cidade, mesmas cartas (duelo P2P, zero servidor)
+    const meuNick = nickLimpo(localStorage.getItem("jogo_nick")||"") || "Um prefeito";
+    const desafioUrl = linkDuelo({ s:S.seed, c:S.cenario||"nova", p:f.score, n:meuNick });
+    const zap = encodeURIComponent(f.duelo
+      ? (f.duelo.venceu
+          ? `⚔️ Respondi seu desafio e VENCI: ${f.score} × ${f.duelo.deles} semanas na ${cen.emoji} ${cen.nome}. Revanche? Mesma cidade: ${desafioUrl}`
+          : f.duelo.empate
+            ? `⚔️ Empate: ${f.score} × ${f.duelo.deles} semanas na ${cen.emoji} ${cen.nome}. Desempata? ${desafioUrl}`
+            : `⚔️ Você venceu essa: ${f.score} × ${f.duelo.deles} semanas na ${cen.emoji} ${cen.nome}. A revanche vem: ${desafioUrl}`)
+      : `🏛️ Sobrevivi ${f.score} semanas como prefeito da ${cen.emoji} ${cen.nome} (Cidade da Semana #${S.seed}) no Cidade Livre${f.novoRecorde?" — RECORDE novo":""}. Duvido aguentar mais que eu — mesma cidade, mesmas cartas: ${desafioUrl}`);
     el.innerHTML = `
       <div class="quem">Fim de governo · ${f.causa==="urnas"?"derrota nas urnas":f.causa==="falencia"?"colapso fiscal":"impeachment"}</div>
       <h2>Você caiu na semana ${f.score+1}.</h2>
       ${momentoHtml({img:"derrota.jpg", emoji:"🏛️", legenda:"Toda queda tem uma lição. A próxima run começa mais sábia."})}
       <p>${f.desc}</p>
+      ${f.duelo? `<div class="selo"><div class="nome">${f.duelo.venceu?"⚔️ Duelo vencido":f.duelo.empate?"⚔️ Duelo empatado":"⚔️ Duelo perdido"}</div>
+        <div class="desc">Você <b>${f.score}</b> × <b>${f.duelo.deles}</b> ${f.duelo.nick} · ${cen.emoji} ${cen.nome} #${S.seed}</div></div>`:""}
       <div class="selo"><div class="nome">${f.score} semanas no poder</div>
         <div class="desc">${f.novoRecorde? "🏆 NOVO RECORDE" : `Recorde: ${f.recorde} semanas`} · prosperidade final ${f.r}%</div></div>
       <div id="rankBloco">
@@ -1701,11 +1773,13 @@ function renderFim(){
              <div class="recap" style="text-align:center; font-size:11px">Ranking da ${(CENARIOS.find(c=>c.id===S.cenario)||CENARIOS[0]).nome} · semana #${S.seed} · apelido público, sem dados pessoais</div>`}
       </div>
       <div class="opcoes">
-        <a class="opcao destaque" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://wa.me/?text=${zap}">Desafiar um amigo no WhatsApp</a>
+        <a class="opcao destaque" style="text-decoration:none;text-align:center" target="_blank" rel="noopener" href="https://wa.me/?text=${zap}">${f.duelo? "⚔️ Responder no WhatsApp" : "⚔️ Desafiar um amigo — mesma cidade"}</a>
+        ${f.duelo && !f.duelo.venceu? `<button class="opcao" id="btnDueloDeNovo" type="button">⚔️ Tentar o duelo de novo</button>`:""}
         <button class="opcao" id="btnRunDeNovo" type="button">Tentar de novo — mesma Cidade da Semana</button>
         <button class="opcao" id="btnVoltarCampanha" type="button">Voltar à campanha</button>
       </div>`;
     if(f.novoRecorde) sfx("recorde");
+    document.getElementById("btnDueloDeNovo")?.addEventListener("click", ()=>iniciarDuelo({ s:S.seed, c:S.cenario||"nova", p:f.duelo.deles, n:f.duelo.nick }));
     $("btnRunDeNovo").addEventListener("click", iniciarVitalicio);
     $("btnVoltarCampanha").addEventListener("click", reiniciar);
     async function mostrarRanking(){
@@ -1768,7 +1842,7 @@ function reiniciar(){
   renderTudo();
 }
 
-function renderTudo(){ renderMedidores(); renderCidade(); renderNoticias(); if(!S.fim) renderCarta(); else renderFim(); drenarFlutuas(); }
+function renderTudo(){ renderMedidores(); renderCidade(); renderNoticias(); if(DUELO_PENDENTE || !S.fim) renderCarta(); else renderFim(); drenarFlutuas(); }
 $("btnReiniciar").addEventListener("click", ()=>{ if(confirm("Recomeçar o mandato do zero?")) reiniciar(); });
 function uiSfx(){ $("btnSfx").textContent = localStorage.getItem("jogo_sfx")==="off" ? "🔇" : "🔊"; }
 $("btnSfx").addEventListener("click", ()=>{

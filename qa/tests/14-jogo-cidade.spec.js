@@ -133,6 +133,31 @@ test.describe('Cidade Livre — tabuleiro de gestão', () => {
     await expect(page.locator('#loteSheet .opcao', { hasText: 'equipe de obras' })).toBeVisible();
   });
 
+  test('link de duelo abre a carta-convite e aceitar entra na mesma cidade', async ({ page }) => {
+    const payload = Buffer.from(JSON.stringify({ s: 20263301, c: 'nova', p: 3, n: 'QA Duelo' }))
+      .toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    await page.goto('/jogo.html?duelo=' + payload, { waitUntil: 'domcontentloaded' });
+
+    await expect(page.locator('#carta h2')).toHaveText('QA Duelo te desafiou');
+    await expect(page.locator('.opcao', { hasText: 'Aceitar o duelo' })).toBeVisible();
+
+    await page.locator('.opcao', { hasText: 'Aceitar o duelo' }).click();
+    const save = await page.evaluate(() => JSON.parse(localStorage.getItem('escola_jogo_cidade_v1') || '{}'));
+    expect(save.modo).toBe('vitalicio');
+    expect(save.seed).toBe(20263301);
+    expect(save.duelo?.score).toBe(3);
+  });
+
+  test('payload de duelo adulterado é ignorado sem quebrar o jogo', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', err => errors.push(err.message));
+    await page.goto('/jogo.html?duelo=%%%lixo%%%', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => { localStorage.removeItem('escola_jogo_cidade_v1'); location.reload(); });
+    await page.waitForLoadState('domcontentloaded');
+    await expect(page.locator('#carta h2')).toHaveText('A cidade é sua');
+    expect(errors, `Erros JS: ${errors.join(', ')}`).toHaveLength(0);
+  });
+
   test('Prefeito Vitalício aparece bloqueado para quem não venceu a campanha', async ({ page }) => {
     await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => {
