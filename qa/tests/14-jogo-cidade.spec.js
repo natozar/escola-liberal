@@ -148,6 +148,24 @@ test.describe('Cidade Livre — tabuleiro de gestão', () => {
     expect(save.duelo?.score).toBe(3);
   });
 
+  test('cidade-fantasma 3D aparece no horizonte após receber um duelo', async ({ page }) => {
+    const payload = Buffer.from(JSON.stringify({ s: 20263302, c: 'nova', p: 23, n: 'Marina', r: 78, b: 11 }))
+      .toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    await page.goto('/jogo.html?duelo=' + payload, { waitUntil: 'domcontentloaded' });
+
+    // horizonte 3D visível com torres (4 faces cada) e tag do vizinho
+    await expect(page.locator('#horizonte')).toBeVisible();
+    expect(await page.locator('#horizonte .fpredio').count()).toBeGreaterThanOrEqual(4);
+    await expect(page.locator('.fantasma-tag')).toContainText('Marina');
+    const persp = await page.locator('#horizonte').evaluate(el => getComputedStyle(el).perspective);
+    expect(persp).not.toBe('none');
+
+    // tag abre o painel do vizinho
+    await page.locator('.fantasma-tag').click();
+    await expect(page.locator('#loteSheet')).toContainText('Cidade de Marina');
+    await expect(page.locator('#loteSheet')).toContainText('78%');
+  });
+
   test('payload de duelo adulterado é ignorado sem quebrar o jogo', async ({ page }) => {
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
