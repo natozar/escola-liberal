@@ -705,6 +705,8 @@ function passarSemana(){
   if(S.modo==="campanha" && S.mandato>=2 && !S.flags.crise2Disparada && (S.caixa<0 || S.produtividade<48)){
     S.flags.crise2Disparada = true;
   }
+  // crise de confiança (Ato 2, disparada por efeito agendado do calote): chega com o mesmo peso das outras
+  if(S.flags.crise3Disparada && !S.flags.crise3Sentida){ S.flags.crise3Sentida = true; doShake(); sfx("crise"); }
   // streak de prosperidade (suco: 🔥 semanas seguidas de cidade saudável)
   S.streak = realidade(S)>=60 ? (S.streak||0)+1 : 0;
   // regra viva do cenário (litorânea/mineradora/capital)
@@ -724,7 +726,7 @@ function passarSemana(){
    AS 15 CARTAS DO ATO 1 (SPEC-FASE-0 §4)
    ============================================================ */
 const DECK = [
-{ id:"a1-01", quem:"Prefeitura", titulo:"A cratera da Rua Principal",
+{ id:"a1-01", quem:"Ato 1 · Sobreviver", titulo:"A cratera da Rua Principal",
   momento:{img:"cratera.jpg", emoji:"🕳️", legenda:"A cratera da Rua Principal: pequena no orçamento, enorme na paciência de quem passa."},
   texto:"A cratera da Rua Principal engoliu mais um pneu esta semana. O conserto custa caro — e adiar é sempre uma opção.",
   opcoes:[
@@ -883,11 +885,65 @@ const DECK = [
 },
 
 /* ============ MANDATO 2 ============ */
-{ id:"m2-01", quem:"Cidade Livre", titulo:"O segundo mandato",
+{ id:"m2-01", quem:"Ato 2 · Cooperar", titulo:"O segundo mandato",
   cond:s=>s.mandato===2,
   momento:{img:"vitoria.jpg", emoji:"🏛️", legenda:"A mesma Rua Principal, quatro anos depois. Agora ela sabe quem você é."},
-  texto:"A faixa da posse ainda está pendurada. Desta vez ninguém te dá o benefício da dúvida: a cidade conhece suas escolhas — e o Prometedor também. Ele não desistiu.",
+  texto:"A faixa da posse ainda está pendurada. Desta vez ninguém te dá o benefício da dúvida: a cidade conhece suas escolhas — e o Prometedor também. E este mandato é sobre outra coisa: uma cidade só cresce se voltar a confiar — no contrato, no vizinho, em você.",
   opcoes:[{rotulo:"Começar o segundo mandato", custo:"", ef:{}, destaque:true}]},
+
+/* ---- ATO 2 · COOPERAR: troca voluntária, contrato, confiança ---- */
+{ id:"a2-fiado", quem:"Ato 2 · Cooperar", titulo:"A fatura dos fornecedores",
+  cond:s=>s.mandato===2 && s.semana<=20,
+  texto:"O contador empilha as faturas: merenda, remédio, material da obra. Pagar em dia aperta o caixa. Mas fornecedor de prefeitura, todo mundo sabe, “aguenta esperar”.",
+  opcoes:[
+    {rotulo:"Pagar tudo em dia, cortando o resto", custo:"−18 do caixa · sem manchete, sem aplauso", ef:{caixa:-18, aprovacao:-3},
+     ag:[{em:5, ef:{produtividade:7}, msg:"Espalhou no atacado: “aquela prefeitura paga em dia”. Os fornecedores começaram a dar desconto pra vender pra você.", tom:"boa"}],
+     news:["Prefeitura quita fornecedores e corta despesa de gabinete.",""]},
+    {rotulo:"Rolar a dívida — “eles aguentam”", custo:"O caixa respira agora", ef:{},
+     ag:[
+       {em:3, ef:{produtividade:-8, flags:{calote:true}}, msg:"Os fornecedores mudaram o tom: agora é tudo à vista, com o risco embutido no preço.", tom:"ruim"},
+       {em:5, ef:{abastecimento:-9, flags:{crise3Disparada:true}}, msg:"A merenda atrasou: o fornecedor antigo não entrega mais sem garantia. Ninguém confia em quem não paga.", tom:"ruim"}],
+     news:["Pagamentos a fornecedores são “reprogramados”.",""]}
+  ]},
+{ id:"a2-cooperativa", quem:"Ato 2 · Cooperar", titulo:"A cooperativa de crédito",
+  cond:s=>s.mandato===2 && s.semana<=20,
+  texto:"Feirantes e comerciantes querem fundar uma cooperativa de crédito: a poupança da cidade emprestada na própria cidade. O gerente do banco grande liga reclamando. A equipe sugere “um estudo de viabilidade de uns dois anos”.",
+  opcoes:[
+    {rotulo:"Autorizar já, com estatuto público", custo:"O banco grande fica contrariado", ef:{aprovacao:3},
+     ag:[
+       {em:4, ef:{produtividade:8}, msg:"Primeiro empréstimo da cooperativa: a oficina da Rua Principal trocou as máquinas.", tom:"boa"},
+       {em:8, ef:{caixa:12, escolaridade:3}, msg:"A poupança que ia embora agora vira negócio aqui. E quem empresta o próprio dinheiro aprende a conferir conta.", tom:"boa"}],
+     news:["Cooperativa de crédito autorizada: a poupança da cidade fica na cidade.","boa"]},
+    {rotulo:"Pedir o estudo de dois anos", custo:"Prudência que ninguém cobra", ef:{},
+     ag:[{em:5, ef:{produtividade:-5}, msg:"Sem crédito local, três reformas de loja foram adiadas. A poupança da cidade segue rendendo — pra fora dela.", tom:"ruim"}],
+     news:["Cooperativa aguarda “análise técnica aprofundada”.",""]}
+  ]},
+{ id:"a2-crise", quem:"A cidade", tipo:"crise", titulo:"A cidade que desconfia",
+  cond:s=>s.flags.crise3Disparada && !s.flags.crise3Resolvida,
+  aulaId:"confianca", marcaVista:"crise3Vista",
+  momento:{img:"comercio-fechado.jpg", emoji:"🤝 ❌", legenda:"Portas fechadas na hora do almoço: onde a palavra não vale, o negócio não abre."},
+  texto:"O fiado acabou na cidade inteira. A obra parou por falta de fornecedor. Na feira, só se vende à vista — “confiar, só na maquininha”. Ninguém decretou nada; a desconfiança se espalhou sozinha.",
+  opcoes:[
+    {rotulo:"Entender o que aconteceu", custo:"Abrir a aula “Confiança É Capital”", ef:{}, abrirAula:true, destaque:true},
+    {rotulo:"Ignorar e seguir governando", custo:"A crise continua sem resposta", ef:{aprovacao:-6},
+     news:["Sem explicação, cada um cria a sua: “o povo mudou”, “o mundo tá difícil”.","ruim"]}
+  ]},
+{ id:"a2-reforma", quem:"Ato 2 · Cooperar", titulo:"Reconstruir a confiança",
+  cond:s=>s.flags.crise3Disparada,
+  momento:{img:"assinatura.jpg", emoji:"🤝 📜", legenda:"A assinatura que vale mais que o valor: a promessa de pagar em dia — em lei."},
+  texto:"Agora você sabe: confiança é capital, e o maior devedor da cidade era a prefeitura. Reconstruir custa caro e não rende palanque — quitar tudo e se amarrar a uma lei de pagamento em dia.",
+  opcoes:[
+    {rotulo:"Quitar as dívidas + Lei do Pagamento em 10 Dias", custo:"Gasta 2 de Lucidez · −25 do caixa", lucidez:2,
+     ef:{lucidez:-2, caixa:-25, aprovacao:-4, flags:{reformou3:true}},
+     ag:[
+       {em:2, ef:{produtividade:12}, msg:"Os fornecedores voltaram — e com eles o prazo, o desconto e a obra andando.", tom:"boa"},
+       {em:4, ef:{abastecimento:10, caixa:15}, msg:"Comprar ficou mais barato: quem paga em dia negocia melhor. A confiança voltou a dar troco.", tom:"boa"}],
+     news:["Lei do Pagamento em 10 Dias sancionada. Fornecedor agora processa quem atrasar — inclusive você.","boa"],
+     aoEscolher:s=>{s.flags.crise3Resolvida=true}},
+    {rotulo:"Prometer que “um dia paga”", custo:"A espiral continua", ef:{},
+     ag:[{em:3, ef:{produtividade:-6, caixa:-8}, msg:"Mais uma semana comprando à vista com preço de risco. Desconfiança é o juro mais caro que existe.", tom:"ruim"}],
+     news:["Prefeitura “renegocia cronograma” com fornecedores.",""]}
+  ]},
 
 { id:"m2-02", quem:"A cidade", titulo:"A conta chegou",
   cond:s=>s.mandato===2 && s.flags.prometeuMais,
@@ -949,6 +1005,57 @@ const DECK = [
      news:["Proposta do Alvará Zero arquivada.",""]}
   ]},
 
+/* ---- ATO 3 · CONSTRUIR INSTITUIÇÕES: a regra que vale contra você ---- */
+{ id:"a3-licitacao", quem:"Ato 3 · Construir instituições", titulo:"A creche urgente",
+  cond:s=>s.mandato===2 && s.semana>=21 && s.semana<=24,
+  texto:"A creche do bairro novo não pode esperar. Uma construtora “de confiança” começa amanhã, sem licitação — “urgência justifica”. O outro caminho é edital aberto no portal: três semanas a mais, qualquer empresa concorre.",
+  opcoes:[
+    {rotulo:"Contratar a empresa amiga amanhã", custo:"−20 do caixa · obra começa já", ef:{aprovacao:5, caixa:-20},
+     ag:[
+       {em:4, ef:{corrupcao:8}, msg:"Primeiro aditivo da creche: +35%. “Solo instável”, diz a empresa que ninguém concorreu pra fiscalizar.", tom:"ruim"},
+       {em:6, ef:{caixa:-15}, msg:"Segundo aditivo. Sem edital, o preço é o que a “urgência” mandar.", tom:"ruim"}],
+     news:["Creche contratada por dispensa de licitação. Obra começa amanhã.","boa"]},
+    {rotulo:"Edital aberto, preço fechado, multa por atraso", custo:"3 semanas a mais · pais protestam", ef:{aprovacao:-4},
+     ag:[{em:4, ef:{produtividade:6, corrupcao:-4, caixa:8}, msg:"Sete empresas disputaram a creche. Saiu 30% mais barata — a concorrência fiscalizou por você.", tom:"boa"}],
+     news:["Edital da creche publicado no portal, aberto a qualquer empresa.",""]}
+  ]},
+{ id:"a3-conselho", quem:"Ato 3 · Construir instituições", titulo:"O conselho que diz não",
+  cond:s=>s.mandato===2 && s.semana>=21 && s.semana<=24,
+  texto:"A equipe propõe um conselho fiscal cidadão — sorteado, independente, com poder de barrar qualquer gasto sem edital. Inclusive os seus. “Prefeito nenhum cria juiz pra si mesmo”, ri o Prometedor.",
+  opcoes:[
+    {rotulo:"Criar o conselho — com poder de veto real", custo:"Você amarra as próprias mãos", ef:{aprovacao:-3, flags:{conselho:true}},
+     ag:[{em:5, ef:{corrupcao:-8, caixa:10}, msg:"O conselho barrou dois contratos com sobrepreço. Um deles era de um aliado seu. Doeu — e funcionou.", tom:"boa"}],
+     news:["Conselho Fiscal Cidadão instalado: gasto sem edital agora trava no veto.","boa"]},
+    {rotulo:"Manter a caneta livre", custo:"Governar rápido tem seu valor", ef:{},
+     ag:[{em:6, ef:{corrupcao:5}, msg:"Sem ninguém olhando por dever de ofício, o sobrepreço voltou de fininho — como sempre volta.", tom:"ruim"}],
+     news:["Proposta do conselho fiscal fica “em análise”.",""]}
+  ]},
+
+/* ---- ATO 4 · DEFENDER: o Marqueteiro na véspera da eleição ---- */
+{ id:"a4-fake", quem:"Ato 4 · Defender", tipo:"prometedor", titulo:"A corrente da véspera",
+  cond:s=>s.mandato===2 && s.semana>=25 && s.semana<=27,
+  aulaId:"falacias", marcaVista:"aulaFalaciasVista",
+  texto:"Um áudio anônimo tomou os grupos da cidade: sua voz, cortada e emendada, “confessando” um desvio. O Marqueteiro do Prometedor sorri nas fotos. Sua equipe propõe responder na mesma moeda: “a gente também sabe editar áudio”.",
+  opcoes:[
+    {rotulo:"Estudar o manual da manipulação", custo:"Abrir a aula “Falácias de Palanque” · +Lucidez", ef:{}, abrirAula:true},
+    {rotulo:"Responder com a íntegra, fonte e número", custo:"Gasta 1 de Lucidez · funciona se a cidade estudou", lucidez:1,
+     ef:{lucidez:-1}, aoEscolher:s=>{ if(s.escolaridade>=30){ aplicar({aprovacao:7}); noticia("Você publicou o áudio íntegro, a fonte e a conta. A cidade que estuda conferiu — e a corrente morreu na praia.","boa"); } else { aplicar({aprovacao:-5}); noticia("Você mostrou a íntegra; a corrente era mais rápida. Uma cidade sem escola não confere áudio.","ruim"); } }},
+    {rotulo:"Mandar fabricar uma corrente contra ele", custo:"Vence a semana, envenena o poço", ef:{aprovBase:10, flags:{fabricouFake:true}},
+     ag:[{em:3, ef:{aprovacao:-13, corrupcao:5}, msg:"A perícia rastreou a corrente até um computador da prefeitura. Agora, quando você fala a verdade, ninguém sabe.", tom:"ruim"}],
+     news:["Nova corrente anônima circula — desta vez contra o Prometedor.",""]}
+  ]},
+{ id:"a4-pesquisa", quem:"Ato 4 · Defender", tipo:"prometedor", titulo:"A pesquisa encomendada",
+  cond:s=>s.mandato===2 && s.semana>=25 && s.semana<=27,
+  texto:"Um instituto “parceiro” oferece a manchete pronta: você 15 pontos à frente, por um preço camarada. “Pesquisa boa anima o eleitor”, garante o Marqueteiro. A pesquisa séria, mais cara, mostra empate técnico.",
+  opcoes:[
+    {rotulo:"Comprar a manchete de 15 pontos", custo:"−12 do caixa · o número que anima", ef:{aprovBase:8, caixa:-12},
+     ag:[{em:2, ef:{aprovacao:-10}, msg:"A metodologia vazou: amostra de 40 pessoas, todas no gabinete. Manchete nova: “prefeitura pagou pra se ver bonita”.", tom:"ruim"}],
+     news:["Pesquisa aponta liderança folgada da prefeitura.","boa"]},
+    {rotulo:"Publicar a pesquisa séria — empate e tudo", custo:"O número duro, com metodologia aberta", ef:{aprovacao:-3},
+     ag:[{em:2, ef:{aprovacao:6}, msg:"O empate assustou — e mobilizou. Quem confia no seu número honesto passou a confiar no resto.", tom:"boa"}],
+     news:["Prefeitura divulga pesquisa com metodologia pública: empate técnico.",""]}
+  ]},
+
 { id:"m2-crise", quem:"A cidade", tipo:"crise", titulo:"O dinheiro que derrete",
   cond:s=>s.flags.crise2Disparada && !s.flags.crise2Resolvida,
   aulaId:"inflacao", marcaVista:"crise2Vista",
@@ -961,7 +1068,7 @@ const DECK = [
   ]},
 
 /* ============ EPÍLOGO — O LEGADO ============ */
-{ id:"m3-01", quem:"O Legado", titulo:"O que fica de pé sem você",
+{ id:"m3-01", quem:"Ato 5 · Transmitir", titulo:"O que fica de pé sem você",
   cond:s=>s.mandato===3,
   momento:{img:"vitoria.jpg", emoji:"🏛️", legenda:"A Rua Principal no seu último ano de mandato. A pergunta agora é outra: e quando você sair?"},
   texto:"Oito anos. Você conheceu a sedução, a conta e a reconstrução. O próximo prefeito pode ser um Prometedor — e tudo que depende de VOCÊ morre com o mandato. O que depende de INSTITUIÇÃO, fica.",
@@ -1567,6 +1674,42 @@ const AULAS = {
   ],
   instalaPainel:false,
   recompensa:3
+ },
+ confianca: {
+  titulo:"Confiança É Capital",
+  fonte:"Disciplina Empreendedorismo · módulo real da Escola Liberal",
+  paragrafos:[
+    "Quase todo negócio é uma <strong>promessa cruzada</strong>: o fornecedor entrega hoje e recebe mês que vem; o cliente leva no fiado; o pedreiro começa a obra antes do pagamento. Crédito vem do latim <em>credere</em> — acreditar. Sem acreditar, só existe o à vista.",
+    "Quando alguém quebra a palavra, o outro lado não para de vender — passa a <strong>cobrar o risco no preço</strong>: à vista, mais caro, com garantia. A desconfiança é um juro invisível que a cidade inteira paga, em cada compra.",
+    "Por isso, onde contrato vale, tudo fica mais barato e mais rápido — <strong>sem ninguém mandar</strong>. A confiança dispensa fiscal, garantia e adiantamento. Ela é um capital: demora anos para juntar e some numa canetada.",
+    "E o maior comprador da cidade é a prefeitura. Quando <strong>ela</strong> atrasa, ensina todo mundo a desconfiar — o calote público não fica no orçamento: espalha o juro da desconfiança por cada balcão da cidade."
+  ],
+  quiz:[
+    {p:"O que acontece quando a prefeitura atrasa os fornecedores?",
+     ops:["Nada — fornecedor de governo aguenta esperar","Eles embutem o risco no preço e passam a exigir à vista","Os preços caem, porque eles precisam vender"], certa:1},
+    {p:"Por que a confiança barateia a vida da cidade inteira?",
+     ops:["Porque dispensa garantias, adiantamentos e juros de risco em cada negócio","Porque o governo tabela os juros","Porque as pessoas compram menos"], certa:0}
+  ],
+  instalaPainel:false,
+  recompensa:3
+ },
+ falacias: {
+  titulo:"Falácias de Palanque",
+  fonte:"Disciplina Voto Consciente · módulo real da Escola Liberal",
+  paragrafos:[
+    "Falácia é um argumento que <strong>convence sem provar</strong>. O espantalho é a mais comum do palanque: inventar um adversário fácil — “ele é CONTRA o pão do povo!” — para não ter que debater o argumento verdadeiro, que é mais duro de vencer.",
+    "Apelo à emoção e urgência andam juntos: “é agora ou nunca”, “só um monstro recusaria”. A pressa existe para <strong>desligar a sua conta</strong>. As perguntas que religam: quanto custa, quem paga, o que deixa de ser feito com o mesmo dinheiro.",
+    "Ataque à pessoa e corrente sem assinatura são irmãos: quando a mensagem mira quem fala (não o que foi dito) e a fonte não dá as caras, ela não quer o seu juízo — quer o seu dedo no <strong>encaminhar</strong>.",
+    "O antídoto não é desconfiar de tudo: é <strong>método</strong>. Pedir o número, a fonte e o prazo. A mentira tem pressa, porque morre no dia seguinte; o fato aguenta pergunta — por isso quem tem fato responde, e quem não tem, grita."
+  ],
+  quiz:[
+    {p:"“Ou você apoia o subsídio, ou é contra o povo.” Isso é…",
+     ops:["Um argumento econômico","Um falso dilema: só oferece duas opções onde existem várias","Uma pesquisa de opinião"], certa:1},
+    {p:"Chega um áudio anônimo e alarmante no grupo. O método manda:",
+     ops:["Encaminhar rápido, vai que é verdade","Responder com outro áudio anônimo","Perguntar pela fonte, pelo número e pela íntegra antes de acreditar"], certa:2}
+  ],
+  instalaPainel:false,
+  recompensa:3
  }
 };
 
@@ -1735,6 +1878,7 @@ function cartaAtual(){
   // cartas de crise são dinâmicas: entram na frente do deck assim que o gatilho dispara
   if(S.criseDisparada && !S.flags.criseVista) return DECK.find(c=>c.id==="a1-11");
   if(S.flags.crise2Disparada && !S.flags.crise2Vista) return DECK.find(c=>c.id==="m2-crise");
+  if(S.flags.crise3Disparada && !S.flags.crise3Vista) return DECK.find(c=>c.id==="a2-crise");
   // momento da recuperação: a cidade respira depois da reforma surtir efeito
   if(S.flags.reformou && (S.flags.recuperou || S.abastecimento>=60) && !S.flags.vistaSolucao) return {
     id:"m-solucao", tipo:"filler", quem:"A cidade", titulo:"As prateleiras voltaram",

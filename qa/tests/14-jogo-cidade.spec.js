@@ -148,6 +148,27 @@ test.describe('Cidade Livre — tabuleiro de gestão', () => {
     expect(save.duelo?.score).toBe(3);
   });
 
+  test('mandato 2 abre o Ato 2 (Cooperar) e a urna continua na semana 28', async ({ page }) => {
+    await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
+    // entra no mandato 2 com o deck do Ato 1 esgotado
+    await page.evaluate(() => {
+      S.flags.viuCapa = true; S.mandato = 2; S.semana = 15;
+      S.jogadas = DECK.filter(c => c.id.startsWith('a1')).map(c => c.id).concat(['m2-01']);
+      salvar(); renderTudo();
+    });
+    await expect(page.locator('#carta .quem')).toContainText('Ato 2');
+    await expect(page.locator('#carta h2')).toHaveText('A fatura dos fornecedores');
+
+    // com o deck esgotado, a eleição chega na semana 28
+    await page.evaluate(() => {
+      S.semana = 27;
+      S.jogadas = DECK.filter(c => !['eleicao', 'crise'].includes(c.tipo || '')).map(c => c.id);
+      salvar(); renderTudo();
+    });
+    await page.locator('#carta .opcao').first().click();
+    await expect(page.locator('#carta h2')).toHaveText('Dia de eleição');
+  });
+
   test('escola oferece a grade curricular e adicionar disciplina desconta o caixa', async ({ page }) => {
     await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
     await page.evaluate(() => { localStorage.removeItem('escola_jogo_cidade_v1'); location.reload(); });
