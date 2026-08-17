@@ -464,7 +464,8 @@ function estadoInicial(){
     caiuNaTentacao: false, fim: null,
     ultimoDelta: {}, streak: 0, semanasAprovBaixa: 0,
     vistas: [], aulasDadas: [],
-    lotes: lotesIniciais(), equipes: [{ocupada:0, loteId:null}]
+    lotes: lotesIniciais(), equipes: [{ocupada:0, loteId:null}],
+    curriculo: [] // grade da escola municipal: disciplinas reais da Escola Liberal (GDD 6.1)
   };
 }
 function iniciarVitalicio(){
@@ -498,6 +499,7 @@ function lotesIniciais(){
 }
 let S = carregar() || estadoInicial();
 if(!S.lotes){ S.lotes = lotesIniciais(); S.equipes = [{ocupada:0, loteId:null}]; }
+if(!S.curriculo) S.curriculo = []; // saves antigos: escola ainda sem grade
 
 /* ---------- suco: som sintetizado + tremida de tela ---------- */
 let _audio = null;
@@ -651,7 +653,9 @@ function realidade(st){ // índice de prosperidade real (o que a cidade vive)
   return clamp(Math.round(st.abastecimento*0.35 + st.moradia*0.3 + st.produtividade*0.35 - st.corrupcao*0.5), 0, 100);
 }
 function multIgnorancia(st){ // demagogia rende menos numa cidade educada
-  return clamp(1 - st.escolaridade/150, 0.3, 1);
+  const base = clamp(1 - st.escolaridade/150, 0.3, 1);
+  // Lógica na grade da escola: a cidade aprende a farejar falácia — a armadilha do próprio jogo desarma
+  return discAtiva("logica") ? Math.max(0.2, base - 0.25) : base;
 }
 function salvar(){ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }
 function carregar(){
@@ -1202,6 +1206,33 @@ const CONSTRUCOES = {
   ]
 };
 
+/* ---------- currículo da cidade (GDD 6.1): educação como vacina ----------
+   O jogador monta a grade da escola com disciplinas REAIS da Escola Liberal.
+   Cada uma tem efeito sistêmico próprio, retorno LENTO (primeira turma leva
+   semanas) e linka pro módulo real do app — o jogo é o mapa do currículo. */
+const FORMATURA = 10; // semanas até a primeira turma se formar
+const GRADE = [
+  {id:"financeira",  emoji:"💰", nome:"Educação Financeira", custo:30, mod:27,
+   efeito:"cidadãos poupam e investem — +1 no caixa toda semana"},
+  {id:"logica",      emoji:"🧠", nome:"Lógica",              custo:30, mod:36,
+   efeito:"vacina contra falácias — promessas fáceis rendem bem menos aprovação"},
+  {id:"empreendedor",emoji:"🚀", nome:"Empreendedorismo",    custo:35, mod:66,
+   efeito:"a cada 6 semanas um ex-aluno abre negócio — arrecadação sem subir imposto"},
+  {id:"voto",        emoji:"🗳️", nome:"Voto Consciente",     custo:25, mod:174,
+   efeito:"as urnas passam a enxergar a gestão real, não só o marketing"}
+];
+function discAtiva(id){ // efeito só depois da primeira turma formada
+  const d = (S.curriculo||[]).find(x=>x.id===id);
+  return !!d && (S.semana - d.desde) >= FORMATURA;
+}
+function adicionarDisciplina(g){
+  if(S.caixa < g.custo || (S.curriculo||[]).find(x=>x.id===g.id)) return;
+  S.caixa -= g.custo;
+  S.curriculo.push({id:g.id, desde:S.semana});
+  sfx("ding"); fecharLote(); salvar(); renderTudo();
+  noticia(`📚 ${g.nome} entrou na grade da escola. A primeira turma se forma em ${FORMATURA} semanas — educação é o investimento mais lento (e mais teimoso) da cidade.`,"boa");
+}
+
 function acoesDoLote(l){
   const acs = [];
   const eq = equipeLivre();
@@ -1223,8 +1254,28 @@ function acoesDoLote(l){
   }
   if(l.tipo==="escola" && l.nivel<3 && l.estado==="bom"){
     const custo = l.nivel===1? 25 : 40;
-    acs.push({rot:`📚 Ampliar a escola (nível ${l.nivel+1})`, custo:`−${custo} do caixa · 3 semanas${semEq} · +escolaridade contínua`, off:!eq||S.caixa<custo,
+    acs.push({rot:`📚 Ampliar a escola (nível ${l.nivel+1})`, custo:`−${custo} do caixa · 3 semanas${semEq} · +escolaridade e +vagas na grade`, off:!eq||S.caixa<custo,
       run:()=>iniciarObra(l, 3, custo, {escolaridade:4}, "Escola ampliada: mais turmas, mais futuro conferindo as contas.", {nivelUp:true})});
+  }
+  if(l.tipo==="escola" && l.estado!=="obra"){
+    // grade curricular: nível da escola = vagas (1 → 1 disciplina, 2 → 2, 3 → todas)
+    const vagas = l.nivel>=3? GRADE.length : l.nivel;
+    const naGrade = S.curriculo||[];
+    for(const g of GRADE){
+      const tem = naGrade.find(x=>x.id===g.id);
+      if(tem){
+        const falta = FORMATURA - (S.semana - tem.desde);
+        acs.push({rot:`${g.emoji} ${g.nome} ✓`,
+          custo:(falta>0? `primeira turma em ${falta} semana${falta===1?"":"s"}` : "turma formada — efeito ativo")+" · toque para estudar a disciplina real",
+          run:()=>{ window.open("https://escolaliberal.com.br/app.html#module-"+g.mod, "_blank", "noopener"); }});
+      } else if(naGrade.length < vagas){
+        acs.push({rot:`${g.emoji} Adicionar ${g.nome} à grade`,
+          custo:`−${g.custo} do caixa · ${g.efeito} · primeira turma em ${FORMATURA} semanas`,
+          off:S.caixa<g.custo, run:()=>adicionarDisciplina(g)});
+      }
+    }
+    if(naGrade.length>=vagas && naGrade.length<GRADE.length)
+      acs.push({rot:"🏫 Grade cheia para o tamanho da escola", custo:"amplie a escola para abrir mais vagas", off:true});
   }
   if(l.tipo==="praca" && !l.construcao && l.estado==="bom"){
     for(const c of CONSTRUCOES.praca)
@@ -1289,6 +1340,25 @@ function tickLotes(){
     if(l.tipo==="rua" && l.estado==="ruim"){
       S.aprovacao = clamp(S.aprovacao-1,0,100);
       _flutuas.push({id:l.id, txt:"−1👍", tipo:"neg"});
+    }
+  }
+  // currículo da cidade: cada disciplina formada trabalha sozinha, e os efeitos COMPÕEM (GDD 6.1)
+  for(const c of (S.curriculo||[])){
+    const idade = S.semana - c.desde;
+    const g = GRADE.find(x=>x.id===c.id); if(!g) continue;
+    if(idade === FORMATURA){
+      aplicar({escolaridade:4});
+      _flutuas.push({id:"escola", txt:"+4📚", tipo:"pos"});
+      noticia(`🎓 Primeira turma de ${g.nome} formada. A partir de agora: ${g.efeito}.`,"boa"); sfx("ding");
+    }
+    if(idade >= FORMATURA){
+      if(c.id==="financeira"){ aplicar({caixa:1}); _flutuas.push({id:"escola", txt:"+1💰", tipo:"pos"}); }
+      if(c.id==="empreendedor" && idade % 6 === 0){
+        aplicar({caixa:6, produtividade:1});
+        _flutuas.push({id:"escola", txt:"+6💰", tipo:"pos"});
+        noticia("🚀 Um ex-aluno da escola abriu negócio próprio: arrecadação nova sem subir um centavo de imposto.","boa");
+      }
+      // logica age em multIgnorancia (demagogia rende menos); voto age na apuração das urnas
     }
   }
   // degradação: a cidade nunca fica pronta (mais agressiva no vitalício)
@@ -1557,6 +1627,7 @@ function renderCidade(){
     const fila = (l.tipo==="padaria"||l.tipo==="mercado") && S.abastecimento<50 && !fechado;
     const badge = l.estado==="obra" ? `🔨${l.obraSemanas}`
                 : l.estado==="ruim" ? "⚠️"
+                : (l.tipo==="escola" && (S.curriculo||[]).length) ? (l.nivel>1?"✦".repeat(l.nivel-1):"")+`🎓${S.curriculo.length}`
                 : l.nivel>1 ? "✦".repeat(l.nivel-1)
                 : l.tipo==="vazio" ? "＋" : "";
     const acionavel = !fechado;
@@ -1795,7 +1866,9 @@ function concluirAula(acertos, AULA){
 /* ---------- eleição e fim ---------- */
 function apurarEleicao(){
   const r = realidade(S);
-  const score = S.imprensaLivre ? Math.round(S.aprovacao*0.55 + r*0.45) : S.aprovacao;
+  // Voto Consciente na grade: o eleitor confere a gestão real por conta própria — mesmo sem imprensa livre
+  const pesoReal = (S.imprensaLivre ? 0.45 : 0) + (discAtiva("voto") ? 0.20 : 0);
+  const score = Math.round(S.aprovacao*(1-pesoReal) + r*pesoReal);
   const venceu = score >= 50;
   if(S.modo==="vitalicio"){
     if(!venceu){ gameOverVitalicio("urnas"); return; }

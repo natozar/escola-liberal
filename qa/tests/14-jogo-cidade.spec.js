@@ -148,6 +148,24 @@ test.describe('Cidade Livre — tabuleiro de gestão', () => {
     expect(save.duelo?.score).toBe(3);
   });
 
+  test('escola oferece a grade curricular e adicionar disciplina desconta o caixa', async ({ page }) => {
+    await page.goto('/jogo.html', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => { localStorage.removeItem('escola_jogo_cidade_v1'); location.reload(); });
+    await page.waitForLoadState('domcontentloaded');
+
+    await page.locator('.predio.lote', { hasText: 'escola' }).click();
+    await expect(page.locator('#loteSheet')).toContainText('Adicionar Educação Financeira');
+    await page.locator('#loteSheet .opcao', { hasText: 'Educação Financeira' }).click();
+
+    const st = await page.evaluate(() => {
+      const s = JSON.parse(localStorage.getItem('escola_jogo_cidade_v1') || '{}');
+      return { caixa: s.caixa, curriculo: s.curriculo };
+    });
+    expect(st.caixa).toBe(70);
+    expect(st.curriculo?.[0]?.id).toBe('financeira');
+    await expect(page.locator('.predio.lote', { hasText: 'escola' }).locator('.lote-badge')).toContainText('🎓1');
+  });
+
   test('cidade-fantasma 3D aparece no horizonte após receber um duelo', async ({ page }) => {
     const payload = Buffer.from(JSON.stringify({ s: 20263302, c: 'nova', p: 23, n: 'Marina', r: 78, b: 11 }))
       .toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
