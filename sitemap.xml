@@ -35,7 +35,7 @@
   <!-- Blog -->
   <url>
     <loc>https://escolaliberal.com.br/blog.html</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -124,6 +124,7 @@
   <url><loc>https://escolaliberal.com.br/blog/voto-perguntas-para-avaliar-promessa-politica.html</loc><lastmod>2026-08-14</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://escolaliberal.com.br/blog/voto-como-funciona-o-marketing-politico.html</loc><lastmod>2026-08-15</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://escolaliberal.com.br/blog/voto-falacias-em-discurso-politico.html</loc><lastmod>2026-08-16</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://escolaliberal.com.br/blog/voto-emocao-e-manipulacao-eleitoral.html</loc><lastmod>2026-08-17</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <!-- Offline fallback (crawlable for PWA) -->
   <url>
     <loc>https://escolaliberal.com.br/offline.html</loc>

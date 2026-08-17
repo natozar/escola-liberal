@@ -5849,7 +5849,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 33,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5858,7 +5858,8 @@
       "votoLesson": 2,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-17T12:33:10.176Z"
     },
     {
       "slug": "voto-como-identificar-fake-news-eleitoral",
