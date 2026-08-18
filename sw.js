@@ -44,6 +44,13 @@ const CORE_ASSETS = [
   './assets/jogo/escola-frutos.jpg',
   './assets/jogo/assinatura.jpg',
   './assets/jogo/gabinete-vazio.jpg',
+  './assets/jogo/faturas.jpg',
+  './assets/jogo/feira-vazia.jpg',
+  './assets/jogo/cooperativa.jpg',
+  './assets/jogo/creche-obra.jpg',
+  './assets/jogo/conselho.jpg',
+  './assets/jogo/corrente-zap.jpg',
+  './assets/jogo/pesquisa.jpg',
   './manifest.json',
   './blog-marketing.css',
   './blog-marketing.js'

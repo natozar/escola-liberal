@@ -894,6 +894,7 @@ const DECK = [
 /* ---- ATO 2 · COOPERAR: troca voluntária, contrato, confiança ---- */
 { id:"a2-fiado", quem:"Ato 2 · Cooperar", titulo:"A fatura dos fornecedores",
   cond:s=>s.mandato===2 && s.semana<=20,
+  momento:{img:"faturas.jpg", emoji:"🧾", legenda:"A pilha na mesa do contador: cada folha é uma promessa da prefeitura — e alguém do outro lado, esperando."},
   texto:"O contador empilha as faturas: merenda, remédio, material da obra. Pagar em dia aperta o caixa. Mas fornecedor de prefeitura, todo mundo sabe, “aguenta esperar”.",
   opcoes:[
     {rotulo:"Pagar tudo em dia, cortando o resto", custo:"−18 do caixa · sem manchete, sem aplauso", ef:{caixa:-18, aprovacao:-3},
@@ -907,6 +908,7 @@ const DECK = [
   ]},
 { id:"a2-cooperativa", quem:"Ato 2 · Cooperar", titulo:"A cooperativa de crédito",
   cond:s=>s.mandato===2 && s.semana<=20,
+  momento:{img:"cooperativa.jpg", emoji:"🤝 🗳️", legenda:"A assembleia da cooperativa: a poupança da cidade, reunida em salão de bairro, decidindo ficar em casa."},
   texto:"Feirantes e comerciantes querem fundar uma cooperativa de crédito: a poupança da cidade emprestada na própria cidade. O gerente do banco grande liga reclamando. A equipe sugere “um estudo de viabilidade de uns dois anos”.",
   opcoes:[
     {rotulo:"Autorizar já, com estatuto público", custo:"O banco grande fica contrariado", ef:{aprovacao:3},
@@ -921,7 +923,7 @@ const DECK = [
 { id:"a2-crise", quem:"A cidade", tipo:"crise", titulo:"A cidade que desconfia",
   cond:s=>s.flags.crise3Disparada && !s.flags.crise3Resolvida,
   aulaId:"confianca", marcaVista:"crise3Vista",
-  momento:{img:"comercio-fechado.jpg", emoji:"🤝 ❌", legenda:"Portas fechadas na hora do almoço: onde a palavra não vale, o negócio não abre."},
+  momento:{img:"feira-vazia.jpg", emoji:"🤝 ❌", legenda:"Meio-dia na feira: banca cheia, corredor vazio. Desconfiança não faz barulho — faz falta."},
   texto:"O fiado acabou na cidade inteira. A obra parou por falta de fornecedor. Na feira, só se vende à vista — “confiar, só na maquininha”. Ninguém decretou nada; a desconfiança se espalhou sozinha.",
   opcoes:[
     {rotulo:"Entender o que aconteceu", custo:"Abrir a aula “Confiança É Capital”", ef:{}, abrirAula:true, destaque:true},
@@ -1008,6 +1010,7 @@ const DECK = [
 /* ---- ATO 3 · CONSTRUIR INSTITUIÇÕES: a regra que vale contra você ---- */
 { id:"a3-licitacao", quem:"Ato 3 · Construir instituições", titulo:"A creche urgente",
   cond:s=>s.mandato===2 && s.semana>=21 && s.semana<=24,
+  momento:{img:"creche-obra.jpg", emoji:"🏗️ 🧱", legenda:"A creche subindo tijolo a tijolo — no tamanho da cidade, no preço do edital."},
   texto:"A creche do bairro novo não pode esperar. Uma construtora “de confiança” começa amanhã, sem licitação — “urgência justifica”. O outro caminho é edital aberto no portal: três semanas a mais, qualquer empresa concorre.",
   opcoes:[
     {rotulo:"Contratar a empresa amiga amanhã", custo:"−20 do caixa · obra começa já", ef:{aprovacao:5, caixa:-20},
@@ -1021,6 +1024,7 @@ const DECK = [
   ]},
 { id:"a3-conselho", quem:"Ato 3 · Construir instituições", titulo:"O conselho que diz não",
   cond:s=>s.mandato===2 && s.semana>=21 && s.semana<=24,
+  momento:{img:"conselho.jpg", emoji:"🪑 📑", legenda:"Os contratos na mesa do conselho: cada pasta é um gasto esperando alguém perguntar por quê."},
   texto:"A equipe propõe um conselho fiscal cidadão — sorteado, independente, com poder de barrar qualquer gasto sem edital. Inclusive os seus. “Prefeito nenhum cria juiz pra si mesmo”, ri o Prometedor.",
   opcoes:[
     {rotulo:"Criar o conselho — com poder de veto real", custo:"Você amarra as próprias mãos", ef:{aprovacao:-3, flags:{conselho:true}},
@@ -1034,6 +1038,7 @@ const DECK = [
 /* ---- ATO 4 · DEFENDER: o Marqueteiro na véspera da eleição ---- */
 { id:"a4-fake", quem:"Ato 4 · Defender", tipo:"prometedor", titulo:"A corrente da véspera",
   cond:s=>s.mandato===2 && s.semana>=25 && s.semana<=27,
+  momento:{img:"corrente-zap.jpg", emoji:"📱 🌒", legenda:"Três da manhã, a tela acesa: a corrente não dorme — e não assina."},
   aulaId:"falacias", marcaVista:"aulaFalaciasVista",
   texto:"Um áudio anônimo tomou os grupos da cidade: sua voz, cortada e emendada, “confessando” um desvio. O Marqueteiro do Prometedor sorri nas fotos. Sua equipe propõe responder na mesma moeda: “a gente também sabe editar áudio”.",
   opcoes:[
@@ -1046,6 +1051,7 @@ const DECK = [
   ]},
 { id:"a4-pesquisa", quem:"Ato 4 · Defender", tipo:"prometedor", titulo:"A pesquisa encomendada",
   cond:s=>s.mandato===2 && s.semana>=25 && s.semana<=27,
+  momento:{img:"pesquisa.jpg", emoji:"📊 🖊️", legenda:"Números na mesa, caneta vermelha na mão: a manchete pronta, esperando alguém pagar por ela."},
   texto:"Um instituto “parceiro” oferece a manchete pronta: você 15 pontos à frente, por um preço camarada. “Pesquisa boa anima o eleitor”, garante o Marqueteiro. A pesquisa séria, mais cara, mostra empate técnico.",
   opcoes:[
     {rotulo:"Comprar a manchete de 15 pontos", custo:"−12 do caixa · o número que anima", ef:{aprovBase:8, caixa:-12},
