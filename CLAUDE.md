@@ -2,7 +2,7 @@
 
 ## Identidade do Projeto
 
-Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 30 disciplinas, 180 módulos, 1.800 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN (com `history` em CLIL — American History em inglês). Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
+Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 31 disciplinas, 186 módulos, 1.860 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN (com `history` em CLIL — American History em inglês). Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
 
 **Domínio:** escolaliberal.com.br
 **Repo:** github.com/natozar/escola-liberal
@@ -19,7 +19,7 @@ Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a ed
 | Backend | Supabase (auth, database, realtime sync) |
 | Pagamentos | Stripe (checkout via Edge Functions) |
 | IA | API Anthropic (Claude) — tutor + quiz generator |
-| PWA | Service Worker v164 (network-first + stale-while-revalidate + cache-first) |
+| PWA | Service Worker v229 (network-first + stale-while-revalidate + cache-first) |
 | Testes | Playwright + html-validate + Lighthouse + Axe |
 | CI/CD | GitHub Actions → GitHub Pages |
 
@@ -743,8 +743,8 @@ Deploy → SW novo detectado (polling 60s)
 - **gen-integrity.mjs:** parametrizado para aceitar dir/output via CLI args.
 - SW v161
 
-### Curriculo (estado atual pos-auditoria 2026-04-25, atualizado 2026-07-14)
-- 30 disciplinas, 6 modulos por disciplina (uniforme), 180 modulos total, 1.800 aulas
+### Curriculo (estado atual pos-auditoria 2026-04-25, atualizado 2026-08-20)
+- 31 disciplinas, 6 modulos por disciplina (uniforme), 186 modulos total, 1.860 aulas
 - `historia` (BR, PT) e `history` (EUA, EN/CLIL) sao disciplinas distintas DELIBERADAMENTE (nao bug)
 - Sequencia entre modulos controlada por campo `order` em cada modulo (fallback: idx do arquivo)
 - IDs unicos garantidos (script `scripts/editorial-fixes.mjs` valida)
@@ -810,6 +810,51 @@ Deploy → SW novo detectado (polling 60s)
 - SW v163 (atual)
 
 ---
+
+### Concluido nesta sessao (2026-08-20 — Disciplina Trader: Mercado Futuro)
+- **Nova disciplina `trader` ("Trader: Mercado Futuro" 📊, accent `honey`, `order:30` — ultima do grid)**
+- 6 modulos novos: mod-180 a mod-185 (60 aulas, ~255KB, media ~4.350 chars/aula):
+  - mod-180 `trader-fundamentos-mercado-futuro` — derivativo, hedger x especulador (Mises/Hayek), clearing da B3,
+    alavancagem, ajuste diario, serie e rolagem, custos + DARF, o estudo da FGV, quem nao deveria operar
+  - mod-181 `trader-anatomia-do-wdo` — ficha tecnica do WDO, aritmetica em pontos (1 pt = R$ 10, tick 0,5 = R$ 5),
+    margem, relogio do pregao, gatilhos intraday, PTAX, rolagem, correlacoes (DI/WIN/cupom), operacao ficticia completa
+  - mod-182 `trader-plataforma-profit` — a ferramenta: layout e workspace, grafico, boleta e tipos de ordem,
+    book/Super DOM, Times & Trades, indicadores, simulador e replay, risco automatico, checklist pre-ordem
+  - mod-183 `trader-leitura-grafico-fluxo` — tendencia, suporte/resistencia, candles, medias e VWAP, volume,
+    fluxo/absorcao/spoofing, abertura, 3 estruturas classicas E COMO CADA UMA FALHA, contexto macro, limites da AT
+  - mod-184 `trader-gestao-de-risco` — risco por operacao, tamanho de posicao, stop, risco-retorno x taxa de acerto,
+    drawdown assimetrico, limites diarios, expectativa matematica, diario de trades, backtest honesto, plano de 1 pagina
+  - mod-185 `trader-do-simulador-a-conta-real` — criterio de passagem, abertura de conta, choque do dinheiro real,
+    DARF na pratica, escalar contratos, como reconhecer golpe (CVM), infraestrutura, trading como negocio, alternativas
+- **REGRA EDITORIAL da disciplina: ensina MECANICA e RISCO, nunca decisao.** Zero recomendacao operacional
+  ("compre/venda/alvo"), zero preco real do dolar (exemplos ficticios declarados), zero guru/corretora/curso citado.
+  O estudo da FGV (Chague, De-Losso, Giovannetti — ~97% dos que persistiram por mais de 300 pregoes perderam)
+  aparece como aula inteira (mod-180 aula 9) e e retomado nos modulos 182 e 185. Postura liberal: informacao completa,
+  responsabilidade individual, sem paternalismo e sem vender ilusao.
+- **Compliance:** caixa `.lesson-warn` com aviso de risco na aula 1 de cada modulo + versao curta em toda aula que
+  descreve execucao de ordem. Marca `Profit® e marca da Nelogica. Material independente, sem qualquer vinculo` no
+  mod-182 aula 1 (uso nominativo). `termos.html` ganhou a secao **8-A — Conteudo sobre Mercados de Alto Risco**
+  (nao somos analista/consultor/gestor por Res. CVM 19, 20 e 21/2021; perda pode superar o capital; sem promessa de
+  resultado; DARF e do usuario; marcas de terceiros; sem intermediacao; oferta de "renda garantida" em nosso nome e fraude).
+- **Primeira disciplina com DIAGRAMAS.** Nenhuma aula do curriculo usava imagem. Aqui os conceitos visuais
+  (book de ofertas, layout da Profit, curva de drawdown, regua de pontos, estrutura de tendencia) sao `<svg>` inline
+  desenhados a mao, coloridos APENAS por variavel CSS (`--honey`/`--sage`/`--coral`/`--text-primary`/`--border`/`--bg-card`)
+  para funcionarem em dark e light. Escolha deliberada em vez de screenshot: zero asset novo, funciona offline,
+  sem risco de copyright de interface de terceiro.
+- **`app.css`:** 3 blocos novos que o conteudo exigia e nao existiam — `.lesv-body table` (com scroll-x no mobile),
+  `.lesson-warn` (coral) e `.lesv-body svg`. As tabelas ja eram usadas por 9 modulos antigos sem estilo nenhum.
+- **`scripts/qa-trader.mjs`** (novo): linter da disciplina — schema, HTML balanceado, tags proibidas, quiz,
+  cores de SVG validadas contra as variaveis que existem de fato no `app.css`, compliance (aviso, linguagem de
+  recomendacao com guarda de negacao, atribuicao de marca) e cliches de IA. Rodar: `node scripts/qa-trader.mjs`.
+  Aceita numeros de modulo como argumento para servir de linter generico de qualquer modulo (`node scripts/qa-trader.mjs 174 175`).
+- **`scripts/append-index.mjs`** (novo): acrescenta modulos ao `lessons/index.json`. IMPORTANTE — o index NAO e
+  derivavel dos `mod-N.json` (63 dos 180 modulos antigos divergem por campos legados), entao a operacao e sempre
+  APPEND posicional validado, nunca rebuild.
+- **LP:** card da disciplina Trader no grid do `index.html` — e tambem o card do **Voto Consciente**, que estava
+  anunciado como "NOVO" nas meta tags desde julho mas nunca ganhou card no corpo da pagina.
+- Contagens **31 disciplinas / 186 modulos / 1.860 aulas** propagadas em 151 arquivos (LP, institucional, app, admin,
+  `src/features/social.js`, template do blog e todos os posts publicados e em rascunho).
+- SW v229
 
 ## Jogo "Cidade Livre" (jogo.html) — 2026-08-08/09
 

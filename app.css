@@ -1643,3 +1643,18 @@ body{}
 .lb-mini-rank{font-weight:700;color:var(--text-primary);flex:1}
 .lb-mini-timer{font-size:.7rem;color:var(--text-muted)}
 .lb-mini-arrow{color:var(--text-muted)}
+
+/* === CONTEUDO DIDATICO: TABELAS, AVISOS E DIAGRAMAS === */
+.lesv-body table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.85rem;display:block;overflow-x:auto;white-space:nowrap}
+@media(min-width:700px){.lesv-body table{display:table;white-space:normal}}
+.lesv-body thead th{text-align:left;font-weight:700;color:var(--text-primary);background:var(--bg-elevated);padding:.6rem .75rem;border-bottom:2px solid var(--border);font-size:.78rem;text-transform:uppercase;letter-spacing:.4px}
+.lesv-body tbody td{padding:.6rem .75rem;border-bottom:1px solid var(--border);color:var(--text-secondary);line-height:1.6;vertical-align:top}
+.lesv-body tbody tr:last-child td{border-bottom:none}
+.lesv-body tbody tr:nth-child(even) td{background:var(--bg-secondary)}
+.lesv-body td strong{color:var(--text-primary)}
+
+.lesson-warn{background:var(--coral-muted);border-left:3px solid var(--coral);padding:1rem 1.25rem;border-radius:0 var(--r-sm) var(--r-sm) 0;margin:1.75rem 0;font-size:.85rem;line-height:1.7;color:var(--text-secondary)}
+.lesson-warn strong{color:var(--coral)}
+
+.lesv-body svg{display:block;width:100%;height:auto;max-width:100%;margin:1.75rem 0;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--r-md);padding:.75rem;font-family:'DM Sans',sans-serif}
+.lesv-body svg text{font-family:'DM Sans',sans-serif}

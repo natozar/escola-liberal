@@ -80,7 +80,7 @@ TAREFA: Escreva artigo educacional completo em HTML (apenas conteudo dentro de <
 
 === REGRAS DE VINCULACAO AS AULAS ===
 1. O artigo e extensao da disciplina "${kw.discipline}" da Escola Liberal.
-2. Na ultima secao, conectar: "Na Escola Liberal, a disciplina de ${kw.discipline} aprofunda esse tema com aulas interativas, quizzes e exercicios praticos. Sao 1.800 aulas gratuitas em 30 disciplinas."
+2. Na ultima secao, conectar: "Na Escola Liberal, a disciplina de ${kw.discipline} aprofunda esse tema com aulas interativas, quizzes e exercicios praticos. Sao 1.860 aulas gratuitas em 31 disciplinas."
 3. DISCIPLINAS RELACIONADAS (mencionar naturalmente): ${discCtx}
 4. O artigo deve ser util por si so — o leitor veio do Google, nao conhece a escola.
 
@@ -204,7 +204,7 @@ function wrapTemplate(kw, body, dateISO) {
 ${body}
     <p style="font-size:.8rem;color:var(--dim);font-style:italic;margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border)">${getDisclaimer(kw.cluster)}</p>
   </article>
-  <div class="cta"><h3>Comece hoje. E 100% gratuito.</h3><p>1.800 aulas interativas, 30 disciplinas, gamificacao completa. Para adultos. Funciona offline.</p><a href="../app.html">Comecar Gratuitamente →</a></div>
+  <div class="cta"><h3>Comece hoje. E 100% gratuito.</h3><p>1.860 aulas interativas, 31 disciplinas, gamificacao completa. Para adultos. Funciona offline.</p><a href="../app.html">Comecar Gratuitamente →</a></div>
   <div class="footer"><p>Escola Liberal © 2026 · <a href="../termos.html">Termos</a> · <a href="../privacidade.html">Privacidade</a> · <a href="../contato.html">Contato</a></p></div>
 </div>
 <script>

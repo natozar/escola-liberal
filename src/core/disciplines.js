@@ -31,7 +31,8 @@ const DISCIPLINES={
   sustentabilidade:{label:'Sustentabilidade',icon:'🌱',order:26},
   espanhol:{label:'Espanhol',icon:'🇪🇸',order:27},
   investimentos:{label:'Investimentos',icon:'📈',order:28},
-  produtividade:{label:'Produtividade',icon:'⚡',order:29}
+  produtividade:{label:'Produtividade',icon:'⚡',order:29},
+  trader:{label:'Trader: Mercado Futuro',icon:'📊',order:30}
 };
 const COLOR_MAP={
   sage:'var(--sage)',sky:'var(--sky)',honey:'var(--honey)',
@@ -54,7 +55,8 @@ const DISC_ACCENT={
   programacao:'sky',oratoria:'honey',civica:'sage',
   empreendedorismo:'coral',tributario:'sage',trabalhista:'honey',marketing:'sky',sustentabilidade:'mint',
   espanhol:'coral',
-  investimentos:'mint',produtividade:'lavender'
+  investimentos:'mint',produtividade:'lavender',
+  trader:'honey'
 };
 function setDiscAccent(disc){
   const color=DISC_ACCENT[disc]||'sage';
