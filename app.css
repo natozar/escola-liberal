@@ -1658,3 +1658,18 @@ body{}
 
 .lesv-body svg{display:block;width:100%;height:auto;max-width:100%;margin:1.75rem 0;background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--r-md);padding:.75rem;font-family:'DM Sans',sans-serif}
 .lesv-body svg text{font-family:'DM Sans',sans-serif}
+/* Diagrama em container rolavel: no celular o SVG de 640 de largura era
+   escalado para ~44%, derrubando o texto de 11px para ~4,8px (QA 2026-08-21).
+   Agora ele mantem o tamanho desenhado e o container rola na horizontal,
+   igual ao tratamento ja dado as tabelas. */
+.lesv-fig{margin:1.75rem 0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.lesv-fig svg{margin:0}
+.lesv-fig:focus-visible{outline:2px solid var(--accent-active,var(--sage));outline-offset:3px;border-radius:var(--r-md)}
+@media(max-width:699px){.lesv-fig svg{min-width:640px}}
+
+/* Indicio de rolagem horizontal em tabela/diagrama. Inserido por
+   markScrollables() apenas quando o elemento realmente transborda. */
+.scrollx-hint{display:none}
+@media(max-width:699px){
+  .scrollx-hint{display:block;margin:-1rem 0 1.4rem;font-size:.72rem;color:var(--text-muted);letter-spacing:.02em}
+}

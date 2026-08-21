@@ -12,9 +12,9 @@ function shareWhatsApp(){
   const pct=total?Math.round(done/total*100):0;
   const xp=window.totalXP();
   const msgs=[
-    `Você sabe por que o real perde valor todo ano? 🤔\n\nEu não sabia. Aprendi na Escola Liberal — escola gratuita pra adultos, direto no celular.\n\n👉 https://escolaliberal.com.br\n\nSão 1.860 aulas de 5 minutos: dinheiro, juros, impostos, filosofia, como abrir um negócio. Tudo que a escola devia ter ensinado e não ensinou.\n\nJá fiz ${pct}% — duvido você me alcançar 🏆`,
+    `Você sabe por que o real perde valor todo ano? 🤔\n\nEu não sabia. Aprendi na Escola Liberal — escola gratuita pra adultos, direto no celular.\n\n👉 https://escolaliberal.com.br\n\nSão 1.940 aulas de 5 minutos: dinheiro, juros, impostos, filosofia, como abrir um negócio. Tudo que a escola devia ter ensinado e não ensinou.\n\nJá fiz ${pct}% — duvido você me alcançar 🏆`,
     `Descobri uma escola GRATUITA que ensina o que importa 📚\n\n💰 Como sair das dívidas e investir\n🗳️ Como escolher candidato sem cair em conversa\n🧠 Como argumentar e detectar manipulação\n🚀 Como abrir um negócio do zero\n\n👉 https://escolaliberal.com.br\n\nFunciona offline, tem XP e certificado. Já tenho ${xp} XP. Vem estudar comigo?`,
-    `A pergunta que me pegou hoje: 🎯\n\n"Por que os preços só sobem — e quem ganha com isso?"\n\nA resposta tá na Escola Liberal, de graça:\n👉 https://escolaliberal.com.br\n\n1.860 aulas de 5 min, no celular, com quiz e XP. A educação que a escola devia ter dado. Aceita o desafio?`
+    `A pergunta que me pegou hoje: 🎯\n\n"Por que os preços só sobem — e quem ganha com isso?"\n\nA resposta tá na Escola Liberal, de graça:\n👉 https://escolaliberal.com.br\n\n1.940 aulas de 5 min, no celular, com quiz e XP. A educação que a escola devia ter dado. Aceita o desafio?`
   ];
   // Especial Eleições 2026: até 04/10/2026, metade dos shares divulga a disciplina Voto Consciente
   const votoMsg=`Eleição é em outubro. Você já sabe escolher? 🗳️\n\nA maioria decide o voto em 40 segundos de vídeo. Eu tô aprendendo a decidir com MÉTODO:\n\n✅ Investigar o passado do candidato (é público e grátis)\n✅ Saber se a promessa cabe no orçamento\n✅ Fugir da manipulação de campanha\n\n👉 https://escolaliberal.com.br\n\n100% apartidário — ninguém te diz em quem votar, você aprende a decidir sozinho. 60 aulas gratuitas, funciona offline. Chega preparado 🇧🇷`;
@@ -166,7 +166,7 @@ function createChallenge(){
 
   // Share via WhatsApp
   const shareUrl=`https://escolaliberal.com.br/app.html?challenge=${challenge.id}`;
-  const text=`🏆 ${window.S.name||'Um amigo'} te desafiou!\n\nQuem estuda mais essa semana na Escola Liberal? Cada aula de 5 minutos vale XP — e o placar é público.\n\n👉 Aceita? ${shareUrl}\n\nÉ grátis: 1.860 aulas de dinheiro, lógica, filosofia e mais, direto no celular.`;
+  const text=`🏆 ${window.S.name||'Um amigo'} te desafiou!\n\nQuem estuda mais essa semana na Escola Liberal? Cada aula de 5 minutos vale XP — e o placar é público.\n\n👉 Aceita? ${shareUrl}\n\nÉ grátis: 1.940 aulas de dinheiro, lógica, filosofia e mais, direto no celular.`;
   const waUrl='https://wa.me/?text='+encodeURIComponent(text);
   window.open(waUrl,'_blank');
   window.toast('Desafio criado! Compartilhe com amigos.');

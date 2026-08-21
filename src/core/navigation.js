@@ -101,6 +101,7 @@ async function openL(mi,li){
     h+=`</div><div class="qz-fb" id="qfb"></div></div>`
   }
   document.getElementById('lvBody').innerHTML=h;
+  markScrollables(document.getElementById('lvBody'));
   const qk=`${mi}-${li}`;
   if(S.quiz[qk]!==undefined){
     document.querySelectorAll('.qz-o').forEach((b,i)=>{b.classList.add('off');if(i===l.quiz.c)b.classList.add('ok')});
@@ -117,6 +118,31 @@ async function openL(mi,li){
   window.updateFavBtn();
   window.scrollTo(0,0)
 }
+
+// Conteudo largo (tabelas e diagramas) rola na horizontal no celular. Sem um
+// indicio visivel o leitor nao percebe que existem colunas ou trechos fora da
+// tela — achado do QA de responsividade em 2026-08-21. Marca apenas o que
+// realmente transborda, entao no desktop nao aparece nada.
+function markScrollables(root){
+  // O Safe DOM Proxy faz getElementById devolver um stub sempre truthy:
+  // checar a capacidade em vez da existencia.
+  if(!root||typeof root.querySelectorAll!=='function')return;
+  root.querySelectorAll('.scrollx-hint').forEach(h=>h.remove());
+  root.querySelectorAll('table,.lesv-fig').forEach(el=>{
+    if(el.scrollWidth<=el.clientWidth+2)return;
+    const hint=document.createElement('div');
+    hint.className='scrollx-hint';
+    hint.setAttribute('aria-hidden','true');
+    hint.textContent='↔ arraste para o lado para ver o restante';
+    el.insertAdjacentElement('afterend',hint);
+  });
+}
+let _sxTimer=null;
+window.addEventListener('resize',()=>{
+  clearTimeout(_sxTimer);
+  _sxTimer=setTimeout(()=>markScrollables(document.getElementById('lvBody')),200);
+});
+
 function ans(mi,li,a){
   const S=window.S;const M=window.M;
   if(!M[mi]||!M[mi].lessons[li]||!M[mi].lessons[li].quiz)return;
@@ -225,6 +251,7 @@ window.renderBackLink=renderBackLink;
 window.goDash=goDash;
 window.goMod=goMod;
 window.openL=openL;
+window.markScrollables=markScrollables;
 window.ans=ans;
 window.nextL=nextL;
 window.prevL=prevL;

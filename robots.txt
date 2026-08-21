@@ -10,6 +10,7 @@ Allow: /privacidade.html
 Allow: /blog.html
 Allow: /blog/
 Allow: /institucional.html
+Allow: /trader.html
 Allow: /cert.html
 Disallow: /app.html
 Disallow: /admin.html

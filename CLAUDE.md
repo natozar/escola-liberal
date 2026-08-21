@@ -2,7 +2,7 @@
 
 ## Identidade do Projeto
 
-Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 31 disciplinas, 186 módulos, 1.860 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN (com `history` em CLIL — American History em inglês). Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
+Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a educação básica de qualidade. 31 disciplinas, 194 módulos, 1.940 aulas interativas. Público: adultos 18+. Tagline: "A educação que a escola deveria ter dado." Bilíngue PT/EN (com `history` em CLIL — American History em inglês). Gratuita. Offline-first. Gamificação completa. Criada por Renato Rodrigues (Ribeirão Preto/SP).
 
 **Domínio:** escolaliberal.com.br
 **Repo:** github.com/natozar/escola-liberal
@@ -19,7 +19,7 @@ Plataforma PWA educacional para adultos brasileiros que não tiveram acesso a ed
 | Backend | Supabase (auth, database, realtime sync) |
 | Pagamentos | Stripe (checkout via Edge Functions) |
 | IA | API Anthropic (Claude) — tutor + quiz generator |
-| PWA | Service Worker v229 (network-first + stale-while-revalidate + cache-first) |
+| PWA | Service Worker v235 (network-first + stale-while-revalidate + cache-first) |
 | Testes | Playwright + html-validate + Lighthouse + Axe |
 | CI/CD | GitHub Actions → GitHub Pages |
 
@@ -743,8 +743,8 @@ Deploy → SW novo detectado (polling 60s)
 - **gen-integrity.mjs:** parametrizado para aceitar dir/output via CLI args.
 - SW v161
 
-### Curriculo (estado atual pos-auditoria 2026-04-25, atualizado 2026-08-20)
-- 31 disciplinas, 6 modulos por disciplina (uniforme), 186 modulos total, 1.860 aulas
+### Curriculo (estado atual pos-auditoria 2026-04-25, atualizado 2026-08-21)
+- 31 disciplinas, 194 modulos total, 1.940 aulas. 6 modulos por disciplina em 30 delas; `trader` tem 14 (aprofundamento de 2026-08-21)
 - `historia` (BR, PT) e `history` (EUA, EN/CLIL) sao disciplinas distintas DELIBERADAMENTE (nao bug)
 - Sequencia entre modulos controlada por campo `order` em cada modulo (fallback: idx do arquivo)
 - IDs unicos garantidos (script `scripts/editorial-fixes.mjs` valida)
@@ -855,6 +855,128 @@ Deploy → SW novo detectado (polling 60s)
 - Contagens **31 disciplinas / 186 modulos / 1.860 aulas** propagadas em 151 arquivos (LP, institucional, app, admin,
   `src/features/social.js`, template do blog e todos os posts publicados e em rascunho).
 - SW v229
+### Concluido nesta sessao (2026-08-21 — Trader: aprofundamento profissional, mod-186 a 193)
+- **8 modulos novos: mod-186 a mod-193** (80 aulas, 285KB, media ~3.650 chars/aula). A disciplina `trader` sai de
+  6 para **14 modulos / 140 aulas** — numero par por exigencia estetica do grid da UI.
+  - mod-186 `trader-microestrutura-e-execucao` — cadeia da ordem ate o motor da B3, fila preco-tempo, spread e
+    liquidez, a mercado x limitada, slippage medida em 200 operacoes, ordens compostas e stop nativo x simulado,
+    leiloes e tunel de volatilidade, formador de mercado e alta frequencia, impacto de mercado, auditoria de execucao
+  - mod-187 `trader-probabilidade-e-estatistica` — trade como amostra, distribuicao e caudas gordas, sequencias de
+    perda esperadas, expectativa x variancia, tamanho de amostra, risco de ruina, Monte Carlo, sobreajuste,
+    vieses de dados (look-ahead, rolagem, sobrevivencia), correlacao x mecanismo
+  - mod-188 `trader-construcao-de-estrategia` — hipotese testavel e teste do estranho, estrategia escrita em 9 linhas,
+    dados e regimes, as sete trapacas do backtest, metricas (fator de lucro, excursao adversa, tempo em queda),
+    otimizacao e regra do plato, fora da amostra e walk-forward, degradacao esperada, monitoramento, portfolio
+  - mod-189 `trader-macro-e-o-dolar` — cambio como preco relativo, diferencial de juros e carry, fluxo comercial e
+    financeiro, swap cambial e atuacao do BC, calendario economico (consenso/surpresa/revisao), dias de decisao,
+    risco fiscal e premio de risco, indice do dolar e commodities, correlacoes intradiarias, rotina macro diaria
+  - mod-190 `trader-risco-de-cauda-e-capital` — o que o stop nao cobre, alavancagem real x margem, modelos de sizing,
+    Kelly fracionado, correlacao escondida entre posicoes, kill-switch em tres niveis, escada de recuperacao,
+    chamada de margem e zeragem compulsoria, capital de risco e separacao patrimonial, escalar contratos
+  - mod-191 `trader-o-oficio` — rotina em tres blocos e checklist pre-ordem, tilt e protocolo de interrupcao,
+    vieses no book, metricas de comportamento (aderencia, sinais perdidos), revisao semanal, numeros do negocio e
+    ponto de equilibrio, apuracao de imposto e compensacao de prejuizo, mesas proprietarias, contingencia, plano de
+    12 meses com criterio de desistencia
+  - mod-192 `trader-estrutura-de-mercado` — estrutura de mercado, marcacao fractal sem subjetividade, BOS, CHoCH,
+    estrutura interna x externa e a recursividade infinita, faixas e falsos rompimentos, multiplos tempos graficos,
+    marcacao retroativa, traducao para o price action classico, estrutura como filtro mensuravel
+  - mod-193 `trader-liquidez-fvg-order-block` — onde os stops se acumulam de fato, sweep, order block e o problema
+    da definicao, FVG (geometria de tres velas), taxa de preenchimento COM grupo de comparacao, premium/discount,
+    mitigacao e modelos de entrada, setup testavel completo, backtest honesto de setup visual, o que sobra de util
+- **Mod-192 e 193 nasceram de pedido explicito do Renato** ("aplicou aulas sobre CHoCH, Bull, BOS, FVG?"). Regua
+  escolhida por ele: **descritivo + critico** — ensina o conceito com precisao, traduz para o price action classico,
+  e submete a mesma exigencia de definicao numerica, amostra e grupo de comparacao aplicada ao resto da disciplina.
+  Zero mencao a educador, comunidade ou produto por nome; narrativa de "instituicao cacando seu stop" e tratada como
+  hipotese sem evidencia publica, com a explicacao mecanica (concentracao de ordens) no lugar dela.
+- **REGRA EDITORIAL mantida:** ensina MECANICA e RISCO, nunca decisao. Zero recomendacao operacional, todos os
+  numeros declarados como ficticios, estudo da FGV retomado no mod-193 aula 10 e no mod-191 aula 10.
+- **`scripts/qa-trader.mjs` — bug corrigido:** os `\b` da regex de acentuacao do aviso (linha 109) estavam gravados
+  como bytes 0x08 (backspace), entao a checagem NUNCA rodou desde que foi escrita. Restaurado o word boundary e
+  removida a alternativa `alavancagem e`, que era falso positivo (o aviso acentuado tambem diz "envolve alavancagem
+  e pode gerar perdas"). Os 6 modulos antigos continuam passando.
+- **QA:** `node scripts/qa-trader.mjs 186 187 188 189 190 191 192 193 --strict` — 80 aulas, **zero erros e zero
+  avisos** (10 aulas passaram por densificacao para ficar acima de 3.000 chars de prosa fora do SVG).
+- **Diagramas:** 11 SVGs inline nos 8 modulos novos (23 na disciplina inteira), cor exclusivamente por
+  variavel CSS existente no `app.css`. Distribuicao desigual: mod-186 tem 3. O mod-191 ganhou o seu depois, no fim da sessao.
+- Contagens **31 disciplinas / 194 modulos / 1.940 aulas** propagadas em 152 arquivos (269 substituicoes). O script
+  usado esta no scratchpad da sessao; ele ignora deliberadamente "1.860 e 1.500 votos" dos posts sobre voto.
+- **`index.html`:** card do Trader atualizado para 14 modulos / 140 aulas com nova descricao; entrada `Course` da
+  disciplina Trader adicionada ao itemList JSON-LD (nao existia); `numberOfCredits` do Course principal corrigido
+  de "1800" (defasado ha varias sessoes) para "1940", idem `PT1800H` para `PT1940H`. 7/7 blocos JSON-LD validos.
+- SW v233; `lessons/integrity.json` regenerado (195 arquivos).
+- **Achado nao corrigido:** `blog/economia-austriaca-criancas.html` contem um bloco de bytes NUL (0x00) a partir do
+  offset ~15110 — por isso o `grep` o trata como binario. E anterior a esta sessao (ja estava no commit) e nao foi
+  tocado. Vale investigar se o post renderiza inteiro em producao.
+### Concluido nesta sessao (2026-08-21 — QA de responsividade e texto escondido)
+- **`qa/tests/15-trader-responsivo.spec.js`** (novo): varre as 140 aulas da disciplina em 5 larguras
+  (320, 360, 414, 768, 1440) e procura 7 classes de defeito — overflow horizontal da pagina, elemento
+  estourando o container, texto cortado por `overflow:hidden`, texto de SVG pequeno demais apos o
+  downscale, texto de SVG fora do viewBox, tabela que rola sem `overflow-x` e conteudo invisivel.
+  Tem **guarda de vacuidade**: falha se o corpo da aula nao estiver renderizado ou se algum SVG nao
+  devolver matriz de tela, para o teste nao passar medindo nada.
+  Rodar: `QA_URL=http://localhost:PORTA npx playwright test 15-trader --project=desktop-chrome`.
+- **Achado 1 — diagramas ilegiveis no celular (22 de 22, todos os modulos da disciplina).**
+  `.lesv-body svg{width:100%}` escalava o viewBox de 640 para ~44% num aparelho de 360px: o texto de
+  11px renderizava a **4,8px**. Corrigido com `<div class="lesv-fig" tabindex="0">` em volta de cada
+  SVG + `@media(max-width:699px){.lesv-fig svg{min-width:640px}}` — o diagrama mantem o tamanho
+  desenhado e o container rola na horizontal, mesma solucao ja usada nas tabelas. Escala medida agora:
+  **0,96** no mobile (texto a ~10,6px). O `tabindex` deixa a rolagem operavel por teclado.
+- **Achado 2 — 4 textos recortados pela borda do SVG**, todos anteriores a esta sessao:
+  mod-180 aula 4 e aula 5 (dois textos em `x=0`, bbox saindo 2,7px pela esquerda) e mod-184 aula 5
+  ("acima daqui, sai da escala" em `x=520`, estourando 14,6px pela direita). Coordenadas ajustadas.
+- **Achado 3 — tabela e diagrama rolavam sem nenhum indicio disso.** Numa aula como mod-190 aula 2,
+  o leitor de celular via so as duas primeiras colunas da regua de alavancagem e nao tinha como saber
+  que existiam "Exposicao" e "Alavancagem". Corrigido com `markScrollables()` em
+  `src/core/navigation.js`: apos montar a aula, mede `scrollWidth > clientWidth` em cada `table` e
+  `.lesv-fig` e insere `<div class="scrollx-hint">↔ arraste para o lado para ver o restante</div>`
+  **apenas no que realmente transborda** (CSS esconde acima de 700px). Reaplica no `resize` com
+  debounce de 200ms. `aria-hidden` porque leitor de tela ja recebe a tabela inteira. Isso conserta
+  tambem as 115 tabelas da disciplina e qualquer conteudo largo futuro, sem tocar no conteudo.
+- **Resultado final:** 140 aulas x 5 larguras, 8.239 elementos, 223 textos de SVG e 115 tabelas
+  medidos — **zero achados**. Contagem de elementos sobe de 8.103 (desktop) para 8.239 (mobile),
+  que sao exatamente os avisos de rolagem sendo injetados so onde precisam.
+- **Regressao:** rodadas as suites `06-mobile-responsive` e `13-mobile-qa-complete` contra o HEAD
+  (via `git worktree` em servidor estatico separado) e contra a arvore atual. **Zero regressoes.**
+  As 9 falhas sao pre-existentes e do lado do teste, nao do app: `#onboard button` em strict mode
+  (o onboarding tem 3 botoes agora), clique em aula que cai por causa disso, `B1` esperando 200 numa
+  pagina que nao existe no servidor local, `B8` esperando `overscroll-behavior:contain` e `B13`
+  esperando `pin-gate.js` no admin (removido ha varias sessoes). "Cards de modulo nao overflow" e
+  flaky nas duas pontas (1 falha em 3 execucoes tanto na baseline quanto no atual).
+- SW v234; `lessons/integrity.json` regenerado (195 arquivos, hashes conferidos um a um).
+- **Nota de conteudo:** a disciplina tinha 22 diagramas e o mod-191 nao tinha nenhum. Resolvido ainda
+  nesta sessao (ver bloco seguinte): agora sao 23.
+### Concluido nesta sessao (2026-08-21 — Diagrama do mod-191, landing `trader.html` e pecas sociais)
+- **Diagrama de rotina no mod-191 aula 1.** Era o unico modulo da disciplina sem nenhum diagrama. O grafico
+  mostra o que a tabela nao mostra: a proporcao entre as 11 horas de mercado aberto e as 2h30 que o plano
+  autoriza operar, com os blocos de pre-mercado e pos-mercado nas pontas. A disciplina passa a ter **23 SVGs**.
+- **`trader.html`** (nova pagina): landing de divulgacao da disciplina, pensada para trafego de busca e de
+  compartilhamento. Estrutura: hero com CTA direto para `app.html#module-180`, caixa de aviso de risco logo
+  abaixo do hero, bloco sobre o estudo da FGV, comparativo "o que voce encontra / o que voce nao encontra"
+  (8 itens de cada lado), grade dos 14 modulos com link direto para a primeira aula de cada um, 7 perguntas
+  frequentes e botoes de compartilhamento com texto pronto (WhatsApp, Telegram, X, LinkedIn, copiar link).
+  - SEO: title de 66 chars, meta description, canonical, keywords, OG completo com `og:image:width/height/alt`,
+    Twitter summary_large_image e **3 blocos JSON-LD** — `Course` (com `teaches`, `numberOfCredits`, oferta
+    gratuita), `BreadcrumbList` e `FAQPage`. Passa limpo no `html-validate` (zero erros).
+  - Compliance: aviso de risco no corpo, rodape com as Res. CVM 19, 20 e 21/2021, remissao a secao 8-A dos
+    Termos, e a frase explicita de que nao recebemos comissao de corretora.
+  - **O card do Trader na LP agora aponta para `trader.html`** em vez de ir direto ao app. O visitante passa a
+    ver o aviso de risco e o escopo antes de entrar, e a pagina ganha link interno para indexacao. Para voltar
+    ao comportamento antigo basta trocar o href de volta para `app.html#module-180` no `index.html`.
+- **`scripts/gen-og-trader.mjs`** (novo, gitignored como o resto de `scripts/`): renderiza as pecas em Chromium
+  headless a partir de um template HTML com as fontes da marca. Gera `assets/icons/og-trader.jpg` (1200x630,
+  preview de link) e `assets/icons/social-trader-1x1.jpg` (1080x1080, feed do Instagram). Segue a linguagem do
+  `og-voto.jpg`: fundo escuro, pill de rotulo, titulo em DM Serif com a segunda linha no acento honey,
+  paragrafo de apoio, pills de fatos, selo rotacionado e barra de marca. Grafico de velas desenhado a mao,
+  sem numero real. Rodar de novo: `node scripts/gen-og-trader.mjs`.
+- **`TEXTOS-DIVULGACAO-TRADER.md`** (novo): textos prontos para WhatsApp, Instagram, X, LinkedIn e story, mais
+  a tabela do que **nunca** escrever nas pecas (promessa de retorno, print de resultado, indicacao de corretora,
+  "metodo infalivel", depoimento com valor ganho). O gancho de todas as pecas e a honestidade — "sem ilusao",
+  "dados, nao promessas" —, o que mantem a divulgacao fora do perimetro das resolucoes da CVM.
+- Fiacao: `sitemap.xml` com a entrada de `trader.html` (priority 0.9), `sw.js` com a pagina e a imagem no
+  CORE_ASSETS, e o script `validate` do `package.json` cobrindo a pagina nova.
+- SW v235; `lessons/integrity.json` regenerado. QA de responsividade rodado de novo apos o diagrama novo:
+  140 aulas x 5 larguras, 23 SVGs, **zero achados**. `trader.html` conferida em 1280px e 390px: sem overflow
+  horizontal, 17 links para o app, 7 blocos de FAQ.
 
 ## Jogo "Cidade Livre" (jogo.html) — 2026-08-08/09
 
