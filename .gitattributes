@@ -1,0 +1,18 @@
+# ============================================================
+# Finais de linha — protecao do manifesto de integridade
+# ============================================================
+# O repo roda com core.autocrlf=true em Windows. Sem esta regra, todo
+# `git checkout` / `git rebase` devolve os JSONs de licao ao disco com CRLF,
+# enquanto o blob commitado (e o que o GitHub Pages serve) permanece em LF.
+#
+# Como `scripts/gen-integrity.mjs` gera o SHA-256 sobre os BYTES do arquivo,
+# rodar `npm run integrity` com a copia local em CRLF produz um manifesto que
+# NAO bate com o conteudo servido em producao — e o cliente (verifyContent)
+# rejeita todo o curriculo, caindo no fallback de cache.
+#
+# `text eol=lf` forca LF tanto no repositorio quanto na copia de trabalho,
+# em qualquer sistema operacional. Nao altera o conteudo ja commitado.
+lessons/*.json text eol=lf
+
+# Mesma razao para o fallback legado servido na raiz.
+lessons.json text eol=lf
