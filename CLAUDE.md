@@ -1012,6 +1012,27 @@ Deploy → SW novo detectado (polling 60s)
 - SW v236 -> v238 (`blog.html`, `app.html`, `index.html` e `perfil.html` estao no CORE_ASSETS). `skipWaiting` continua
   apenas no message handler.
 
+### Concluido nesta sessao (2026-08-21 — Link interno do blog e numeros defasados)
+- **`ARTICLES_MAP` (blog-marketing.js) cobria so 22 dos 66 posts.** `initRelatedArticles()` e
+  `initDisciplineCard()` comecam com `if (!ARTICLES_MAP[slug]) return`, entao os 44 posts sem entrada nao
+  renderizavam NEM o bloco "Continue aprendendo" NEM o card de disciplina que leva pro app — os dois
+  elementos de link interno e conversao mortos em dois tercos do blog. Entre os 44 estava a **serie Voto
+  Consciente inteira (37 posts)**, que e a aposta pra janela eleitoral de outubro. Entradas geradas a partir
+  dos cards do proprio `blog.html` (fonte canonica de tag/titulo/resumo): titulo cortado no gancho antes dos
+  dois-pontos, resumo ficando com a metade explicativa. As 22 entradas antigas preservadas palavra por palavra.
+- **Numeros defasados em 4 lugares do `blog-marketing.js`**: "800 aulas em 26 disciplinas" no banner de meio de
+  artigo, card de disciplina, ticker e CTA flutuante. Real: 1.940 aulas / 31 disciplinas. A correcao de
+  2026-07-14 arrumou o HTML dos posts mas nao tocou neste JS, entao a afirmacao errada seguia em cima de todo post.
+- **Verificacao em navegador** (Chromium via playwright, os 66 posts servidos por vite): 66/66 com o bloco
+  "Continue aprendendo" (antes 22), 62 com 4 cards e 4 com 2 (tag sem par — previsto pelo algoritmo), 63
+  destinos distintos linkados, **0 links quebrados, 0 erros de pagina**, 1 `<article>` por post.
+- **Pendencia menor nao mexida:** 3 entradas antigas do map tem tag diferente da do card no `blog.html` —
+  `como-vender-whatsapp` (Marketing x Empreendedorismo), `gamificacao-educacao` (Educacao x Gamificacao),
+  `matematica-singapura-metodo` (Educacao x Matematica). E categorizacao editorial, decisao do Renato.
+- **`blog/drafts/`** ainda tem "800 aulas / 26 disciplinas" em 2 rascunhos (`como-precificar-servico`,
+  `como-funciona-clt-trabalhador`). Nao publicados; corrigir antes de publicar.
+- SW v238 -> v239 (`blog-marketing.js` esta no CORE_ASSETS).
+
 ## Jogo "Cidade Livre" (jogo.html) — 2026-08-08/09
 
 Jogo educacional de gestão de cidade, em produção. O jogador governa uma cidade brasileira fictícia; medidas coletivistas dão aprovação imediata e cobram o custo semanas depois (fila de efeitos agendados). Na crise, uma AULA real do currículo abre no momento da dor; concluí-la gera "Lucidez", que paga as reformas.
