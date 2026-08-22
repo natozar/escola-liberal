@@ -67,7 +67,7 @@ if('serviceWorker' in navigator){
 /* === CRITICAL MOBILE LAYOUT — inline to survive CSS cache issues === */
 @media(max-width:900px){
   .shell{display:block!important;min-height:0!important;height:auto!important}
-  .main{position:relative!important;padding:.75rem!important;padding-top:calc(52px + env(safe-area-inset-top,0px) + .75rem)!important;padding-bottom:calc(64px + env(safe-area-inset-bottom,0px) + .75rem)!important;box-sizing:border-box!important;width:100%!important;min-height:100vh!important;min-height:100dvh!important;overflow:visible!important;-webkit-overflow-scrolling:touch!important}
+  .main{position:relative!important;padding:.75rem!important;padding-top:calc(52px + env(safe-area-inset-top,0px) + .75rem)!important;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px) + .75rem)!important;box-sizing:border-box!important;width:100%!important;min-height:100vh!important;min-height:100dvh!important;max-height:none!important;height:auto!important;overflow:visible!important;-webkit-overflow-scrolling:touch!important}
   .side{transform:translateX(-100%);position:fixed!important;z-index:200!important;top:0!important;left:0!important;bottom:0!important;width:300px!important;height:100vh!important;height:100dvh!important}
   .side.open{transform:translateX(0)!important}
   .mobile-header{display:flex!important;height:calc(52px + env(safe-area-inset-top,0px))!important}
@@ -75,8 +75,44 @@ if('serviceWorker' in navigator){
   .bottom-nav{display:flex!important}
   .global-progress{display:none!important}
 }
+/* === UPDATE BANNER ===
+   Inline de proposito: este banner aparece exatamente quando ha um Service
+   Worker novo esperando. Se dependesse do app.css, um app.css antigo em cache
+   o renderizaria cru — que era o estado ate aqui: `.update-banner` nao tinha
+   UMA linha de CSS em lugar nenhum do projeto, entao era uma div solta com
+   botoes nativos do navegador. Fica acima da bottom-nav E do botao de chat. */
+.update-banner{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:calc(136px + env(safe-area-inset-bottom,0px));
+  z-index:9000;
+  align-items:center;gap:.55rem;
+  width:max-content;max-width:calc(100vw - 24px);
+  padding:.55rem .55rem .55rem 1rem;
+  background:var(--bg-card,#1a2338);
+  border:1px solid var(--border,rgba(255,255,255,.1));
+  border-left:3px solid var(--sage,#4a9e7e);
+  border-radius:var(--r-lg,16px);
+  box-shadow:0 8px 28px rgba(0,0,0,.3);
+  font-family:'DM Sans',system-ui,sans-serif;
+  font-size:.82rem;line-height:1.3;color:var(--text-primary,#e8eaf0);
+}
+.update-banner>span{flex:1 1 auto;min-width:0}
+.update-banner button{
+  flex:0 0 auto;font-family:inherit;font-size:.78rem;font-weight:600;
+  min-height:36px;padding:0 .9rem;border:none;border-radius:999px;
+  background:var(--sage,#4a9e7e);color:#fff;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;transition:opacity .2s}
+.update-banner button:disabled{opacity:.6;cursor:default}
+.update-banner button:last-child{
+  background:transparent;color:var(--text-muted,#8892a4);
+  min-width:36px;padding:0;font-size:.9rem}
+@media(min-width:901px){.update-banner{bottom:88px}}
+@media(max-width:359px){.update-banner{font-size:.76rem;padding-left:.75rem}}
 @media(max-width:600px){
-  .main{padding:.5rem!important}
+  /* Aperta so as laterais. Antes era `padding:.5rem!important`, que zerava tambem
+     o topo e o rodape reservados acima — o conteudo ficava sob o header fixo e o
+     scroll nao alcancava o fim, escondido atras da bottom-nav. */
+  .main{padding-left:.5rem!important;padding-right:.5rem!important}
 }
 </style>
 </head>
@@ -855,7 +891,7 @@ if('serviceWorker' in navigator){
 
 <!-- SW UPDATE BANNER -->
 <div id="updateBanner" class="update-banner" role="alert" style="display:none">
-  <span>🔄 Nova versao disponivel</span>
+  <span>🔄 Nova versão disponível</span>
   <button id="updateBtn" onclick="applyUpdate()">Atualizar</button>
   <button onclick="dismissUpdate()" aria-label="Fechar">✕</button>
 </div>

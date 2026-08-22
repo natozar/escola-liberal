@@ -19,6 +19,9 @@
   --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:24px;--r-full:9999px;
   --ease:cubic-bezier(.4,0,.2,1);
   --sidebar-w:260px;
+  /* Alturas das barras fixas — usadas para reservar espaco no scroller .main */
+  --mhead-h:calc(52px + env(safe-area-inset-top,0px));   /* .mobile-header */
+  --bnav-h:calc(84px + env(safe-area-inset-bottom,0px)); /* .bottom-nav + botao central elevado */
   --scrollbar-thumb:rgba(255,255,255,.08);
   --shadow-card:0 2px 12px rgba(0,0,0,.2);
   --shadow-elevated:0 8px 32px rgba(0,0,0,.25);
@@ -535,10 +538,11 @@ a.profile-row:hover{background:var(--bg-hover)}
 body.focus-mode .side{display:none !important}
 body.focus-mode .shell{grid-template-columns:1fr !important}
 body.focus-mode .main{max-height:100vh;padding:2rem 3rem}
+@media(max-width:900px){body.focus-mode .main{padding:calc(var(--mhead-h) + 1rem) 1.25rem calc(var(--bnav-h) + 1rem)}}
 body.focus-mode .lesv{max-width:800px;margin:0 auto}
 body.focus-mode .focus-btn{display:flex}
 body.focus-mode .mobile-bar{display:none !important}
-@media(max-width:600px){body.focus-mode .main{padding:1rem}}
+@media(max-width:600px){body.focus-mode .main{padding-left:1rem;padding-right:1rem}}
 
 /* ========== FAVORITES ========== */
 .fav-btn{background:none;border:none;cursor:pointer;font-size:1.1rem;padding:.2rem;transition:transform .2s;color:var(--text-muted)}
@@ -1294,8 +1298,11 @@ body{}
   .app-version-bar{display:none!important}
   /* Toast below mobile header */
   .toast{top:calc(54px + env(safe-area-inset-top,0px))!important;z-index:7000!important}
-  /* Adjust content for fixed header + bottom nav — FIXED POSITION scroll container */
-  .main{padding:calc(2rem + 40px) 2rem 2rem;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;max-height:100vh;max-height:100dvh;box-sizing:border-box;overscroll-behavior-y:auto}
+  /* Adjust content for fixed header + bottom nav — FIXED POSITION scroll container.
+     O topo reserva a altura real do .mobile-header (52px + notch) e o rodape a do
+     .bottom-nav (inclui o botao central elevado). Sem isso o conteudo fica escondido
+     sob as barras fixas e o scroll nao alcanca o fim. */
+  .main{padding:calc(var(--mhead-h) + 1rem) 1.25rem calc(var(--bnav-h) + 1rem);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;max-height:100vh;max-height:100dvh;box-sizing:border-box;overscroll-behavior-y:auto}
   /* Hamburger in header replaces sidebar toggle */
   .side{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
   .side.open{top:0;padding-top:calc(56px + env(safe-area-inset-top))}
@@ -1329,7 +1336,9 @@ body{}
   .mh-breadcrumb span:active{background:var(--sage-muted)}
 }
 @media(max-width:600px){
-  .main{padding:.5rem!important}
+  /* Aperta so as laterais. Topo/rodape continuam reservando as barras fixas —
+     o `padding:.5rem!important` antigo matava as duas folgas de uma vez. */
+  .main{padding-left:.5rem!important;padding-right:.5rem!important}
   .welcome{padding:1rem}
   .welcome h2{font-size:1.25rem}
   .mc-status{font-size:.6rem}
