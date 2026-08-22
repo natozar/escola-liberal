@@ -1033,6 +1033,29 @@ Deploy → SW novo detectado (polling 60s)
   `como-funciona-clt-trabalhador`). Nao publicados; corrigir antes de publicar.
 - SW v238 -> v239 (`blog-marketing.js` esta no CORE_ASSETS).
 
+### Concluido nesta sessao (2026-08-21 — Causa raiz: o pipeline do blog)
+Os defeitos corrigidos nos posts voltariam no proximo artigo gerado. Correcao nos tres scripts do pipeline
+(`scripts/` esta no `.gitignore`, mas estes tres arquivos sao rastreados desde antes e continuam versionados).
+- **`generate-blog.js`** — o prompt pede "apenas conteudo dentro de `<article>`", que o modelo as vezes le como
+  "emita voce mesmo a tag". Quando isso acontecia o post nascia com `<article>` aninhado e o fechamento caindo
+  antes do disclaimer. `wrapTemplate()` agora **remove qualquer `<article>` vindo do corpo** antes de inserir no
+  template (que ja abre e fecha a sua). Botao de tema do template com `type="button"`.
+- **`publish-blog.js`** — dois defeitos:
+  - **Nova etapa 5b:** registra os posts publicados no `ARTICLES_MAP`. Essa etapa **nunca existiu** — e a razao
+    de 44 posts terem ficado sem link interno.
+  - **Regeneracao do `blog.html` era destrutiva:** preservava apenas uma lista fixa de 5 slugs legados, entao
+    qualquer post publicado fora do fluxo do `keywords.json` era APAGADO do indice na publicacao seguinte. Era o
+    caso do `como-escolher-candidato` — e o card recem-adicionado teria sumido no proximo `blog:publish`. Agora
+    preserva todo card existente cujo slug nao esta sendo regenerado.
+- **`verify-sitemap.mjs`** — cobria so disco x sitemap. Passa a cruzar as **quatro fontes de verdade** (arquivos
+  em disco, `sitemap.xml`, cards do `blog.html`, `ARTICLES_MAP`), nos dois sentidos, seis checagens. Exit 1 em
+  qualquer divergencia; continua rodando no fim do `publish-blog.js`. Rodar avulso: `npm run blog:verify-sitemap`.
+- **Verificacao:** as 3 classes de regressao injetadas de proposito, uma a uma — o verificador pegou as tres com
+  exit 1. `wrapTemplate()` alimentada com o corpo defeituoso exato devolve 1 article com o disclaimer dentro e o
+  conteudo intacto. `publish-blog.js` rodado ponta a ponta numa copia isolada do repo com draft sintetico:
+  67 arquivos / 67 cards, `como-escolher-candidato` e os 5 legados preservados, entrada criada sozinha no
+  `ARTICLES_MAP`, sitemap e SW atualizados, verificador passando.
+
 ## Jogo "Cidade Livre" (jogo.html) — 2026-08-08/09
 
 Jogo educacional de gestão de cidade, em produção. O jogador governa uma cidade brasileira fictícia; medidas coletivistas dão aprovação imediata e cobram o custo semanas depois (fila de efeitos agendados). Na crise, uma AULA real do currículo abre no momento da dor; concluí-la gera "Lucidez", que paga as reformas.
