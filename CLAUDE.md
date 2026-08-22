@@ -1083,6 +1083,51 @@ Os defeitos corrigidos nos posts voltariam no proximo artigo gerado. Correcao no
 - Disciplina passa de **23 para 27 diagramas**. `integrity.json` regenerado (195 arquivos, hashes conferidos
   contra os blobs do git, nao contra o disco). SW v239 -> v240.
 
+### Concluido nesta sessao (2026-08-22 — Conteudo escondido sob as barras fixas no mobile)
+- **Causa raiz num `<style>` inline do `app.html`, nao no `app.css`.** O bloco "CRITICAL MOBILE LAYOUT"
+  reservava espaco para as duas barras `position:fixed` e, nove linhas abaixo, um
+  `@media(max-width:600px){.main{padding:.5rem!important}}` zerava as duas reservas de uma vez. Como todo
+  celular tem <=600px, **todo celular pegava**: medido em 320px, **44px de conteudo sob o header** e
+  **78px inalcancaveis no rodape**. Mais visivel na aba Disciplinas, onde o titulo abre o bloco e a grade
+  de ferramentas o encerra — mas o defeito era de TODAS as telas.
+- **Segundo defeito por baixo:** o `max-height:100dvh` do `app.css` sobrevivia ao bloco inline (que so
+  sobrescrevia `overflow`). A caixa do `.main` ficava travada na altura da tela com o conteudo vazando
+  para fora dela, entao o `padding-bottom` era aplicado numa caixa que terminava em 100dvh e nao valia
+  nada. **So corrigir o padding nao resolveria** — foi preciso `max-height:none` e `height:auto` no mobile.
+  Esse mesmo clipping empurrava o `#updateBanner` e uma fresta da sidebar para o meio do conteudo (era o
+  🔄 azul colado no card "Missoes Semanais"); os dois sumiram com a correcao do `.main`.
+- **Numeros medidos, nao chutados:** header 52px + notch; bottom-nav 70px ate 400px de largura e 80px
+  acima disso; botao central elevado sobe 18px alem dela; FAB do chat ocupa ate 128px da base. Rodape do
+  `.main` passou de 64px para **84px + safe-area**.
+- **`app.css`:** mesma correcao na camada de baixo, com `--mhead-h` e `--bnav-h` como tokens, para o valor
+  certo continuar existindo se o bloco inline for removido algum dia.
+- **`#updateBanner` nao tinha UMA LINHA DE CSS em lugar nenhum do projeto.** A unica regra
+  `.update-banner` vive em `scripts/append-mobile-css.js`, que le um `app.css.new` inexistente e nunca
+  chegou ao `app.css`. Era uma `div` estatica, transparente, com botoes nativos do navegador.
+  **Estilizado, nao removido:** a Politica de Atualizacao PWA (regra 3) faz dele a unica via pela qual o
+  usuario autoriza um update — apagar o elemento deixaria o mobile sem caminho de atualizacao, ja que o
+  botao 🔄 do header so aparece junto com ele.
+- **CSS do banner inline no `app.html`, de proposito.** Ele aparece exatamente quando ha um SW novo
+  esperando; se dependesse do `app.css` — que **nao esta no CORE_ASSETS** e chega por
+  stale-while-revalidate — um `app.css` velho em cache o renderizaria cru outra vez. Mesmo motivo do
+  bloco de layout critico que ja vivia ali. Posicao `fixed`, centrado, acima da bottom-nav e do FAB.
+  Acento corrigido no texto do banner.
+- **`qa/tests/16-barras-fixas.spec.js`** (novo): 10 testes em 5 larguras — 5 medem topo e fim de 8 telas
+  contra as barras fixas (e trocam de aba com a pagina ja rolada, que e como o usuario chega), 5 checam
+  o banner via `showUpdateBanner()` real (position, fundo opaco, dentro da tela, sem colidir com nav e
+  FAB, alvo de toque >=36px). Tem guarda de vacuidade: falha se as barras nao estiverem visiveis.
+- **Por que as 15 specs anteriores passavam com o bug ativo:** nenhuma media conteudo contra as barras
+  fixas. O defeito nao gera erro, nem overflow, nem elemento fora do container — a pagina rola normal ate
+  o fim, so que o comeco fica sob o header e o fim sob a nav. **Os dois defeitos foram reintroduzidos de
+  proposito, um a um, e a spec nova pegou os dois** (`44px sob o header` / `position: esperado fixed,
+  recebido static`).
+- **Regressao:** `06-mobile` e `13-mobile` rodadas contra os arquivos originais e contra os corrigidos —
+  **11 falhas identicas, 32 passes identicos, zero regressoes**. As 11 sao pre-existentes e do lado do
+  teste (`pin-gate.js` removido ha varias sessoes, `B1` esperando 200 numa pagina que nao existe no
+  servidor local, `B8` esperando `overscroll-behavior:contain`).
+- SW v241 -> **v242** (o v241 ja tinha sido consumido pelo commit do blog no mesmo dia; rebase antes do
+  bump para nao colidir). `skipWaiting` conferido: continua apenas no message handler.
+
 ## Jogo "Cidade Livre" (jogo.html) — 2026-08-08/09
 
 Jogo educacional de gestão de cidade, em produção. O jogador governa uma cidade brasileira fictícia; medidas coletivistas dão aprovação imediata e cobram o custo semanas depois (fila de efeitos agendados). Na crise, uma AULA real do currículo abre no momento da dor; concluí-la gera "Lucidez", que paga as reformas.
