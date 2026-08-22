@@ -29,17 +29,23 @@
   const ARTICLES_MAP = {
     'como-calcular-juros-emprestimo': { title: 'Como Calcular Juros de Empréstimo', tag: 'Finanças', desc: 'Fórmulas e exemplos práticos para calcular juros simples e compostos.' },
     'como-comecar-negocio-pouco-dinheiro': { title: 'Como Começar um Negócio com Pouco Dinheiro', tag: 'Empreendedorismo', desc: 'Estratégias para empreender com baixo investimento inicial.' },
+    'como-criar-habitos': { title: 'Como Criar Hábitos que Duram', tag: 'Desenvolvimento', desc: 'A ciência dos hábitos: gatilho-rotina-recompensa, 21 vs 66 dias, habit stacking e como não desistir.' },
     'como-desenvolver-inteligencia-emocional': { title: 'Como Desenvolver Inteligência Emocional', tag: 'Desenvolvimento', desc: 'Práticas para melhorar sua inteligência emocional no dia a dia.' },
     'como-economizar-dinheiro': { title: 'Como Economizar Dinheiro', tag: 'Finanças', desc: '15 estratégias práticas para economizar no dia a dia.' },
+    'como-escolher-candidato': { title: 'Como Escolher um Candidato', tag: 'Cidadania', desc: 'Método apartidário: histórico verificável, teste das promessas, ficha limpa e uma matriz de decisão simples.' },
     'como-fazer-orcamento-pessoal': { title: 'Como Fazer Orçamento Pessoal', tag: 'Finanças', desc: 'Método simples e eficiente para controlar suas finanças.' },
     'como-fazer-plano-negocios-simples': { title: 'Como Fazer um Plano de Negócios Simples', tag: 'Empreendedorismo', desc: 'Guia prático para estruturar seu plano de negócios.' },
     'como-fazer-resumo-estudar': { title: 'Como Fazer Resumo para Estudar', tag: 'Educação', desc: 'Técnicas de resumo que realmente ajudam na memorização.' },
+    'como-gerenciar-tempo': { title: 'Gestão do Tempo', tag: 'Desenvolvimento', desc: 'Eisenhower, time blocking, batching e weekly review.' },
     'como-sair-das-dividas': { title: 'Como Sair das Dívidas', tag: 'Finanças', desc: 'Guia passo a passo para eliminar dívidas e recuperar sua saúde financeira.' },
+    'como-ser-mais-produtivo': { title: 'Como Ser Mais Produtivo no Dia a Dia', tag: 'Desenvolvimento', desc: '10 estratégias de produtividade que funcionam na vida real: Pomodoro, batching, deep work e mais.' },
     'como-ter-mais-disciplina': { title: 'Como Ter Mais Disciplina', tag: 'Desenvolvimento', desc: 'Métodos práticos para desenvolver disciplina e consistência.' },
+    'como-ter-mais-foco': { title: 'Como Ter Foco e Concentração no Trabalho', tag: 'Desenvolvimento', desc: 'Deep work, eliminação de distrações e técnicas comprovadas.' },
     'como-validar-ideia-negocio': { title: 'Como Validar uma Ideia de Negócio', tag: 'Empreendedorismo', desc: 'Passos para testar sua ideia antes de investir.' },
     'como-vencer-procrastinacao': { title: 'Como Vencer a Procrastinação', tag: 'Desenvolvimento', desc: 'Estratégias baseadas em ciência para parar de procrastinar.' },
     'como-vender-whatsapp': { title: 'Como Vender pelo WhatsApp', tag: 'Marketing', desc: 'Técnicas de vendas para WhatsApp Business.' },
     'como-voltar-estudar-depois-30': { title: 'Como Voltar a Estudar Depois dos 30', tag: 'Educação', desc: 'Guia para adultos que querem retomar os estudos.' },
+    'diferenca-poupanca-cdb-tesouro': { title: 'Poupança vs CDB vs Tesouro Direto', tag: 'Finanças', desc: 'Comparação detalhada entre poupança, CDB e Tesouro Direto com simulações de rendimento real em 2026.' },
     'direitos-consumidor-ninguem-conta': { title: 'Direitos do Consumidor que Ninguém Conta', tag: 'Direito', desc: 'Conheça seus direitos e saiba como se proteger.' },
     'economia-austriaca-criancas': { title: 'Economia Austríaca para Crianças', tag: 'Economia', desc: 'Conceitos de economia explicados de forma simples.' },
     'filosofia-p4c-pensamento-critico': { title: 'Filosofia P4C e Pensamento Crítico', tag: 'Filosofia', desc: 'Como a filosofia para crianças desenvolve o pensamento crítico.' },
@@ -48,7 +54,45 @@
     'matematica-singapura-metodo': { title: 'Método Singapura de Matemática', tag: 'Educação', desc: 'Entenda o método que fez de Singapura líder em matemática.' },
     'metodos-estudo-mais-eficientes': { title: 'Métodos de Estudo Mais Eficientes', tag: 'Educação', desc: 'Técnicas comprovadas para estudar melhor em menos tempo.' },
     'o-que-e-juros-compostos': { title: 'O que São Juros Compostos', tag: 'Finanças', desc: 'Entenda a fórmula que transforma pequenos valores em grandes montantes.' },
-    'tesouro-direto-para-iniciantes': { title: 'Tesouro Direto para Iniciantes', tag: 'Finanças', desc: 'Guia completo para começar a investir no Tesouro Direto.' }
+    'reserva-emergencia-quanto-guardar': { title: 'Reserva de Emergência', tag: 'Finanças', desc: 'Descubra o valor ideal da reserva de emergência e os melhores investimentos para proteger seu dinheiro.' },
+    'tesouro-direto-para-iniciantes': { title: 'Tesouro Direto para Iniciantes', tag: 'Finanças', desc: 'Guia completo para começar a investir no Tesouro Direto.' },
+    'voto-algoritmo-e-bolha-politica': { title: 'Algoritmo e Bolha', tag: 'Cidadania', desc: 'Por que seu feed concorda com você — e o dos outros não' },
+    'voto-ciclo-eleitoral-e-obras-publicas': { title: 'Os Incentivos de Quem Promete', tag: 'Cidadania', desc: 'Por que a obra fica pronta em ano de eleição — e a conta chega depois' },
+    'voto-como-avaliar-o-passado-de-um-candidato': { title: 'Discurso vs Histórico', tag: 'Cidadania', desc: 'Por que o passado prevê comportamento melhor que qualquer promessa' },
+    'voto-como-cobrar-promessa-de-campanha': { title: 'A Promessa da Eleição Passada', tag: 'Cidadania', desc: 'O plano de governo registrado no TSE é documento — e dá pra cobrar' },
+    'voto-como-funciona-a-urna-eletronica': { title: 'A Urna Por Dentro', tag: 'Cidadania', desc: 'Como seu voto vira número — e como qualquer cidadão pode conferir' },
+    'voto-como-funciona-o-marketing-politico': { title: 'O Marketing Político por Dentro', tag: 'Cidadania', desc: 'Candidato também é produto — e existe uma indústria inteira pra vendê-lo' },
+    'voto-como-funciona-o-orcamento-publico': { title: 'O Orçamento Engessado', tag: 'Cidadania', desc: 'Quanto do dinheiro público já tem dono antes de o eleito tomar posse' },
+    'voto-como-funciona-o-sistema-proporcional': { title: 'O Sistema Proporcional Sem Mistério', tag: 'Cidadania', desc: 'Por que votar num candidato pode eleger outro — a conta completa' },
+    'voto-como-identificar-fake-news-eleitoral': { title: 'A Fake News de Véspera', tag: 'Cidadania', desc: 'Anatomia do boato que aparece no sábado antes da eleição' },
+    'voto-como-identificar-promessa-impossivel': { title: 'O Teste da Promessa Impossível', tag: 'Cidadania', desc: 'Quatro perguntas de 30 segundos que filtram 80% do palanque' },
+    'voto-como-ler-pesquisa-eleitoral': { title: 'Como Ler Pesquisa Eleitoral', tag: 'Cidadania', desc: 'Margem de erro, quem pagou e por que pesquisa não é previsão' },
+    'voto-como-pesquisar-candidato-no-tse': { title: 'Onde Estão os Dados Públicos', tag: 'Cidadania', desc: 'TSE, portais de transparência e sites legislativos — tudo grátis' },
+    'voto-como-pesquisar-sobre-um-candidato': { title: 'Montando a Ficha do Candidato', tag: 'Cidadania', desc: 'Roteiro prático: 30 minutos de pesquisa com checklist' },
+    'voto-como-ver-votacao-de-deputado': { title: 'O Histórico de Votações', tag: 'Cidadania', desc: 'Como o parlamentar votou quando o placar estava valendo' },
+    'voto-como-verificar-noticia-eleitoral': { title: 'Verificação em 5 Minutos', tag: 'Cidadania', desc: 'O kit básico pra checar antes de acreditar — ou compartilhar' },
+    'voto-competencia-de-cada-cargo-eleitoral': { title: 'A Promessa Fora do Cargo', tag: 'Cidadania', desc: 'O detector de promessa impossível — competência antes de simpatia' },
+    'voto-competencia-do-cargo-e-promessa': { title: 'Competência vs Promessa', tag: 'Cidadania', desc: 'Prometer o que o cargo não pode entregar é impossível por definição' },
+    'voto-custo-de-oportunidade-no-governo': { title: 'Custo de Oportunidade', tag: 'Cidadania', desc: 'Cada real no projeto A é um real que não vai para o B' },
+    'voto-de-onde-vem-o-dinheiro-publico': { title: 'De Onde Vem o Dinheiro Público', tag: 'Cidadania', desc: 'Governo não gera receita do nada — alguém sempre pagou antes' },
+    'voto-diferenca-deputado-estadual-e-federal': { title: 'Deputado Estadual × Deputado Federal', tag: 'Cidadania', desc: 'A diferença que quase ninguém sabe explicar' },
+    'voto-emocao-e-manipulacao-eleitoral': { title: 'Emoção Não É Prova', tag: 'Cidadania', desc: 'Por que jingle, história de superação e bebê no colo funcionam tão bem' },
+    'voto-falacias-em-discurso-politico': { title: 'Falácias de Palanque', tag: 'Cidadania', desc: 'Os truques de argumentação que aparecem em discurso de todo espectro' },
+    'voto-o-custo-invisivel-das-promessas': { title: 'Não Existe Almoço Grátis', tag: 'Cidadania', desc: 'O que se vê e o que não se vê em cada benefício prometido' },
+    'voto-o-que-faz-governador-e-presidente': { title: 'Governador e Presidente', tag: 'Cidadania', desc: 'Quem cuida do quê — a divisão federal que evita cobrança errada' },
+    'voto-o-que-faz-um-prefeito': { title: 'O Prefeito', tag: 'Cidadania', desc: 'O que a prefeitura realmente faz — e o que não é com ela' },
+    'voto-o-que-faz-um-senador': { title: 'O Senador', tag: 'Cidadania', desc: 'Oito anos de mandato e poderes que só o Senado tem' },
+    'voto-o-que-faz-um-vereador': { title: 'O Vereador', tag: 'Cidadania', desc: 'O cargo mais próximo de você — e o mais mal compreendido' },
+    'voto-o-que-sao-emendas-parlamentares': { title: 'Emendas Parlamentares', tag: 'Cidadania', desc: 'O que são, por que existem e como seguir o dinheiro' },
+    'voto-patrimonio-de-candidato-declarado': { title: 'O Patrimônio Declarado', tag: 'Cidadania', desc: 'A evolução dos bens entre eleições — onde olhar e o que levanta bandeira' },
+    'voto-perguntas-para-avaliar-promessa-politica': { title: 'As Perguntas que Desmontam Promessa Vazia', tag: 'Cidadania', desc: 'O checklist completo para debate, sabatina ou pesquisa solo' },
+    'voto-peso-do-voto-nas-eleicoes': { title: 'Seu Voto na Ponta do Lápis', tag: 'Cidadania', desc: 'A matemática que ninguém te mostrou antes de você votar' },
+    'voto-por-que-candidatos-prometem-demais': { title: 'A Inflação de Promessas', tag: 'Cidadania', desc: 'Por que quem promete pouco parece fraco — e o exagero vence a triagem' },
+    'voto-presenca-e-produtividade-de-parlamentar': { title: 'Presença e Produtividade', tag: 'Cidadania', desc: 'Comparecimento e projetos — e a armadilha de contar quantidade' },
+    'voto-quanto-custa-uma-promessa-de-campanha': { title: 'Cabe no Orçamento? Exercício Guiado', tag: 'Cidadania', desc: 'Estimando o custo de uma promessa com números redondos' },
+    'voto-quem-financia-campanha-eleitoral': { title: 'Quem Paga a Campanha', tag: 'Cidadania', desc: 'Fundo eleitoral, doadores e por que financiamento revela incentivos' },
+    'voto-titulo-de-eleitor-e-justificativa': { title: 'Título, Obrigação e Justificativa', tag: 'Cidadania', desc: 'As regras reais do voto no Brasil — sem lenda urbana' },
+    'voto-troca-de-partido-politico': { title: 'O Troca-Troca Partidário', tag: 'Cidadania', desc: 'Janela partidária, histórico de filiações e o que muitas trocas sugerem' },
   };
 
   // ── Helpers ──
@@ -126,7 +170,7 @@
     // After 2nd h2
     const ctaMessages = [
       { icon: '🎓', title: 'Aprenda mais sobre esse tema', text: 'Aulas interativas e gratuitas na Escola Liberal', btn: 'Ver Aulas' },
-      { icon: '🧠', title: 'Quer dominar esse assunto?', text: '800 aulas em 26 disciplinas, 100% grátis', btn: 'Começar Agora' },
+      { icon: '🧠', title: 'Quer dominar esse assunto?', text: '1.940 aulas em 31 disciplinas, 100% grátis', btn: 'Começar Agora' },
       { icon: '📚', title: 'Conteúdo exclusivo te esperando', text: 'Quizzes, gamificação e certificados', btn: 'Acessar Grátis' }
     ];
     const msg = ctaMessages[Math.floor(Math.random() * ctaMessages.length)];
@@ -163,7 +207,7 @@
       <div class="el-logo-mark">EL</div>
       <span class="el-banner-badge"><span class="dot"></span> 100% Gratuito</span>
       <h3>A Educação que a Escola Deveria Ter Dado</h3>
-      <p>800 aulas interativas em 26 disciplinas. Gamificação, quizzes, certificados. Funciona offline.</p>
+      <p>1.940 aulas interativas em 31 disciplinas. Gamificação, quizzes, certificados. Funciona offline.</p>
       <div class="el-live-counter"><span class="el-live-dot"></span><span class="el-live-num">${liveCount}</span> pessoas estudando agora</div>
       <div class="el-btn-row">
         <a href="${APP_URL}" class="el-btn">Começar Gratuitamente →</a>
@@ -251,7 +295,7 @@
   // ── 7. Ticker Strip ──
   function initTicker() {
     const items = [
-      '26 Disciplinas', '800 Aulas Interativas', '100% Gratuito',
+      '31 Disciplinas', '1.940 Aulas Interativas', '100% Gratuito',
       'Funciona Offline', 'Gamificação Completa', 'Quizzes em Cada Aula',
       'Para Adultos 18+', 'Certificados Digitais', 'Sem Anúncios'
     ];
@@ -276,7 +320,7 @@
       <span class="el-float-cta-badge">GRÁTIS</span>
       <button class="el-float-cta-close" aria-label="Fechar">✕</button>
       <h4>Escola Liberal</h4>
-      <p>800 aulas gratuitas em finanças, filosofia, oratória e mais 23 disciplinas.</p>
+      <p>1.940 aulas gratuitas em finanças, filosofia, oratória e mais 28 disciplinas.</p>
       <a href="${APP_URL}" class="el-btn">Acessar Grátis →</a>
     `);
     document.body.appendChild(float);
