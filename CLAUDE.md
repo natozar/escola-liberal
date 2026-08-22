@@ -980,6 +980,38 @@ Deploy → SW novo detectado (polling 60s)
   140 aulas x 5 larguras, 23 SVGs, **zero achados**. `trader.html` conferida em 1280px e 390px: sem overflow
   horizontal, 17 links para o app, 7 blocos de FAQ.
 
+### Concluido nesta sessao (2026-08-21 — Saneamento do blog e do markup das paginas principais)
+- **Bytes NUL no post de economia austriaca — resolvido** (ver nota acima). Era o unico arquivo do repo afetado.
+- **Auditoria dos 66 posts do blog.** Tres defeitos reais encontrados e corrigidos:
+  - **`<article>` aninhado em 19 posts.** O gerador abria um segundo `<article>` depois da `div.meta` e o fechava
+    ANTES do disclaimer legal — entao o aviso de natureza educacional (nao e recomendacao de investimento, nao
+    substitui advogado ou psicologo) ficava fora do artigo que continha o `h1` e o corpo. Em 17 posts a forma era
+    o aninhamento; em 2 (`como-ser-mais-produtivo`, `reserva-emergencia-quanto-guardar`) o `</article>` fechava
+    cedo e deixava o disclaimer solto no container. Todos normalizados para a forma dos posts sadios.
+  - **`como-escolher-candidato.html` era pagina orfa.** No `sitemap.xml` desde 14/07 mas sem nenhum link interno
+    no site — nao aparecia no `blog.html` e nenhum post apontava pra ele. E o post-pilar da serie Voto Consciente
+    ("Metodo Completo em 6 Passos"). Card adicionado na posicao cronologica; indice vai de 65 para 66 cards.
+  - **`<button>` sem `type` nos 66 posts** (alternador de tema). Sem type explicito o default e submit.
+  - Verificacao: texto renderizado dos 66 posts identico ao de HEAD (tags e scripts removidos na comparacao).
+    Cobertura: 0 posts fora do sitemap, 0 fora do blog.html, 0 entradas de sitemap apontando pra arquivo inexistente.
+- **Paginas principais:** `autocomplete="new-password"` nos dois campos de senha do `perfil.html` (sem isso o
+  gerenciador de senhas nao oferece gerar nem salvar a senha nova) e `&` cru virou `&amp;` em `app.html` e `index.html`.
+- **`npm run validate` nao tem baseline verde** — falhava com 354 erros nas 12 paginas principais antes desta sessao,
+  agora 350. O grosso e ruido de lint que NAO vale corrigir: `no-inline-style` (195) e `no-implicit-button-type` (97)
+  sao preferencia da ferramenta, e mexer neles em massa traz risco de regressao visual sem ganho pro usuario.
+  Por isso o blog tambem NAO foi adicionado ao script `validate`: sem baseline verde, incluir mais arquivos nao vira gate.
+- **Achados deliberadamente NAO corrigidos** (com motivo):
+  - **45 titulos de post acima de 70 chars** (`long-title`). Nao e defeito: o Google trunca por volta de 60 chars e o
+    gancho ja esta na frente em todos. Encurtar 45 titulos publicados e reescrever copy e arriscar cauda longa de
+    busca por uma regra que e heuristica da ferramenta, nao do buscador. Decisao de marketing, nao de codigo.
+  - **`aria-label` no `#chatBadge`** (`app.html`): o badge esta dentro de um `<button>` que ja tem `aria-label`
+    proprio, entao o rotulo do span nunca e anunciado — esta morto, mas inerte. Feature do tutor IA esta desligada.
+  - **`<h2 id="mvT">` e `<h4 id="flashTerm">` vazios**: sao placeholders preenchidos por JS, falso positivo estatico.
+  - **`<style>` dentro do `<body>` no `index.html`**: mover pro head muda a ordem da cascata e arrisca regressao visual.
+  - **`<div>` dentro de `<button>`** (3x em `app.html`): invalido, mas corrigir exige remontar markup com risco visual.
+- SW v236 -> v238 (`blog.html`, `app.html`, `index.html` e `perfil.html` estao no CORE_ASSETS). `skipWaiting` continua
+  apenas no message handler.
+
 ## Jogo "Cidade Livre" (jogo.html) — 2026-08-08/09
 
 Jogo educacional de gestão de cidade, em produção. O jogador governa uma cidade brasileira fictícia; medidas coletivistas dão aprovação imediata e cobram o custo semanas depois (fila de efeitos agendados). Na crise, uma AULA real do currículo abre no momento da dor; concluí-la gera "Lucidez", que paga as reformas.
