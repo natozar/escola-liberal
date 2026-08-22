@@ -1056,6 +1056,33 @@ Os defeitos corrigidos nos posts voltariam no proximo artigo gerado. Correcao no
   67 arquivos / 67 cards, `como-escolher-candidato` e os 5 legados preservados, entrada criada sozinha no
   `ARTICLES_MAP`, sitemap e SW atualizados, verificador passando.
 
+### Concluido nesta sessao (2026-08-21 — Quatro diagramas novos em BOS, estrutura, sweep e order block)
+- **Motivo:** a disciplina tinha 23 diagramas, mas os dois modulos mais visuais (mod-192 estrutura, mod-193
+  liquidez) tinham so 3 em 20 aulas — CHoCH, filtro de estrutura e FVG. **BOS, sweep e order block**, que sao
+  conceitos de marcacao grafica, viviam so de texto.
+- **mod-192 aula 3 — BOS:** duas barras contra a linha do topo anterior. Numa, o pavio supera mas o corpo inteiro
+  fecha abaixo; na outra o corpo inteiro fica acima. Mostra graficamente que a mesma barra e rompimento por um
+  criterio e nao e pelo outro — o argumento da aula.
+- **mod-192 aula 5 — estrutura interna x externa:** um recuo com topos descendentes marcados dentro de uma alta
+  cujos fundos seguem ascendentes; duas chaves rotulam as camadas.
+- **mod-193 aula 2 — sweep:** dois cenarios lado a lado com o MESMO caminho ate a linha pontilhada, divergindo so
+  depois (um volta pra dentro, o outro sustenta). E a forma grafica de "em tempo real o comeco dos dois e identico".
+- **mod-193 aula 3 — order block:** a mesma barra marcada de duas formas concorrentes (corpo x barra inteira),
+  com tamanhos visivelmente diferentes.
+- **Regra seguida:** cada diagrama carrega o ponto CRITICO da aula, nao so o conceito. Padrao dos 23 existentes
+  mantido — SVG inline em `<div class="lesv-fig" tabindex="0">`, viewBox 640 de largura, cor so por variavel do
+  `app.css`, `role="img"` + aria-label, texto minimo 11px, nota de rodape declarando o grafico como esquematico.
+  Zero preco real, zero instrumento nomeado, zero recomendacao.
+- **Verificacao:** `qa-trader` nas 140 aulas sem erro; medicao no navegador em dark e light com `getBBox` real
+  (nenhum texto fora do viewBox, **nenhuma colisao entre textos**, menor texto a 11,4px); `15-trader-responsivo`
+  nas 5 larguras com 27 SVGs / 259 textos / 27 figuras rolaveis e zero achados.
+- **Tres dos quatro foram redesenhados apos conferencia visual** — bounds-check nao basta: no BOS o corpo do
+  candle de confirmacao atravessava a linha e deixava "fechou acima" ambiguo; no de estrutura o texto explicativo
+  cruzava a linha de preco e os pontos marcados nao sustentavam a legenda; no de order block os rotulos A e B se
+  sobrepunham. **A checagem de colisao entre textos passou a existir por causa disso** — vale reusar em diagrama novo.
+- Disciplina passa de **23 para 27 diagramas**. `integrity.json` regenerado (195 arquivos, hashes conferidos
+  contra os blobs do git, nao contra o disco). SW v239 -> v240.
+
 ## Jogo "Cidade Livre" (jogo.html) — 2026-08-08/09
 
 Jogo educacional de gestão de cidade, em produção. O jogador governa uma cidade brasileira fictícia; medidas coletivistas dão aprovação imediata e cobram o custo semanas depois (fila de efeitos agendados). Na crise, uma AULA real do currículo abre no momento da dor; concluí-la gera "Lucidez", que paga as reformas.
