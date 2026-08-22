@@ -904,9 +904,11 @@ Deploy → SW novo detectado (polling 60s)
   disciplina Trader adicionada ao itemList JSON-LD (nao existia); `numberOfCredits` do Course principal corrigido
   de "1800" (defasado ha varias sessoes) para "1940", idem `PT1800H` para `PT1940H`. 7/7 blocos JSON-LD validos.
 - SW v233; `lessons/integrity.json` regenerado (195 arquivos).
-- **Achado nao corrigido:** `blog/economia-austriaca-criancas.html` contem um bloco de bytes NUL (0x00) a partir do
-  offset ~15110 — por isso o `grep` o trata como binario. E anterior a esta sessao (ja estava no commit) e nao foi
-  tocado. Vale investigar se o post renderiza inteiro em producao.
+- **Achado RESOLVIDO (2026-08-21):** `blog/economia-austriaca-criancas.html` tinha 236 bytes NUL (0x00) de padding
+  no fim do arquivo, a partir do offset 15110 — por isso o `grep` o tratava como binario. O documento em si estava
+  intacto (fechava em `</html>` no 15110) e sempre renderizou inteiro em producao; o lixo vinha depois do fechamento
+  e o navegador o ignora. Origem: commit `9de919a` (escrita original do post). Padding truncado; varredura do repo
+  confirmou que era o unico arquivo afetado. O diff do post voltou a ser textual no git.
 ### Concluido nesta sessao (2026-08-21 — QA de responsividade e texto escondido)
 - **`qa/tests/15-trader-responsivo.spec.js`** (novo): varre as 140 aulas da disciplina em 5 larguras
   (320, 360, 414, 768, 1440) e procura 7 classes de defeito — overflow horizontal da pagina, elemento
