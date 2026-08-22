@@ -167,6 +167,12 @@ function getDisclaimer(cluster) {
 // HTML TEMPLATE
 // ============================================================
 function wrapTemplate(kw, body, dateISO) {
+  // O prompt pede "apenas conteudo dentro de <article>", o que o modelo as vezes lê como
+  // "emita voce mesmo a tag <article>". Quando isso acontece, o artigo nasce com <article>
+  // aninhado e o fechamento cai ANTES do disclaimer legal, jogando o aviso pra fora do
+  // artigo. Foi o que produziu 19 posts defeituosos ate 2026-08-21. O template abaixo ja
+  // abre e fecha o <article> — entao qualquer article vindo do corpo e removido aqui.
+  body = body.replace(/<\/?article[^>]*>/gi, '');
   const words = body.replace(/<[^>]+>/g, '').split(/\s+/).length;
   const readTime = Math.ceil(words / 200);
   const months = ['','janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
@@ -196,7 +202,7 @@ function wrapTemplate(kw, body, dateISO) {
 <script src="../cookie-consent.js"><\/script>
 </head>
 <body>
-<button class="theme-btn" onclick="toggleTheme()" aria-label="Alternar tema">🌙</button>
+<button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Alternar tema">🌙</button>
 <div class="container">
   <nav class="breadcrumb"><a href="../index.html">Inicio</a> / <a href="../blog.html">Blog</a> / <span>${kw.title.split(':')[0]}</span></nav>
   <article>
