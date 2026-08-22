@@ -5989,7 +5989,7 @@
       ],
       "targetWordCount": 1500,
       "priority": 38,
-      "status": "drafted",
+      "status": "published",
       "relatedSlugs": [
         "como-escolher-candidato"
       ],
@@ -5998,7 +5998,8 @@
       "votoLesson": 7,
       "draftedAt": "2026-07-15T12:00:00.000Z",
       "reviewScore": 8,
-      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada."
+      "reviewNotes": "Conteudo curado (nao-IA-generico), neutralidade verificada.",
+      "publishedAt": "2026-08-22T12:28:29.807Z"
     },
     {
       "slug": "voto-compra-de-voto-e-assedio-eleitoral",
