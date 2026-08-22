@@ -342,7 +342,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-primary);col
       <div class="card-title">Alterar Senha</div>
       <div class="field">
         <label for="secNewPass">Nova Senha</label>
-        <input type="password" id="secNewPass" placeholder="Mínimo 6 caracteres" minlength="6" oninput="checkPwdStrength(this.value)">
+        <input type="password" id="secNewPass" autocomplete="new-password" placeholder="Mínimo 6 caracteres" minlength="6" oninput="checkPwdStrength(this.value)">
         <div class="pwd-strength">
           <div class="pwd-bars">
             <div class="pwd-bar" id="pb1"></div>
@@ -355,7 +355,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-primary);col
       </div>
       <div class="field">
         <label for="secConfPass">Confirmar Senha</label>
-        <input type="password" id="secConfPass" placeholder="Repita a nova senha" minlength="6">
+        <input type="password" id="secConfPass" autocomplete="new-password" placeholder="Repita a nova senha" minlength="6">
       </div>
       <button class="btn btn-primary" onclick="changePassword()" id="changePassBtn" style="width:100%">Alterar Senha</button>
     </div>
